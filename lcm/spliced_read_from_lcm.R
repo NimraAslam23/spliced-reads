@@ -18,11 +18,6 @@ spliced_reads |>
 spliced_reads |> 
   distinct(junction_name) #770 splice junctions
 
-    #? why does code below not work
-spliced_reads |> 
-  filter(sample_name, contains("junction")) |> 
-  head()
-
 group_column <- spliced_reads |> 
   select(junction_name, sample_name, n_spliced_reads) |> 
   complete(junction_name, sample_name,fill=list(n_spliced_reads = 0)) |> 
@@ -31,6 +26,8 @@ group_column <- spliced_reads |>
                           "control"))
 
 View(group_column)
+
+
 
 group_column |>  filter(grepl("STMN2",junction_name)) |> 
   ggplot(aes(x = n_spliced_reads,
@@ -43,40 +40,31 @@ STMN2 <- group_column |>  filter(grepl("STMN2",junction_name))
 k <- wilcox.test(n_spliced_reads ~ disease, STMN2) |> 
   broom::tidy()
 
+# Nest data by junction_name
+
+group_column_nested <- group_column |> 
+  group_by(junction_name) |> 
+  nest()
+
+View(group_column_nested)
+
+# Run wilcoxon test on all the nested data
+
+mean_per_junction <- group_column_nested |> 
+  mutate(mean_n_spliced_reads = map_dbl(data, ~{mean(.x$n_spliced_reads)}))
+
+View(mean_per_junction)
+
+wilcox.test(mean_n_spliced_reads ~ ~{(.x$disease)}, mean_per_junction)
+### How to get the 'disease' part?
 
 
 
 
 
-   
-   
-
-complete(group_column, junction_name, sample_name)
 
 
 
-# "Group" column ----------------------------------------------------------
-
-spliced_reads |> 
-  mutate(group =
-    group_by(sample_name) |> 
-           ALS = select(sample_name, contains("ALS") & controls = select(sample_name, contains("Controls")))
-    .before = sample_name
-  )
-
-spliced_reads |> 
-  mutate(group =
-           case_when(sample_name, contains("ALS") ~ 'ALS',
-                     sample_name, contains("Control") ~ 'control')
-  )
-
-                        
-# Are any junctions significantly higher in ALS vs controls? --------------
-
-    #? new column - number of spliced reads for each junction?
-
-test <- t.test(formula = n_spliced_reads ~ group,
-               data = spliced_reads)
 
 
 
