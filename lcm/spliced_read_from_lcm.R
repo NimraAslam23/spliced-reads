@@ -43,7 +43,7 @@ View(k)
 
 # Create a table of the average count of each junction in each disease
 
-group_column |> 
+mean_per_junction <- group_column |> 
   group_by(junction_name,disease) |> 
   mutate(mean_n_spliced_reads = mean(n_spliced_reads)) |> 
   ungroup() |> 
@@ -69,12 +69,27 @@ wilcox_tested_nested = group_column_nested |>
 
 View(wilcox_tested_nested)
 
+# Find the junctions which were significant (p < 0.05)
 
+significant_junctions <- wilcox_tested_nested |> 
+  filter(p.value < 0.05) 
 
+View(significant_junctions) # 33 significant junctions
 
+# What fraction of the significant junctions are more expressed in ALS? More expressed in controls?
 
+mean_per_junction_sig <- mean_per_junction |> 
+  semi_join(significant_junctions, mean_per_junction, by=("junction_name"))
 
+control_sig <- mean_per_junction_sig |> 
+  filter(control > ALS)
 
+ALS_sig <- mean_per_junction_sig |> 
+  filter(ALS > control)
 
+  #fraction more expressed in controls
+fraction_control_sig <- nrow(control_sig)/nrow(significant_junctions)
 
+  #fraction more expressed in ALS
+fraction_ALS_sig <- nrow(ALS_sig)/nrow(significant_junctions)
 
