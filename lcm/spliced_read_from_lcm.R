@@ -1,3 +1,4 @@
+setwd("/Users/nimraaslam/Documents/GitHub/spliced-reads/lcm")
 getwd()
 library(tidyverse)
 library(ggplot2)
@@ -27,8 +28,6 @@ group_column <- spliced_reads |>
 
 View(group_column)
 
-
-
 group_column |>  filter(grepl("STMN2",junction_name)) |> 
   ggplot(aes(x = n_spliced_reads,
              fill = disease)) +
@@ -40,25 +39,35 @@ STMN2 <- group_column |>  filter(grepl("STMN2",junction_name))
 k <- wilcox.test(n_spliced_reads ~ disease, STMN2) |> 
   broom::tidy()
 
+View(k)
+
+# Create a table of the average count of each junction in each disease
+
+group_column |> 
+  group_by(junction_name,disease) |> 
+  mutate(mean_n_spliced_reads = mean(n_spliced_reads)) |> 
+  ungroup() |> 
+  select(junction_name,disease,mean_n_spliced_reads) |> 
+  unique() |> #have mean_n_spliced_reads for each junction_name separately for control and ALS
+  pivot_wider(names_from = 'disease',
+              values_from = 'mean_n_spliced_reads')
+
 # Nest data by junction_name
 
 group_column_nested <- group_column |> 
   group_by(junction_name) |> 
   nest()
-
+  
 View(group_column_nested)
 
 # Run wilcoxon test on all the nested data
 
-mean_per_junction <- group_column_nested |> 
-  mutate(mean_n_spliced_reads = map_dbl(data, ~{mean(.x$n_spliced_reads)}))
+wilcox_tested_nested = group_column_nested |> 
+  mutate(wc_res = map(data,~{broom::tidy(wilcox.test(.x$n_spliced_reads ~ .x$disease, exact=FALSE))})) |> 
+  unnest(wc_res) |> 
+  arrange(p.value)
 
-View(mean_per_junction)
-
-wilcox.test(mean_n_spliced_reads ~ ~{(.x$disease)}, mean_per_junction)
-### How to get the 'disease' part?
-
-
+View(wilcox_tested_nested)
 
 
 
