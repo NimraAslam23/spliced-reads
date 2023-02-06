@@ -152,3 +152,16 @@ spliced_reads_pdtp_select |>
     title = "pTDP-43 levels do not affect viability of motor neurons", 
     x = "pTDP-43 accumulation",
     y = "Motor neuron death (%)") 
+
+# stmn2_all_junctions.bed -------------------------------------------------
+
+stmn2_all_junctions_orig <- read_tsv("stmn2_all_junctions.bed",
+                                     col_names = c("chrosome", "start", "end", "sample_name", 
+                                                   "n_spliced_reads", "strand"))
+stmn2_all_junctions <- unique(stmn2_all_junctions_orig)
+stmn2_all_junctions$sample_name <- gsub(".SJ.out", "", as.character(stmn2_all_junctions$sample_name))
+
+spliced_reads_pdtp_stmn2 <- stmn2_all_junctions |> 
+  left_join(spliced_reads_pdtp, by=c("sample_name", "chrosome", "start", 
+                                     "end", "n_spliced_reads", "strand"))
+
