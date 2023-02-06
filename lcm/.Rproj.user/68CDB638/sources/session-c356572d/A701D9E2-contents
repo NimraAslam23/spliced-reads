@@ -134,11 +134,21 @@ spliced_reads_pdtp_select <- spliced_reads_pdtp |>
 spliced_reads_pdtp_select |> 
   filter(grepl("STMN2", junction_name)) |> 
   drop_na() |> 
-  ggplot(aes(x = MN_death, y = n_spliced_reads, color = pTDP_category)) +
-  geom_point(position = "jitter") +
+  ggplot(aes(x = pTDP_category, y = n_spliced_reads)) +
+  geom_boxplot() +
   theme(legend.position = "none") +
   labs(
-    title = "STMN2 expression is higher with less phosphorylated TDP-43", #what exactly do the values of 'pTDP.43' represent?
-    x = "Motor neuron death", #what is this variable?
-    y = "Number of STMN2 spliced reads") +
-  facet_wrap(~pTDP_category)
+    title = "STMN2 expression is higher with less phosphorylated TDP-43", 
+    x = "pTDP-43 accumulation",
+    y = "Number of STMN2 spliced reads") 
+
+spliced_reads_pdtp_select |> 
+  filter(grepl("STMN2", junction_name)) |> 
+  drop_na() |> 
+  ggplot(aes(x = pTDP_category, y = MN_death)) +
+  geom_boxplot() +
+  theme(legend.position = "none") +
+  labs(
+    title = "pTDP-43 levels do not affect viability of motor neurons", 
+    x = "pTDP-43 accumulation",
+    y = "Motor neuron death (%)") 
