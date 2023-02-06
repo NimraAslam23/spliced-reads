@@ -165,3 +165,17 @@ spliced_reads_pdtp_stmn2 <- stmn2_all_junctions |>
   left_join(spliced_reads_pdtp, by=c("sample_name", "chrosome", "start", 
                                      "end", "n_spliced_reads", "strand"))
 
+spliced_reads_pdtp_stmn2 <- spliced_reads_pdtp_stmn2 |> 
+  mutate(disease = ifelse(grepl("ALS", sample_name),
+                          "ALS",
+                          "Control")) |> 
+  relocate(disease, .after = sample_name)
+
+#spliced_reads_pdtp_stmn2 <- spliced_reads_pdtp_stmn2 |> 
+  #group_by(junction_name, disease) |> 
+  #mutate(mean_n_spliced_reads = mean(n_spliced_reads)) |> 
+  #ungroup() |> 
+  #select(junction_name, disease, mean_n_spliced_reads) |> 
+  #unique() |> 
+  #pivot_wider(names_from = "disease",
+              #values_from = "mean_n_spliced_reads")
