@@ -187,4 +187,26 @@ spliced_reads_pdtp_stmn2 |>
   geom_boxplot() +
   labs(
     title = "Annotated STMN2 event has higher expression in the control samples",
-    y = "Number of spliced reads")
+    y = "Number of spliced reads"
+  )
+
+spliced_reads_pdtp_stmn2 |> 
+  filter(grepl("annotated", junction)) |> 
+  drop_na() |> 
+  ggplot(aes(x = pTDP_category, y = n_spliced_reads)) +
+  geom_boxplot() +
+  labs(
+    title = "Higher expression of annotated STMN2 event with low levels of pTDP",
+    x = "Level of phosphorylated TDP-43",
+    y = "Number of spliced reads"
+  )
+
+spliced_reads_pdtp_stmn2 |> 
+  filter(grepl("annotated", junction)) |> 
+  drop_na() |> 
+  ggplot(aes(x = MN_death, y = n_spliced_reads)) +
+  geom_point() +
+  labs(
+    x = "Motor neuron death (%)",
+    y = "Number of spliced reads"
+  )
