@@ -162,20 +162,29 @@ stmn2_all_junctions <- unique(stmn2_all_junctions_orig)
 stmn2_all_junctions$sample_name <- gsub(".SJ.out", "", as.character(stmn2_all_junctions$sample_name))
 
 spliced_reads_pdtp_stmn2 <- stmn2_all_junctions |> 
-  left_join(spliced_reads_pdtp, by=c("sample_name", "chrosome", "start", 
-                                     "end", "n_spliced_reads", "strand"))
+  left_join(ptdp_orig, by=c("sample_name"))
+
+spliced_reads_pdtp_select |> 
+  filter(grepl("STMN2", junction_name))
+
+stmn2_all_junctions |> 
+  distinct(end)
+  # cryptic 79616822, annotated 79636802
 
 spliced_reads_pdtp_stmn2 <- spliced_reads_pdtp_stmn2 |> 
+  mutate(junction = ifelse(grepl("79616822", end),
+                           "cryptic",
+                           "annotated")) |> 
   mutate(disease = ifelse(grepl("ALS", sample_name),
-                          "ALS",
-                          "Control")) |> 
-  relocate(disease, .after = sample_name)
+                                "ALS",
+                                "control")) |> 
+  relocate(disease, .after = sample_name) |> 
+  relocate(junction, .after = disease)
 
-#spliced_reads_pdtp_stmn2 <- spliced_reads_pdtp_stmn2 |> 
-  #group_by(junction_name, disease) |> 
-  #mutate(mean_n_spliced_reads = mean(n_spliced_reads)) |> 
-  #ungroup() |> 
-  #select(junction_name, disease, mean_n_spliced_reads) |> 
-  #unique() |> 
-  #pivot_wider(names_from = "disease",
-              #values_from = "mean_n_spliced_reads")
+spliced_reads_pdtp_stmn2 |> 
+  filter(grepl("annotated", junction)) |> 
+  ggplot(aes(x = disease, y = n_spliced_reads)) +
+  geom_boxplot() +
+  labs(
+    title = "Annotated STMN2 event has higher expression in the control samples",
+    y = "Number of spliced reads")
