@@ -182,8 +182,7 @@ spliced_reads_pdtp_stmn2 <- spliced_reads_pdtp_stmn2 |>
   relocate(junction, .after = disease)
 
 spliced_reads_pdtp_stmn2 |> 
-  filter(grepl("annotated", junction)) |> 
-  ggplot(aes(x = disease, y = n_spliced_reads)) +
+  ggplot(aes(x = junction, y = n_spliced_reads, fill = disease)) +
   geom_boxplot() +
   labs(
     title = "Annotated STMN2 event has higher expression in the control samples",
@@ -191,22 +190,59 @@ spliced_reads_pdtp_stmn2 |>
   )
 
 spliced_reads_pdtp_stmn2 |> 
-  filter(grepl("annotated", junction)) |> 
   drop_na() |> 
-  ggplot(aes(x = pTDP_category, y = n_spliced_reads)) +
+  ggplot(aes(x = junction, y = n_spliced_reads, fill = pTDP_category)) +
   geom_boxplot() +
   labs(
     title = "Higher expression of annotated STMN2 event with low levels of pTDP",
-    x = "Level of phosphorylated TDP-43",
+    x = "Junction",
     y = "Number of spliced reads"
   )
 
 spliced_reads_pdtp_stmn2 |> 
-  filter(grepl("annotated", junction)) |> 
   drop_na() |> 
-  ggplot(aes(x = MN_death, y = n_spliced_reads)) +
+  ggplot(aes(x = MN_death, y = n_spliced_reads, color = junction)) +
   geom_point() +
   labs(
     x = "Motor neuron death (%)",
-    y = "Number of spliced reads"
+    y = "Number of spliced reads",
+    color = "Junction"
   )
+
+# percent spliced in (psi) value ------------------------------------------
+
+psi_stmn2 <- spliced_reads_pdtp_stmn2 |> 
+  select(-start,-end) |> 
+  unique() |>
+  pivot_wider(names_from = 'junction',
+              values_from = 'n_spliced_reads',
+              values_fill = 0) 
+
+psi_stmn2 <- psi_stmn2 |> 
+  group_by(sample_name) |> 
+  mutate(total_counts = annotated + cryptic) |> 
+  mutate(psi = cryptic / total_counts)
+
+psi_stmn2 |> 
+  drop_na() |> 
+  ggplot(aes(x = pTDP_category, y = psi, fill = pTDP_category)) +
+  geom_boxplot() +
+  theme(legend.position = "none") +
+  labs(
+    title = "STMN2 cryptic splicing is higher with low levels of pTDP",
+    x = "pTDP-43 accumulation",
+    y = "PSI value"
+  )
+
+psi_stmn2 |> 
+  drop_na() |> 
+  ggplot(aes(x = MN_death, y = psi, color = pTDP_category)) +
+  geom_point() +
+  labs(
+    x = "Motor neuron death (%)",
+    y = "PSI value",
+    color = "pTDP-43 \naccumulation"
+  )
+
+
+
