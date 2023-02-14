@@ -1,30 +1,57 @@
+---
+title: "Cryptic expression in LCM Neurons"
+output:
+  pdf_document: default
+  html_document: default
+date: "2023-02-09"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggplot2)
 library(tidyr)
 library(dplyr)
+```
 
-# Data import -------------------------------------------------------------
+# R Markdown
 
+We wanted to know if we could detect TDP43 cryptic events in LCM neurons from ALS or control patients. AL sent me the counts of spliced reads supporting the inclusion of various TDP-43 related cryptic events from a 2018 study.
+
+```{r readin}
 spliced_reads_orig <- read.csv("spliced_read_from_lcm.csv")
 spliced_reads <- spliced_reads_orig
 
-# Looking at data ---------------------------------------------------------
+```
 
-spliced_reads |> 
-  distinct(sample_name) #21 unique samples
+## Looking at the spliced reads data
 
-spliced_reads |> 
-  distinct(junction_name) #770 splice junctions
+```{r unique data points}
+n_samp <- spliced_reads |> 
+  distinct(sample_name) |> 
+  nrow()
 
-group_column <- spliced_reads |> 
-  select(junction_name, sample_name, n_spliced_reads) |> 
-  complete(junction_name, sample_name,fill=list(n_spliced_reads = 0)) |> 
-  mutate(disease = ifelse(grepl("ALS", sample_name),
-                          "ALS",
-                          "control"))
+n_splice <- spliced_reads |> 
+  distinct(junction_name) |> nrow() 
 
-# Density plot - number of spliced reads in ALS and controls --------------
+```
 
+There are 21 unique samples and 770 splice junctions in the data.
+
+The dataframe was extended to include counts for all samples and all junctions, inserting spliced reads counts as '0'. A new column was added to include information on the disease group for each sample (i.e., ALS patients or control samples).
+
+```{r disease group column}
+    group_column <- spliced_reads |> 
+      select(junction_name, sample_name, n_spliced_reads) |> 
+      complete(junction_name, sample_name,fill=list(n_spliced_reads = 0)) |> 
+      mutate(disease = ifelse(grepl("ALS", sample_name),
+                              "ALS",
+                              "control"))
+```
+
+To visualise the spliced reads data, a density plot was made with a pseudo log scale on the x-axis to compare the number of spliced reads in the ALS and control samples.
+
+```{r}
 group_column |> 
   ggplot(aes(x = n_spliced_reads,
              fill = disease)) +
@@ -35,9 +62,13 @@ group_column |>
     x = "Number of spliced reads",
     color = "Group",
   )
+```
 
-# Table of the average count of each junction in each disease -------------
+The density plot illustrated that there are more spliced reads in the ALS cohort, with some more extreme values.
 
+A new column was added to include information on the average count of each junction in ALS patients and control samples. This column was then split into two columns: ALS and control.
+
+```{r}
 mean_per_junction <- group_column |> 
   group_by(junction_name,disease) |> 
   mutate(mean_n_spliced_reads = mean(n_spliced_reads)) |> 
@@ -46,34 +77,38 @@ mean_per_junction <- group_column |>
   unique() |> #mean_n_spliced_reads for each junction_name separately for control and ALS
   pivot_wider(names_from = 'disease',
               values_from = 'mean_n_spliced_reads')
+```
 
-# Nest data by junction_name ----------------------------------------------
+## Wilcoxon test
 
+The data were nested by junction name and a wilcoxon test was conducted to see if any junctions were differentially expressed in the ALS and control samples. The junctions were filtered for only those that were significant (i.e., wilcoxon test p-value \< 0.05). Most of the 770 junctions had no significant difference in expression between the ALS and control samples, but a small fraction of them did - specifically 33.
+
+```{r}
 group_column_nested <- group_column |> 
   group_by(junction_name) |> 
   nest()
 
-# Run wilcoxon test on all the nested data --------------------------------
-
-wilcox_tested_nested = group_column_nested |> 
+wilcox_tested_nested = group_column_nested |>
   mutate(wc_res = map(data,~{broom::tidy(wilcox.test(.x$n_spliced_reads ~ .x$disease, exact=FALSE))})) |> 
   unnest(wc_res) |> 
   arrange(p.value)
 
-# Find the junctions which were significant (p < 0.05) --------------------
-
 significant_junctions <- wilcox_tested_nested |> 
-  filter(p.value < 0.05) # 33 significant junctions
+  filter(p.value < 0.05)
+```
 
-# Fraction of significant junctions expressed more in ALS and cont --------
+These significant junctions were grouped according to their disease group ("ALS" or "control") and the percentage of junctions more highly expressed in the ALS and control samples was calculated.
 
+```{r}
 mean_per_junction_sig <- mean_per_junction |> 
   semi_join(significant_junctions, by=("junction_name")) |> 
   mutate(higher_value = ifelse(ALS>control, "ALS", "control")) |> 
   janitor::tabyl(higher_value)
+```
 
-# Number of significant spliced reads in ALS and controls -----------------
+Most of the significant events were expressed more highly in the controls than the ALS motor neurons. 76% of the significant junctions were more highly expressed in the controls, whereas only 24% were more highly expressed in ALS patients.
 
+```{r}
 sig_reads_groups <- group_column |> 
   semi_join(significant_junctions, by=("junction_name")) 
 
@@ -84,28 +119,36 @@ ggplot(sig_reads_groups, aes(x = n_spliced_reads, color = disease, fill = diseas
     title = "Number of significant spliced reads in ALS and controls",
     x = "Number of spliced reads",
   )
+```
 
-# Junctions higher in the controls vs ALS ---------------------------------
-
+```{r}
 mean_per_junction |> 
   semi_join(significant_junctions, by=("junction_name")) |> 
   mutate(higher_value = ifelse(ALS>control,"ALS","control")) |> 
   separate(junction_name, sep = '\\|',into = c("gene","junc_cat","n_datasets_junction_found"),convert = TRUE) |>
   janitor::tabyl(junc_cat,higher_value)
+```
 
+Most of the junctions significantly higher in controls are annotated events, with both ends of the junctions overlapping with known introns/exons, whereas for the junctions higher in the ALS cohort either none or only 1 end overlaps a known exon.
+
+```{r}
 mean_per_junction |> 
   semi_join(significant_junctions, by=("junction_name")) |> 
   mutate(higher_value = ifelse(ALS>control,"ALS","control")) |> 
   separate(junction_name, sep = '\\|',into = c("gene","junc_cat","n_datasets_junction_found"),convert = TRUE) |> 
   ggplot(aes(x = junc_cat, fill = higher_value)) +
-  geom_bar(position = "dodge") +
+  geom_bar() +
   labs(
     title = "Number of junctions significantly higher in ALS and controls",
     x = "Junction category",
     y = "Number of junctions",
     color = "Group",
   )
+```
 
+Next, we asked: how many datasets was an event detected in if it was higher in ALS or controls?
+
+```{r}
 # Mean 'n_datasets_junction_found' by which tissue it was higher in -------
 
 mean_per_junction |> 
@@ -113,7 +156,17 @@ mean_per_junction |>
   mutate(higher_value = ifelse(ALS>control,"ALS","control")) |> group_by(higher_value) |> 
   separate(junction_name, sep = '\\|',into = c("gene","junc_cat","n_datasets_junction_found"),convert = TRUE) |> 
   summarize(mean_n_datasets = mean(n_datasets_junction_found))
+```
 
+Junctions higher in ALS motor neurons were found in, on average, 3.5 TDP-43 knockdown studies. On the other hand, junctions higher in controls were found in only 1 study. Thus, the annotated events higher in controls were unique to a single TDP-43 knockdown.
+
+Next, AL sent me data on STMN2 junctions:
+
+-   The percentage of motor neurons with cytoplasmic accumulation of phosphorylated TDP-43 (pTDP-43), also grouped into 'low' and 'high' pTDP-43 in a separate column.
+
+-   The percentage of motor neurons that died in each STMN2 sample.
+
+```{r}
 # Left-join ptdp table to existing table ----------------------------------
 
 ptdp_orig <- read.csv("ptdp_mn_death.csv")
@@ -125,7 +178,9 @@ ptdp_orig <- ptdp_orig |>
 
 spliced_reads_pdtp <- spliced_reads |> 
   left_join(ptdp_orig, by = "sample_name")
+```
 
+```{r}
 # Plot STMN2 expression against MN ----------------------------------------
 
 spliced_reads_pdtp_select <- spliced_reads_pdtp |> 
@@ -152,7 +207,11 @@ spliced_reads_pdtp_select |>
     title = "pTDP-43 levels do not affect viability of motor neurons", 
     x = "pTDP-43 accumulation",
     y = "Motor neuron death (%)") 
+```
 
+The final table had counts for all the STMN2 reads that have the same start coordinate "79611214". This table had two different splicing events: annotated and cryptic, both with different end coordinates. The events were grouped according to their end coordinates into either "annotated" or "cryptic" in a new column and also grouped into either "ALS" or "control".
+
+```{r}
 # stmn2_all_junctions.bed -------------------------------------------------
 
 stmn2_all_junctions_orig <- read_tsv("stmn2_all_junctions.bed",
@@ -172,7 +231,7 @@ stmn2_all_junctions |>
   # cryptic 79616822, annotated 79636802
 
 spliced_reads_pdtp_stmn2 <- spliced_reads_pdtp_stmn2 |> 
-  mutate(junction = ifelse(end == "79616822",
+  mutate(junction = ifelse(grepl("79616822", end),
                            "cryptic",
                            "annotated")) |> 
   mutate(disease = ifelse(grepl("ALS", sample_name),
@@ -180,7 +239,9 @@ spliced_reads_pdtp_stmn2 <- spliced_reads_pdtp_stmn2 |>
                                 "control")) |> 
   relocate(disease, .after = sample_name) |> 
   relocate(junction, .after = disease)
+```
 
+```{r}
 spliced_reads_pdtp_stmn2 |> 
   ggplot(aes(x = junction, y = n_spliced_reads, fill = disease)) +
   geom_boxplot() +
@@ -188,7 +249,9 @@ spliced_reads_pdtp_stmn2 |>
     title = "Annotated STMN2 event has higher expression in the control samples",
     y = "Number of spliced reads"
   )
+```
 
+```{r}
 spliced_reads_pdtp_stmn2 |> 
   drop_na() |> 
   ggplot(aes(x = junction, y = n_spliced_reads, fill = pTDP_category)) +
@@ -198,34 +261,39 @@ spliced_reads_pdtp_stmn2 |>
     x = "Junction",
     y = "Number of spliced reads"
   )
+```
 
+```{r}
 spliced_reads_pdtp_stmn2 |> 
   drop_na() |> 
-  ggplot(aes(x = MN_death, y = n_spliced_reads)) +
-  geom_point(aes(color = junction)) +
+  ggplot(aes(x = MN_death, y = n_spliced_reads, color = junction)) +
+  geom_point() +
   labs(
     x = "Motor neuron death (%)",
     y = "Number of spliced reads",
     color = "Junction"
-  ) +
-  ggpubr::stat_cor() +
-  geom_smooth(method = 'lm') +
-  ggtitle('There is no relationship between MN death and N spliced reads of either STMN2 event')
+  )
+```
 
+```{r}
 # percent spliced in (psi) value ------------------------------------------
 
 psi_stmn2 <- spliced_reads_pdtp_stmn2 |> 
-  select(-chrosome,-start,-end) |> 
+  select(-start,-end) |> 
   unique() |>
   pivot_wider(names_from = 'junction',
               values_from = 'n_spliced_reads',
               values_fill = 0) 
+```
 
+```{r}
 psi_stmn2 <- psi_stmn2 |> 
-  # group_by(sample_name) |> 
+  group_by(sample_name) |> 
   mutate(total_counts = annotated + cryptic) |> 
   mutate(psi = cryptic / total_counts)
+```
 
+```{r}
 psi_stmn2 |> 
   drop_na() |> 
   ggplot(aes(x = pTDP_category, y = psi, fill = pTDP_category)) +
@@ -236,20 +304,16 @@ psi_stmn2 |>
     x = "pTDP-43 accumulation",
     y = "PSI value"
   )
+```
 
+```{r}
 psi_stmn2 |> 
   drop_na() |> 
-  ggplot(aes(x = MN_death, y = psi)) +
-  geom_point(aes(color = pTDP_category)) +
+  ggplot(aes(x = MN_death, y = psi, color = pTDP_category)) +
+  geom_point() +
   labs(
     x = "Motor neuron death (%)",
     y = "PSI value",
     color = "pTDP-43 \naccumulation"
-  ) +
-  ggpubr::stat_cor() +
-  geom_smooth(method = 'lm') +
-  ggtitle('There is a negative relationship between cryptic STMN2 PSI and MN death - more death is less cryptic expressed')
-
-
-
-
+  )
+```

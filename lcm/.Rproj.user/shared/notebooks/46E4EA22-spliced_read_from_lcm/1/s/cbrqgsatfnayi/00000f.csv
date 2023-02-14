@@ -1,0 +1,3 @@
+"0","spliced_reads_orig <- read.csv(""spliced_read_from_lcm.csv"")"
+"0","spliced_reads <- spliced_reads_orig"
+"0",""

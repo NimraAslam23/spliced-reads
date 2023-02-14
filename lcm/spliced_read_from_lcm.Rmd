@@ -1,30 +1,55 @@
+---
+title: "Cryptic expression in LCM Neurons"
+output:
+  pdf_document: default
+  html_document: default
+date: "2023-02-09"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggplot2)
 library(tidyr)
 library(dplyr)
+```
 
-# Data import -------------------------------------------------------------
+# R Markdown
 
+We wanted to know if we could detect TDP43 cryptic events in LCM neurons from ALS or control patients. AL sent me the counts of spliced reads supporting the inclusion of various TDP-43 related cryptic events from a 2018 study.
+
+```{r readin}
 spliced_reads_orig <- read.csv("spliced_read_from_lcm.csv")
 spliced_reads <- spliced_reads_orig
 
-# Looking at data ---------------------------------------------------------
+```
 
-spliced_reads |> 
-  distinct(sample_name) #21 unique samples
+## Looking at the spliced reads data
 
-spliced_reads |> 
-  distinct(junction_name) #770 splice junctions
+```{r unique data points}
+n_samp <- spliced_reads |> 
+  distinct(sample_name) |> 
+  nrow()
 
-group_column <- spliced_reads |> 
-  select(junction_name, sample_name, n_spliced_reads) |> 
-  complete(junction_name, sample_name,fill=list(n_spliced_reads = 0)) |> 
-  mutate(disease = ifelse(grepl("ALS", sample_name),
-                          "ALS",
-                          "control"))
+n_splice <- spliced_reads |> 
+  distinct(junction_name) |> nrow() 
 
-# Density plot - number of spliced reads in ALS and controls --------------
+```
+There are 21 unique samples and 770 splice junctions in the data.
 
+The dataframe was extended to include counts for all samples and all junctions, inserting spliced reads counts as '0'.
+A new column was added to include information on the disease group for each sample (i.e., ALS patients or control samples). 
+```{r disease group column}
+    group_column <- spliced_reads |> 
+      select(junction_name, sample_name, n_spliced_reads) |> 
+      complete(junction_name, sample_name,fill=list(n_spliced_reads = 0)) |> 
+      mutate(disease = ifelse(grepl("ALS", sample_name),
+                              "ALS",
+                              "control"))
+```
+
+To visualise the spliced reads data, a density plot was made with a pseudo log scale on the x-axis to compare the number of spliced reads in the ALS and control samples.
+```{r}
 group_column |> 
   ggplot(aes(x = n_spliced_reads,
              fill = disease)) +
@@ -35,9 +60,11 @@ group_column |>
     x = "Number of spliced reads",
     color = "Group",
   )
+```
+The density plot illustrated that there are more spliced reads in the ALS cohort, with some more extreme values. 
 
-# Table of the average count of each junction in each disease -------------
-
+A new column was added to include information on the average count of each junction in ALS patients and control samples. This column was then split into two columns: ALS and control.
+```{r}
 mean_per_junction <- group_column |> 
   group_by(junction_name,disease) |> 
   mutate(mean_n_spliced_reads = mean(n_spliced_reads)) |> 
@@ -46,34 +73,36 @@ mean_per_junction <- group_column |>
   unique() |> #mean_n_spliced_reads for each junction_name separately for control and ALS
   pivot_wider(names_from = 'disease',
               values_from = 'mean_n_spliced_reads')
+```
 
-# Nest data by junction_name ----------------------------------------------
+## Wilcoxon test
 
+The data were nested by junction name and a wilcoxon test was conducted to see if any junctions were differentially expressed in the ALS and control samples.
+```{r}
 group_column_nested <- group_column |> 
   group_by(junction_name) |> 
   nest()
 
-# Run wilcoxon test on all the nested data --------------------------------
-
-wilcox_tested_nested = group_column_nested |> 
+wilcox_tested_nested = group_column_nested |>
   mutate(wc_res = map(data,~{broom::tidy(wilcox.test(.x$n_spliced_reads ~ .x$disease, exact=FALSE))})) |> 
   unnest(wc_res) |> 
   arrange(p.value)
+```
 
-# Find the junctions which were significant (p < 0.05) --------------------
-
+The junctions were filtered for only those that were significant (i.e., wilcoxon test p-value < 0.05).
+```{r}
 significant_junctions <- wilcox_tested_nested |> 
-  filter(p.value < 0.05) # 33 significant junctions
-
-# Fraction of significant junctions expressed more in ALS and cont --------
-
+  filter(p.value < 0.05)
+```
+33 junctions were significantly expressed.These significant junctions were grouped according to their disease group ("ALS" or "control") and the percentage of junctions more highly expressed in the ALS and control samples was calculated. 
+```{r}
 mean_per_junction_sig <- mean_per_junction |> 
   semi_join(significant_junctions, by=("junction_name")) |> 
   mutate(higher_value = ifelse(ALS>control, "ALS", "control")) |> 
   janitor::tabyl(higher_value)
-
-# Number of significant spliced reads in ALS and controls -----------------
-
+```
+76% of the significant junctions were more highly expressed in the controls, whereas onyl 24% were more highly expressed in ALS patients. 
+```{r}
 sig_reads_groups <- group_column |> 
   semi_join(significant_junctions, by=("junction_name")) 
 
@@ -84,9 +113,9 @@ ggplot(sig_reads_groups, aes(x = n_spliced_reads, color = disease, fill = diseas
     title = "Number of significant spliced reads in ALS and controls",
     x = "Number of spliced reads",
   )
+```
 
-# Junctions higher in the controls vs ALS ---------------------------------
-
+```{r}
 mean_per_junction |> 
   semi_join(significant_junctions, by=("junction_name")) |> 
   mutate(higher_value = ifelse(ALS>control,"ALS","control")) |> 
@@ -105,7 +134,9 @@ mean_per_junction |>
     y = "Number of junctions",
     color = "Group",
   )
+```
 
+```{r}
 # Mean 'n_datasets_junction_found' by which tissue it was higher in -------
 
 mean_per_junction |> 
@@ -113,7 +144,9 @@ mean_per_junction |>
   mutate(higher_value = ifelse(ALS>control,"ALS","control")) |> group_by(higher_value) |> 
   separate(junction_name, sep = '\\|',into = c("gene","junc_cat","n_datasets_junction_found"),convert = TRUE) |> 
   summarize(mean_n_datasets = mean(n_datasets_junction_found))
+```
 
+```{r}
 # Left-join ptdp table to existing table ----------------------------------
 
 ptdp_orig <- read.csv("ptdp_mn_death.csv")
@@ -125,7 +158,9 @@ ptdp_orig <- ptdp_orig |>
 
 spliced_reads_pdtp <- spliced_reads |> 
   left_join(ptdp_orig, by = "sample_name")
+```
 
+```{r}
 # Plot STMN2 expression against MN ----------------------------------------
 
 spliced_reads_pdtp_select <- spliced_reads_pdtp |> 
@@ -152,7 +187,9 @@ spliced_reads_pdtp_select |>
     title = "pTDP-43 levels do not affect viability of motor neurons", 
     x = "pTDP-43 accumulation",
     y = "Motor neuron death (%)") 
+```
 
+```{r}
 # stmn2_all_junctions.bed -------------------------------------------------
 
 stmn2_all_junctions_orig <- read_tsv("stmn2_all_junctions.bed",
@@ -208,7 +245,9 @@ spliced_reads_pdtp_stmn2 |>
     y = "Number of spliced reads",
     color = "Junction"
   )
+```
 
+```{r}
 # percent spliced in (psi) value ------------------------------------------
 
 psi_stmn2 <- spliced_reads_pdtp_stmn2 |> 
@@ -243,6 +282,5 @@ psi_stmn2 |>
     y = "PSI value",
     color = "pTDP-43 \naccumulation"
   )
-
-
+```
 
