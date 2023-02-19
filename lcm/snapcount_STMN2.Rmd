@@ -1,0 +1,145 @@
+---
+title: "Snapcount - STMN2"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Creating variables
+
+```{r}
+gene_name = "STMN2" 
+snapcount_coords_cryptic_STMN2 = "chr8:79611215-79616821"
+snapcount_coords_annotated_STMN2 = "chr8:79611215-79636801"
+strand_code = "+"
+```
+
+## Query TCGA for all STMN2 cryptic  events
+
+```{r}
+cryptic_query <-  QueryBuilder(compilation = 'tcga',regions = snapcount_coords_cryptic_STMN2)
+
+if(strand_code == "+"){
+  cryptic_query <- set_row_filters(cryptic_query, strand == "+") 
+}else if(strand_code == "-"){
+  cryptic_query <- set_row_filters(cryptic_query, strand == "-") 
+}
+```
+
+filter to only query junctions on the + strand within the stated region
+filter to only query junctions on the - strand within the stated region 
+
+## Query TCGA for exon-exon splice junctions in STMN2 cryptic events
+
+```{r}
+
+juncs_on_cryptic <- query_jx(cryptic_query)
+juncs_on_cryptic_flat <- query_jx(cryptic_query,return_rse = FALSE)
+samples_with_cryptic = juncs_on_cryptic@colData |> 
+  as.data.frame() 
+# is @ the same as $ ?
+
+```
+query all exon-exon splice junctions
+query data returned as a dataframe
+new dataframe containing all TCGA on the queried exon-exon splice
+
+```{r}
+
+samples_with_cryptic <- samples_with_cryptic |> 
+  select(c("rail_id",
+           "gdc_cases.demographic.gender",
+           "gdc_cases.submitter_id",
+           "gdc_cases.project.name",
+           "gdc_cases.project.primary_site",
+           "gdc_cases.diagnoses.tumor_stage",
+           "gdc_cases.samples.sample_type",
+           "cgc_case_primary_site",
+           "junction_coverage",
+           "junction_avg_coverage"))
+
+```
+same df as above but only only columns we need (instead of 861!)
+
+```{r}
+
+juncs_on_cryptic_flat = juncs_on_cryptic_flat |>
+  select(chromosome,start,end,strand,samples) |> 
+  separate_rows(samples, sep = ',') |> 
+  filter(samples != "") |> 
+  separate(samples, into = c("rail_id","count")) |> 
+  mutate(rail_id = as.integer(rail_id)) |> 
+  mutate(count = as.numeric(count))
+
+```
+
+the df containing queried exon-exon splice junctions in cryptic STMN2 region
+samples previously appeared as list after df, but this code adds the samples to each row
+remove rows with no 'samples' 
+split 'samples' column (contains two values) into two: rail_id and count
+change rail_id values to integers (previously characters)
+change all count values to numbers (previously characters)
+
+
+only exon-exon splice junctions with same end coordinates in the region 
+join the queried data with the TCGA data
+```{r}
+
+juncs_on_cryptic_flat |> 
+  mutate(rail_id = as.integer(rail_id)) |> # already did this in code above - why again?
+  left_join(samples_with_cryptic) |> 
+  filter(end == 79616821) |>
+  View()
+
+```
+
+## Query TCGA for all STMN2 annotated events 
+
+```{r}
+
+anno_query <-  QueryBuilder(compilation = 'tcga',regions = snapcount_coords_annotated_STMN2)
+anno_query <- set_coordinate_modifier(anno_query, Coordinates$Exact) 
+if(strand_code == "+"){
+  anno_query <- set_row_filters(anno_query, strand == "+") 
+}else if(strand_code == "-"){
+  anno_query <- set_row_filters(anno_query, strand == "-") 
+}
+
+```
+return junctions whose start and end coordinates match the boundaries of the annotated region
+only query junctions on the + strand within the stated region
+only query junctions on the - strand within the stated region
+
+```{r}
+
+cryptic_query_exact <- set_coordinate_modifier(cryptic_query, Coordinates$Exact) 
+
+```
+return junctions whose start and end coordinates match the boundaries of the cryptic region
+
+## Junction Inclusion Ratio
+
+JIR measures the relative prevalence of two splicing patterns.
+```{r}
+
+jir <- junction_inclusion_ratio(list(cryptic_query_exact),
+                                list(anno_query),
+                                group_names=c(glue::glue("{gene_name}_cryptic"),
+                                              glue::glue("{gene_name}_annotated")))
+
+```
+
+JIR approaches 1 when more reads supporting set B (annotated).
+JIR is 0 when cryptic reads = annotated reads.
+JIR approaches -1 when more reads supporting set A (cryptic).
+
+```{r}
+
+# join the jir for queried junctions with TCGA data
+jir |> 
+  left_join(samples_with_cryptic,by = c('sample_id' = 'rail_id')) |> 
+  View()
+
+```

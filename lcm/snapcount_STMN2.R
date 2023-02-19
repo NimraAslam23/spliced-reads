@@ -14,16 +14,16 @@ strand_code = "+"
 cryptic_query <-  QueryBuilder(compilation = 'tcga',regions = snapcount_coords_cryptic_STMN2) 
 
 if(strand_code == "+"){
-  cryptic_query <- set_row_filters(cryptic_query, strand == "+") # filter to only query junctions on the + strand within the stated region
+  cryptic_query <- set_row_filters(cryptic_query, strand == "+") # filter to only query cryptic junction events 
 }else if(strand_code == "-"){
-  cryptic_query <- set_row_filters(cryptic_query, strand == "-") # filter to only query junctions on the - strand within the stated region 
+  cryptic_query <- set_row_filters(cryptic_query, strand == "-") # filter to only query cryptic junction events 
 }
 
-# query TCGA for exon-exon splice junctions within region of cryptic STMN2 events - make df of these junctions with all TCGA data
+# query TCGA for cryptic STMN2 exon-exon splice junction events - make df of these junctions with all TCGA data
 juncs_on_cryptic <- query_jx(cryptic_query) # query all exon-exon splice junctions
 juncs_on_cryptic_flat <- query_jx(cryptic_query,return_rse = FALSE) # query data returned as a dataframe
-samples_with_cryptic = juncs_on_cryptic@colData |> 
-  as.data.frame() # new dataframe containing all TCGA on the queried exon-exon splice junctions 
+samples_with_cryptic <- juncs_on_cryptic@colData |> 
+  as.data.frame() # new dataframe: samples with cryptic STMN2 exon-exon splice junction events (from TCGA)
 # is @ the same as $ ?
 
 samples_with_cryptic <- samples_with_cryptic |> 
@@ -35,10 +35,12 @@ samples_with_cryptic <- samples_with_cryptic |>
            "gdc_cases.diagnoses.tumor_stage",
            "gdc_cases.samples.sample_type",
            "cgc_case_primary_site",
-           "junction_coverage",
-           "junction_avg_coverage")) # same dataframe as above but only columns we need (instead of 861!)
+           "junction_coverage", # number of spliced reads that cover exon-exon junction?
+           "junction_avg_coverage")) 
+# same dataframe as above but only columns we need (instead of 861!)
 
-juncs_on_cryptic_flat = juncs_on_cryptic_flat |> # the df containing queried exon-exon splice junctions in cryptic STMN2 region
+
+juncs_on_cryptic_flat <- juncs_on_cryptic_flat |> # the df containing queried exon-exon splice junctions in cryptic STMN2 region
   select(chromosome,start,end,strand,samples) |> # only 5 columns we need
   separate_rows(samples, sep = ',') |> # samples previously appeared as list after df, but this code adds the samples to each row
   filter(samples != "") |> # remove rows with no 'samples' 
@@ -47,9 +49,8 @@ juncs_on_cryptic_flat = juncs_on_cryptic_flat |> # the df containing queried exo
   mutate(count = as.numeric(count)) # change all count values to numbers (previously characters)
 
 # only exon-exon splice junctions with same end coordinates in the region 
-# join the queried data with the TCGA data
+# join the queried data with the TCGA data 
 juncs_on_cryptic_flat |> 
-  mutate(rail_id = as.integer(rail_id)) |> # already did this in code above - why again?
   left_join(samples_with_cryptic) |> 
   filter(end == 79616821) |>
   View()
