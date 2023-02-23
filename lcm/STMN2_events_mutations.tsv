@@ -9,3 +9,93 @@ chr17:g.7673803G>A	Substitution	Missense TP53 R273C	56 / 3,259,1.72%	130 / 13,71
 chr3:g.179218294G>A	Substitution	Missense PIK3CA E542K	50 / 3,259,1.53%	191 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0.04, PolyPhen: probably_damaging - score 0.912	add to survival plot
 chr17:g.7675088C>T	Substitution	Missense TP53 R175H	50 / 3,259,1.53%	183 / 13,714	VEP: MODERATE, SIFT: tolerated - score 0.11, PolyPhen: benign - score 0.319	add to survival plot
 chr1:g.6197725delT	Deletion	Frameshift RPL22 K15Rfs*5	43 / 3,259,1.32%	188 / 13,714	VEP: HIGH	add to survival plot
+chr17:g.7674220C>T	Substitution	Missense TP53 R248Q	43 / 3,259,1.32%	143 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0, PolyPhen: probably_damaging - score 0.994	add to survival plot
+chr2:g.147926117delA	Deletion	Frameshift ACVR2A K437Rfs*5	40 / 3,259,1.23%	170 / 13,714	VEP: HIGH	add to survival plot
+chr17:g.58357800delC	Deletion	Frameshift RNF43 G659Vfs*41	39 / 3,259,1.20%	165 / 13,714	VEP: HIGH	add to survival plot
+chr17:g.7673802C>T	Substitution	Missense TP53 R273H	36 / 3,259,1.10%	110 / 13,714	VEP: MODERATE, SIFT: tolerated - score 0.13, PolyPhen: possibly_damaging - score 0.643	add to survival plot
+chr17:g.7674221G>A	Substitution	Missense TP53 R248W	34 / 3,259,1.04%	107 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0, PolyPhen: probably_damaging - score 1	add to survival plot
+chr17:g.7673776G>A	Substitution	Missense TP53 R282W	30 / 3,259,0.92%	99 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0, PolyPhen: probably_damaging - score 1	add to survival plot
+chr1:g.114713908T>C	Substitution	Missense NRAS Q61R	26 / 3,259,0.80%	180 / 13,714	VEP: MODERATE, SIFT: tolerated - score 0.06, PolyPhen: benign - score 0.251	add to survival plot
+chr12:g.25245351C>G	Substitution	Missense KRAS G12R	25 / 3,259,0.77%	72 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0.03, PolyPhen: possibly_damaging - score 0.497	add to survival plot
+chr2:g.208248389G>A	Substitution	Missense IDH1 R132C	24 / 3,259,0.74%	71 / 13,714	VEP: MODERATE, SIFT: deleterious_low_confidence - score 0.03, PolyPhen: benign - score 0.1	add to survival plot
+chr17:g.7674894G>A	Substitution	Stop Gained TP53 R213*	23 / 3,259,0.71%	88 / 13,714	VEP: HIGH	add to survival plot
+chr5:g.112839942C>T	Substitution	Stop Gained APC R1450*	22 / 3,259,0.68%	57 / 13,714	VEP: HIGH	add to survival plot
+chr12:g.25245347C>T	Substitution	Missense KRAS G13D	22 / 3,259,0.68%	114 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0.04, PolyPhen: benign - score 0.44	add to survival plot
+chr17:g.7674945G>A	Substitution	Stop Gained TP53 R196*	21 / 3,259,0.64%	64 / 13,714	VEP: HIGH	add to survival plot
+chr11:g.533874T>C	Substitution	Missense HRAS Q61R	19 / 3,259,0.58%	30 / 13,714	VEP: MODERATE, SIFT: tolerated - score 0.07, PolyPhen: benign - score 0.1	add to survival plot
+chr17:g.7675076T>C	Substitution	Missense TP53 H179R	19 / 3,259,0.58%	49 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0, PolyPhen: probably_damaging - score 0.98	add to survival plot
+chr8:g.102277121delT	Deletion	Frameshift UBR5 E2121Kfs*28	18 / 3,259,0.55%	67 / 13,714	VEP: HIGH	add to survival plot
+chr1:g.64841314delT	Deletion	Frameshift JAK1 K860Nfs*16	18 / 3,259,0.55%	64 / 13,714	VEP: HIGH	add to survival plot
+chr17:g.7674872T>C	Substitution	Missense TP53 Y220C	18 / 3,259,0.55%	80 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0, PolyPhen: probably_damaging - score 0.998	add to survival plot
+chr12:g.25245351C>A	Substitution	Missense KRAS G12C	18 / 3,259,0.55%	149 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0.04, PolyPhen: probably_damaging - score 0.991	add to survival plot
+chr10:g.844999delT	Deletion	Frameshift LARP4B T163Hfs*47	17 / 3,259,0.52%	59 / 13,714	VEP: HIGH	add to survival plot
+chr10:g.87933148G>A	Substitution	Missense PTEN R130Q	17 / 3,259,0.52%	59 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0.02, PolyPhen: probably_damaging - score 0.998	add to survival plot
+chr3:g.179199088G>A	Substitution	Missense PIK3CA R88Q	16 / 3,259,0.49%	74 / 13,714	VEP: MODERATE, SIFT: tolerated - score 0.06, PolyPhen: probably_damaging - score 0.971	add to survival plot
+chr17:g.7674230C>T	Substitution	Missense TP53 G245S	15 / 3,259,0.46%	52 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0, PolyPhen: probably_damaging - score 0.998	add to survival plot
+chr17:g.20204950delA	Deletion	Frameshift SPECC1 N303Tfs*63	15 / 3,259,0.46%	48 / 13,714	VEP: HIGH	add to survival plot
+chr14:g.104780214C>T	Substitution	Missense AKT1 E17K	15 / 3,259,0.46%	61 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0, PolyPhen: probably_damaging - score 1	add to survival plot
+chr5:g.112838934C>T	Substitution	Stop Gained APC R1114*	14 / 3,259,0.43%	30 / 13,714	VEP: HIGH	add to survival plot
+chr3:g.179221146G>A	Substitution	Missense PIK3CA E726K	14 / 3,259,0.43%	29 / 13,714	VEP: MODERATE, SIFT: tolerated - score 0.36, PolyPhen: benign - score 0.396	add to survival plot
+chr17:g.7673704G>A	Substitution	Stop Gained TP53 R306*	14 / 3,259,0.43%	40 / 13,714	VEP: HIGH	add to survival plot
+chr10:g.87933147C>G	Substitution	Missense PTEN R130G	13 / 3,259,0.40%	54 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0, PolyPhen: probably_damaging - score 0.999	add to survival plot
+chr3:g.179234297A>T	Substitution	Missense PIK3CA H1047L	13 / 3,259,0.40%	43 / 13,714	VEP: MODERATE, SIFT: tolerated - score 0.44, PolyPhen: benign - score 0.007	add to survival plot
+chr1:g.26779440delG	Deletion	Frameshift ARID1A D1850Tfs*33	13 / 3,259,0.40%	43 / 13,714	VEP: HIGH	add to survival plot
+chr1:g.114713909G>T	Substitution	Missense NRAS Q61K	13 / 3,259,0.40%	124 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0.01, PolyPhen: possibly_damaging - score 0.709	add to survival plot
+chr3:g.179203765T>A	Substitution	Missense PIK3CA N345K	12 / 3,259,0.37%	39 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0.01, PolyPhen: probably_damaging - score 0.997	add to survival plot
+chr3:g.179210192T>C	Substitution	Missense PIK3CA C420R	12 / 3,259,0.37%	27 / 13,714	VEP: MODERATE, SIFT: tolerated - score 0.21, PolyPhen: possibly_damaging - score 0.908	add to survival plot
+chr7:g.55165350G>T	Substitution	Missense EGFR G598V	12 / 3,259,0.37%	24 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0, PolyPhen: probably_damaging - score 0.951	add to survival plot
+chrX:g.130056036delC	Deletion	Frameshift BCORL1 P1681Qfs*20	12 / 3,259,0.37%	58 / 13,714	VEP: HIGH	add to survival plot
+chr15:g.90088606C>T	Substitution	Missense IDH2 R172K	12 / 3,259,0.37%	22 / 13,714	VEP: MODERATE, SIFT: deleterious_low_confidence - score 0, PolyPhen: probably_damaging - score 0.998	add to survival plot
+chr17:g.7674953T>C	Substitution	Missense TP53 H193R	11 / 3,259,0.34%	38 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0, PolyPhen: probably_damaging - score 1	add to survival plot
+chr9:g.134053407delG	Deletion	Frameshift BRD3 P24Rfs*24	11 / 3,259,0.34%	34 / 13,714	VEP: HIGH	add to survival plot
+chr17:g.7670685G>A	Substitution	Stop Gained TP53 R342*	11 / 3,259,0.34%	40 / 13,714	VEP: HIGH	add to survival plot
+chr2:g.147899472delA	Deletion	Frameshift ACVR2A D96Tfs*54	11 / 3,259,0.34%	26 / 13,714	VEP: HIGH	add to survival plot
+chr12:g.25245350C>G	Substitution	Missense KRAS G12A	11 / 3,259,0.34%	54 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0.02, PolyPhen: possibly_damaging - score 0.723	add to survival plot
+chr7:g.55154129C>T	Substitution	Missense EGFR A289V	11 / 3,259,0.34%	22 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0.02, PolyPhen: probably_damaging - score 0.985	add to survival plot
+chr8:g.112228800delA	Deletion	Frameshift CSMD3 F3640Lfs*61	11 / 3,259,0.34%	38 / 13,714	VEP: HIGH	add to survival plot
+chr15:g.90760909delA	Deletion	Frameshift BLM N515Mfs*16	11 / 3,259,0.34%	31 / 13,714	VEP: HIGH	add to survival plot
+chr4:g.152328233G>A	Substitution	Missense FBXW7 R465C	10 / 3,259,0.31%	42 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0, PolyPhen: probably_damaging - score 1	add to survival plot
+chr10:g.87933147C>T	Substitution	Stop Gained PTEN R130*	10 / 3,259,0.31%	32 / 13,714	VEP: HIGH	add to survival plot
+chr16:g.15708830delG	Deletion	Intron MYH11	10 / 3,259,0.31%	43 / 13,714	VEP: MODIFIER	add to survival plot
+chr10:g.8069470delCA	Deletion	Splice Acceptor GATA3 X309_splice	10 / 3,259,0.31%	23 / 13,714	VEP: HIGH	add to survival plot
+chr12:g.25225628C>T	Substitution	Missense KRAS A146T	10 / 3,259,0.31%	32 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0.03, PolyPhen: possibly_damaging - score 0.844	add to survival plot
+chr2:g.208248389G>C	Substitution	Missense IDH1 R132G	10 / 3,259,0.31%	15 / 13,714	VEP: MODERATE, SIFT: deleterious_low_confidence - score 0, PolyPhen: possibly_damaging - score 0.883	add to survival plot
+chr19:g.42287605C>T	Substitution	Missense CIC R1124W	9 / 3,259,0.28%	11 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0, PolyPhen: probably_damaging - score 1	add to survival plot
+chr7:g.140753337C>T	Substitution	Missense BRAF V640M	9 / 3,259,0.28%	38 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0, PolyPhen: possibly_damaging - score 0.737	add to survival plot
+chr7:g.2928689delG	Deletion	Frameshift CARD11 R555Gfs*45	9 / 3,259,0.28%	27 / 13,714	VEP: HIGH	add to survival plot
+chr2:g.208248389G>T	Substitution	Missense IDH1 R132S	9 / 3,259,0.28%	11 / 13,714	VEP: MODERATE, SIFT: deleterious_low_confidence - score 0, PolyPhen: possibly_damaging - score 0.847	add to survival plot
+chr12:g.132676598G>C	Substitution	Missense POLE P286R	9 / 3,259,0.28%	32 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0, PolyPhen: probably_damaging - score 1	add to survival plot
+chr17:g.7674262T>C	Substitution	Missense TP53 Y234C	9 / 3,259,0.28%	22 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0, PolyPhen: probably_damaging - score 0.98	add to survival plot
+chr5:g.112780895C>T	Substitution	Stop Gained APC R213*	9 / 3,259,0.28%	24 / 13,714	VEP: HIGH	add to survival plot
+chr1:g.26779863C>T	Substitution	Stop Gained ARID1A R1989*	9 / 3,259,0.28%	33 / 13,714	VEP: HIGH	add to survival plot
+chr12:g.56085070G>A	Substitution	Missense ERBB3 V104M	9 / 3,259,0.28%	27 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0.05, PolyPhen: possibly_damaging - score 0.64	add to survival plot
+chr3:g.179218307A>G	Substitution	Missense PIK3CA Q546R	9 / 3,259,0.28%	24 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0.02, PolyPhen: probably_damaging - score 0.934	add to survival plot
+chr7:g.55191822T>G	Substitution	Missense EGFR L858R	9 / 3,259,0.28%	56 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0, PolyPhen: probably_damaging - score 0.999	add to survival plot
+chr1:g.156791743_156791744insC	Insertion	Frameshift PRCC Q380Pfs*12	8 / 3,259,0.25%	14 / 13,714	VEP: HIGH	add to survival plot
+chr1:g.26780313delC	Deletion	Frameshift ARID1A F2141Sfs*59	8 / 3,259,0.25%	26 / 13,714	VEP: HIGH	add to survival plot
+chr12:g.25227341T>G	Substitution	Missense KRAS Q61H	8 / 3,259,0.25%	81 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0, PolyPhen: benign - score 0.121	add to survival plot
+chr5:g.112838220C>T	Substitution	Stop Gained APC R876*	8 / 3,259,0.25%	32 / 13,714	VEP: HIGH	add to survival plot
+chr16:g.67611436delA	Deletion	Frameshift CTCF T204Qfs*18	8 / 3,259,0.25%	19 / 13,714	VEP: HIGH	add to survival plot
+chr17:g.7675085C>A	Substitution	Missense TP53 C176F	8 / 3,259,0.25%	26 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0, PolyPhen: probably_damaging - score 0.998	add to survival plot
+chr17:g.7675077G>A	Substitution	Missense TP53 H179Y	8 / 3,259,0.25%	20 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0, PolyPhen: probably_damaging - score 0.991	add to survival plot
+chr17:g.7675124T>C	Substitution	Missense TP53 Y163C	8 / 3,259,0.25%	31 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0, PolyPhen: probably_damaging - score 0.999	add to survival plot
+chr3:g.179210291G>A	Substitution	Missense PIK3CA E453K	8 / 3,259,0.25%	21 / 13,714	VEP: MODERATE, SIFT: tolerated - score 0.06, PolyPhen: possibly_damaging - score 0.655	add to survival plot
+chr18:g.51065549G>A	Substitution	Missense SMAD4 R361H	8 / 3,259,0.25%	24 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0.03, PolyPhen: probably_damaging - score 0.999	add to survival plot
+chr10:g.87958013delA	Deletion	Frameshift PTEN K267Rfs*9	8 / 3,259,0.25%	35 / 13,714	VEP: HIGH	add to survival plot
+chr17:g.7675143C>A	Substitution	Missense TP53 V157F	8 / 3,259,0.25%	36 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0, PolyPhen: probably_damaging - score 0.998	add to survival plot
+chrX:g.49030440_49030441insC	Insertion	Frameshift TFE3 P483Tfs*138	8 / 3,259,0.25%	18 / 13,714	VEP: HIGH	add to survival plot
+chr10:g.87957915C>T	Substitution	Stop Gained PTEN R233*	8 / 3,259,0.25%	46 / 13,714	VEP: HIGH	add to survival plot
+chr9:g.21971121G>A	Substitution	Stop Gained CDKN2A R80*	8 / 3,259,0.25%	55 / 13,714	VEP: HIGH	add to survival plot
+chr4:g.152326137G>C	Substitution	Missense FBXW7 R505G	8 / 3,259,0.25%	31 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0, PolyPhen: probably_damaging - score 1	add to survival plot
+chr17:g.7674917T>C	Substitution	Missense TP53 Y205C	8 / 3,259,0.25%	21 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0, PolyPhen: probably_damaging - score 0.998	add to survival plot
+chr3:g.179199150delGAA	Deletion	Inframe Deletion PIK3CA E110del	8 / 3,259,0.25%	17 / 13,714	VEP: MODERATE	add to survival plot
+chr3:g.179199690G>A	Substitution	Missense PIK3CA G118D	8 / 3,259,0.25%	28 / 13,714	VEP: MODERATE, SIFT: tolerated - score 0.05, PolyPhen: possibly_damaging - score 0.797	add to survival plot
+chr13:g.35159526delA	Deletion	Frameshift NBEA N1121Mfs*9	8 / 3,259,0.25%	19 / 13,714	VEP: HIGH	add to survival plot
+chr17:g.7673802C>A	Substitution	Missense TP53 R273L	8 / 3,259,0.25%	31 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0, PolyPhen: probably_damaging - score 0.994	add to survival plot
+chrX:g.77654139G>A	Substitution	Stop Gained ATRX R1426*	8 / 3,259,0.25%	10 / 13,714	VEP: HIGH	add to survival plot
+chr17:g.39725079G>A	Substitution	Missense ERBB2 V842I	7 / 3,259,0.21%	18 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0, PolyPhen: possibly_damaging - score 0.906	add to survival plot
+chr12:g.132673703C>A	Substitution	Missense POLE V411L	7 / 3,259,0.21%	20 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0, PolyPhen: probably_damaging - score 1	add to survival plot
+chr12:g.57466292delG	Deletion	Frameshift GLI1 G274Afs*6	7 / 3,259,0.21%	34 / 13,714	VEP: HIGH	add to survival plot
+chr17:g.42218218delG	Deletion	Frameshift STAT5B Q368Rfs*2	7 / 3,259,0.21%	17 / 13,714	VEP: HIGH	add to survival plot
+chr5:g.68295269A>G	Substitution	Missense PIK3R1 N564D	7 / 3,259,0.21%	13 / 13,714	VEP: MODERATE, SIFT: deleterious - score 0.02, PolyPhen: possibly_damaging - score 0.671	add to survival plot
+chr10:g.87961042delTACT	Deletion	Frameshift PTEN T319*	7 / 3,259,0.21%	28 / 13,714	VEP: HIGH	add to survival plot
