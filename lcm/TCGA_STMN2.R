@@ -5,18 +5,15 @@ library(clipr)
 library(naniar)
 library(ggpubr)
 library(rstatix)
-library(forcats)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(knitr)
+library(snapcount)
+library(ggsignif)
 
 jir_new$gdc_cases.submitter_id
 write_clip(jir_new$gdc_cases.submitter_id)
-
-# JSON genes --------------------------------------------------------------
-
-genes <- fromJSON("STMN2_events_genes.json")
-
-# JSON mutations ----------------------------------------------------------
-
-mutations <- fromJSON("STMN2_events_mutations.json") 
 
 # Import gene data from TCGA ---------------------------------------------------
 
@@ -65,9 +62,9 @@ STMN2_clinical |>
   labs(
     x = "Cancer Type",
     y = "Number of Cases",
-    title = "STMN2 cryptic events are found in mostly breast and brain cancers" 
+    title = "STMN2 events are found in mostly breast and brain cancers" 
   ) +
-  theme(legend.position = "none")
+  theme(legend.position = "none", plot.title = element_text(size=10)) 
 
 # joining jir table with clinical table -----------------------------------
 
@@ -86,9 +83,14 @@ STMN2_clinical_jir <- STMN2_clinical_jir |>
   rename("sample_type" = "gdc_cases.samples.sample_type") |> 
   rename("cgc_primary_site" = "cgc_case_primary_site")
 
+# filter for cryptic coverage > 2 -----------------------------------------
+
+STMN2_clinical_jir_cryptic <- STMN2_clinical_jir |> 
+  filter(STMN2_cryptic_coverage > 2)
+
 # bar plot - primary sites of cancers with cryptic STMN2 events -----------
 
-STMN2_clinical_jir |> 
+STMN2_clinical_jir_cryptic |> 
   drop_na() |> 
   ggplot(aes(x = fct_rev(fct_infreq(gdc_primary_site)))) +
   geom_bar(aes(fill = gdc_primary_site)) +
@@ -96,68 +98,51 @@ STMN2_clinical_jir |>
   labs(
     x = "Primary Site of Cancer",
     y = "Number of Cases",
-    title = "Cancers with cryptic STMN2 events are found mostly in the breast and brain" 
+    title = 
+      "Primary sites of cancers with cryptic STMN2 events are mostly the adrenal gland and brain" 
   ) +
-  theme(legend.position = "none")
+  theme(legend.position = "none", plot.title = element_text(size=9)) 
 
 # boxplot - cryptic STMN2 coverage in different cancer sites --------------
 
-STMN2_clinical_jir |> 
+STMN2_clinical_jir_cryptic |> 
   drop_na() |> 
   filter(cgc_primary_site != "") |> 
-  ggplot(aes(x = junction_avg_coverage, y = fct_reorder(cgc_primary_site, junction_avg_coverage, median))) +
-  geom_boxplot(aes(fill = cgc_primary_site)) +
+  ggplot(aes(x = junction_avg_coverage, y = fct_reorder(gdc_primary_site, 
+                                                        junction_avg_coverage, median))) +
+  geom_boxplot(aes(fill = gdc_primary_site)) +
   labs(
     x = "Junction Average Coverage",
     y = "Primary Site of Cancer",
   ) +
-  theme(legend.position = "none")
+  theme(legend.position = "none", plot.title = element_text(size=10)) +
+  geom_signif(comparisons = list(c("Stomach", "Breast"), c("Stomach", "Brain")),
+              map_signif_level = TRUE,
+              y_position = c(75, 80))
 
 # # / fraction of cases with STMN2 events in cancer types -----------------
 
-STMN2_clinical_jir |> 
+STMN2_events_different_cancers <- STMN2_clinical_jir_cryptic |> 
   drop_na() |>
   janitor::tabyl(cancer_type) |> arrange(-percent)
 
 # # / fraction of cases with STMN2 events in cancer sites -----------------
 
-STMN2_clinical_jir |> 
+STMN2_events_primary_sites1 <- STMN2_clinical_jir_cryptic |> 
   drop_na() |> 
   janitor::tabyl(gdc_primary_site) |> arrange(-percent)
 
-STMN2_clinical_jir |> 
-  drop_na() |> 
-  filter(cgc_primary_site != "") |> 
-  janitor::tabyl(cgc_primary_site) |> arrange(-percent)
+# All clinical data from TCGA ---------------------------------------------
 
-# filter for cryptic coverage > 2 -----------------------------------------
+TCGA_all_clinical_orig <- read.csv("TCGA_all_clinical.tsv", sep = "\t", header = TRUE, na.strings = "", fill = TRUE)
+head(TCGA_all_clinical_orig)
 
-STMN2_clinical_jir_cryptic <- STMN2_clinical_jir |> 
-  filter(STMN2_cryptic_coverage > 2)
+TCGA_clinical <- TCGA_all_clinical_orig
 
-STMN2_clinical_jir_cryptic |> 
-  drop_na() |> 
-  ggplot(aes(x = fct_rev(fct_infreq(gdc_primary_site)))) +
-  geom_bar(aes(fill = gdc_primary_site)) +
-  coord_flip() +
-  labs(
-    x = "Primary Site of Cancer",
-    y = "Number of Cases"
-  ) +
-  theme(legend.position = "none")
-
-STMN2_clinical_jir_cryptic |> 
-  drop_na() |> 
-  filter(cgc_primary_site != "") |> 
-  ggplot(aes(x = junction_avg_coverage, y = fct_reorder(cgc_primary_site, junction_avg_coverage, median))) +
-  geom_boxplot(aes(fill = cgc_primary_site)) +
-  labs(
-    x = "Junction Average Coverage",
-    y = "Primary Site of Cancer",
-  ) +
-  theme(legend.position = "none")
+TCGA_clinical <- TCGA_clinical|> 
+  select(case_submitter_id, project_id, age_at_index, ethnicity, gender, race, ajcc_pathologic_stage) |> 
+  separate(project_id, into = c("project", "cancer_type")) |> 
+  select(-project)
 
 
 
-### find total cancer group size of each tissue type (to see what fraction of each cancer has cryptic STMN2)
-### Pick one patient who has high STMN2 expression and see if you can pull back the mutation/copy number variation/etc info about them

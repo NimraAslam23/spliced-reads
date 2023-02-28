@@ -17,6 +17,7 @@ library(tidyr)
 library(dplyr)
 library(knitr)
 library(snapcount)
+library(ggsignif)
 ```
 
 ```{r snapcount_STMN2.R, include = FALSE}
@@ -60,8 +61,7 @@ juncs_on_cryptic_flat <- juncs_on_cryptic_flat |>
 
 juncs_on_cryptic_flat |> 
   left_join(samples_with_cryptic) |> 
-  filter(end == 79616821) |>
-  View()
+  filter(end == 79616821)
 
 anno_query <-  QueryBuilder(compilation = 'tcga',regions = snapcount_coords_annotated_STMN2)
 anno_query <- set_coordinate_modifier(anno_query, Coordinates$Exact) 
@@ -82,23 +82,11 @@ jir_new <- jir |>
   left_join(samples_with_cryptic,by = c('sample_id' = 'rail_id')) 
 ```
 
-## 
 
 ```{r GDC case IDs, include = FALSE}
 jir_new$gdc_cases.submitter_id
 #write_clip(jir_new$gdc_cases.submitter_id)
 ```
-
-
-```{r JSON genes, include = FALSE}
-genes <- fromJSON("STMN2_events_genes.json")
-```
-
-
-```{r JSON mutations, include = FALSE}
-mutations <- fromJSON("STMN2_events_mutations.json") 
-```
-
 
 ```{r Import gene data from TCGA, include = FALSE}
 STMN2_events_genes_orig <- read.csv("STMN2_events_genes.tsv", sep = "\t", header = TRUE, na.strings="", fill = TRUE)
@@ -127,6 +115,7 @@ head(STMN2_events_mutations_orig)
 STMN2_events_mutations <- STMN2_events_mutations_orig
 ```
 
+# Cancers with STMN2 expression
 
 ```{r Import clinical data from TCGA, include = FALSE}
 STMN2_clinical_orig <- read.csv("STMN2_clinical.tsv", sep = "\t", header = TRUE, na.strings = "", fill = TRUE)
@@ -140,21 +129,23 @@ STMN2_clinical <- STMN2_clinical|>
   select(-project)
 ```
 
-# Cancer types with cryptic STMN2 events
 
 ```{r bar plot - cancer types with cryptic STMN2 events}
 STMN2_clinical |> 
-  ggplot(aes(x = cancer_type)) +
+  ggplot(aes(x = fct_rev(fct_infreq(cancer_type)))) +
   geom_bar(aes(fill = cancer_type)) +
   coord_flip() +
   labs(
     x = "Cancer Type",
     y = "Number of Cases",
-    title = "STMN2 cryptic events are found in mostly breast and lung cancers" 
+    title = "STMN2 events are found in mostly breast and brain cancers" 
   ) +
-  theme(legend.position = "none")
+  theme(legend.position = "none", plot.title = element_text(size=10)) 
 ```
+**Figure 1**: STMN2 events are found mostly in breast and brain cancer patients. 
+BRCA = breast cancer; LGG = low-grade gliomas (brain tumours)
 
+# Cancers with cryptic STMN2 expression
 
 ```{r joining jir table with clinical table, include = FALSE}
 jir_new <- jir_new |> 
@@ -174,63 +165,73 @@ STMN2_clinical_jir <- STMN2_clinical_jir |>
   rename("cgc_primary_site" = "cgc_case_primary_site")
 ```
 
-# Primary sites of the cancers with cryptic STMN2 events
+```{r filter for cryptic coverage 2}
+STMN2_clinical_jir_cryptic <- STMN2_clinical_jir |> 
+  filter(STMN2_cryptic_coverage > 2) 
+```
+
+## Primary sites of cancers 
 
 ```{r bar plot - primary sites of cancers with cryptic STMN2 events}
-STMN2_clinical_jir |> 
+STMN2_clinical_jir_cryptic |> 
   drop_na() |> 
-  ggplot(aes(x = gdc_primary_site)) +
+  ggplot(aes(x = fct_rev(fct_infreq(gdc_primary_site)))) +
   geom_bar(aes(fill = gdc_primary_site)) +
   coord_flip() +
   labs(
     x = "Primary Site of Cancer",
     y = "Number of Cases",
-    title = "Cancers with cryptic STMN2 events are found mostly in the breast and brain" 
+    title = 
+  "Primary sites of cancers with cryptic STMN2 events are mostly the adrenal gland and brain" 
   ) +
-  theme(legend.position = "none")
+  theme(legend.position = "none", plot.title = element_text(size=9)) 
 ```
+**Figure 2**: Cryptic STMN2 events are found mostly in the adrenal gland and brain.
 
-# Cryptic STMN2 coverage in the different primary sites of cancers with cryptic STMN2 events
+Interestingly, Figure 2 shows that cryptic STMN2 expression is low in the breast. Comparing this to Figure 1, this shows that the STMN2 events expressed in breast cancers may be mostly annotated non-cryptic events. 
 
-```{r boxplot - cryptic STMN2 coverage in different cancer sites}
-STMN2_clinical_jir |> 
+## Cryptic STMN2 junction coverage in different sites of cancers
+
+```{r boxplot - cryptic STMN2 coverage in different cancer sites, warning = FALSE}
+STMN2_clinical_jir_cryptic |> 
   drop_na() |> 
   filter(cgc_primary_site != "") |> 
-  ggplot(aes(x = junction_avg_coverage, y = fct_reorder(cgc_primary_site, 
+  ggplot(aes(x = junction_avg_coverage, y = fct_reorder(gdc_primary_site, 
                                                         junction_avg_coverage, median))) +
-  geom_boxplot(aes(fill = cgc_primary_site)) +
+  geom_boxplot(aes(fill = gdc_primary_site)) +
   labs(
     x = "Junction Average Coverage",
     y = "Primary Site of Cancer",
   ) +
-  theme(legend.position = "none")
+  theme(legend.position = "none", plot.title = element_text(size=10)) +
+  geom_signif(comparisons = list(c("Stomach", "Breast"), c("Stomach", "Brain")),
+              map_signif_level = TRUE,
+              y_position = c(75, 80))
 ```
+**Figure 3**: Stomach and breast cancers have the greatest STMN2 coverage.
 
-# Which cancers have the most STMN2 events?
+On average, cancers in the stomach and breast have the greatest number of reads supporting cryptic STMN2 events. Cancers of the brain have significantly fewer reads surpporting cryptic events. 
 
-```{r number / fraction of cases with STMN2 events in different cancers}
-STMN2_events_different_cancers <- STMN2_clinical_jir |> 
+
+
+## Which cancers have the most cryptic STMN2 events?
+
+```{r number / fraction of cases with STMN2 events in different cancers, echo = FALSE}
+STMN2_events_different_cancers <- STMN2_clinical_jir_cryptic |> 
   drop_na() |>
-  janitor::tabyl(cancer_type)
+  janitor::tabyl(cancer_type) |> arrange(-percent)
 
 kable(STMN2_events_different_cancers, 
-      caption = "STMN2 events are found primarily in breast and brain cancer.")
+      caption = "Breast and brain cancers have high cryptic STMN2 expression.")
 ```
 
-# Where are the cancers located, which contain cryptic STMN2 events?
+## Where are the cancers with cryptic STMN2 events located?
 
-```{r number / fraction of cases with STMN2 events in different primary cancer sites}
-STMN2_events_primary_sites1 <- STMN2_clinical_jir |> 
+```{r number / fraction of cases with STMN2 events in different primary cancer sites, echo = FALSE}
+STMN2_events_primary_sites1 <- STMN2_clinical_jir_cryptic |> 
   drop_na() |> 
-  janitor::tabyl(gdc_primary_site)
+  janitor::tabyl(gdc_primary_site) |> arrange(-percent)
 
-kable(STMN2_events_primary_sites1, caption = ".")
-
-STMN2_events_primary_sites2 <- STMN2_clinical_jir |> 
-  drop_na() |> 
-  filter(cgc_primary_site != "") |> 
-  janitor::tabyl(cgc_primary_site)
-
-kable(STMN2_events_primary_sites2, caption = ".")
+kable(STMN2_events_primary_sites1, caption = "Cancers with cryptic STMN2 events are found primarily in the adrenal gland and brain")
 ```
 
