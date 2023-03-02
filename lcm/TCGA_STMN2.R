@@ -11,6 +11,7 @@ library(dplyr)
 library(knitr)
 library(snapcount)
 library(ggsignif)
+library(TCGAbiolinks)
 
 jir_new$gdc_cases.submitter_id
 write_clip(jir_new$gdc_cases.submitter_id)
@@ -75,13 +76,14 @@ STMN2_clinical_jir <- jir_new |>
   left_join(STMN2_clinical, by=c("case_submitter_id")) 
 STMN2_clinical_jir <- STMN2_clinical_jir |> 
   select(-gdc_cases.diagnoses.tumor_stage, -age_at_index, -gdc_cases.demographic.gender, 
-         -ajcc_pathologic_stage, -ethnicity, -race, -cancer_type, -gender)
+         -ajcc_pathologic_stage, -ethnicity, -race, -gender)
  
 STMN2_clinical_jir <- STMN2_clinical_jir |> 
-  rename("cancer_type" = "gdc_cases.project.name") |> 
+  rename("cancer" = "gdc_cases.project.name") |> 
   rename("gdc_primary_site" = "gdc_cases.project.primary_site") |> 
   rename("sample_type" = "gdc_cases.samples.sample_type") |> 
-  rename("cgc_primary_site" = "cgc_case_primary_site")
+  rename("cgc_primary_site" = "cgc_case_primary_site") |> 
+  rename("cancer_abbrev" = "cancer_type")
 
 # filter for cryptic coverage > 2 -----------------------------------------
 
@@ -120,13 +122,13 @@ STMN2_clinical_jir_cryptic |>
               map_signif_level = TRUE,
               y_position = c(75, 80))
 
-# # / fraction of cases with STMN2 events in cancer types -----------------
+# num / fraction of cases with STMN2 events in cancer types -----------------
 
 STMN2_events_different_cancers <- STMN2_clinical_jir_cryptic |> 
   drop_na() |>
   janitor::tabyl(cancer_type) |> arrange(-percent)
 
-# # / fraction of cases with STMN2 events in cancer sites -----------------
+# num / fraction of cases with STMN2 events in cancer sites -----------------
 
 STMN2_events_primary_sites1 <- STMN2_clinical_jir_cryptic |> 
   drop_na() |> 
@@ -144,5 +146,109 @@ TCGA_clinical <- TCGA_clinical|>
   separate(project_id, into = c("project", "cancer_type")) |> 
   select(-project)
 
+# All clinical data from cBioPortal ---------------------------------------
+
+cBio_all_clinical_orig <- read.csv("cBio_clinical_data.tsv", sep = "\t", header = TRUE, na.strings = "", fill = TRUE)
+
+cBio_clinical <- cBio_all_clinical_orig
+
+cBio_clinical <- cBio_clinical |> 
+  select(Study.ID, Patient.ID, Sample.ID, Aneuploidy.Score, Cancer.Type, TCGA.PanCanAtlas.Cancer.Type.Acronym, Cancer.Type.Detailed,
+         Months.of.disease.specific.survival, Mutation.Count, Overall.Survival..Months.)
+
+cBio_clinical <- cBio_clinical |> 
+  rename("case_submitter_id" = "Patient.ID") |> 
+  rename("cancer" = "Cancer.Type.Detailed") |> 
+  rename("cancer_abbrev" = "TCGA.PanCanAtlas.Cancer.Type.Acronym")
+
+# join cBio data with STMN2 cryptic table ---------------------------------
+
+STMN2_cryptic_cBio <- STMN2_clinical_jir_cryptic |> 
+  left_join(cBio_clinical, by = "case_submitter_id") |> 
+  relocate(cancer.y, .after = cancer.x) |> 
+  relocate(cancer_abbrev.y, .after = cancer_abbrev.x) |> 
+  relocate(Cancer.Type, .after = cancer_abbrev.y) |> 
+  select(-cancer.y, -cancer_abbrev.x, -cgc_primary_site, -Cancer.Type, -Sample.ID, -Overall.Survival..Months.) |> 
+  rename("disease_survival_months" = "Months.of.disease.specific.survival") |> 
+  relocate(case_submitter_id, .after = sample_id) |> 
+  rename("cancer_type" = "cancer.x") |> 
+  relocate(cancer_type, .after = case_submitter_id) |> 
+  rename("cancer_abbrev" = "cancer_abbrev.y") |> 
+  relocate(cancer_abbrev, .after = cancer_type) |> 
+  relocate(gdc_primary_site, .after = cancer_abbrev) |> 
+  relocate(sample_type, .after = gdc_primary_site) |> 
+  rename("aneuploidy_score" = "Aneuploidy.Score") |> 
+  rename("mutation_count" = "Mutation.Count")
+
+# mutation counts ---------------------------------------------------------
+
+mean_per_junction <- group_column |> 
+  group_by(junction_name,disease) |> 
+  mutate(mean_n_spliced_reads = mean(n_spliced_reads)) |> 
+  ungroup() |> 
+  select(junction_name,disease,mean_n_spliced_reads) |> 
+  unique() |> #mean_n_spliced_reads for each junction_name separately for control and ALS
+  pivot_wider(names_from = 'disease',
+              values_from = 'mean_n_spliced_reads')
+
+STMN2_cryptic_cBio_mutations <- STMN2_cryptic_cBio |> 
+  drop_na() |> 
+  filter(mutation_count !="NA") |> 
+  group_by(cancer_type) |> 
+  mutate(mean_mutation_count = mean(as.numeric(mutation_count))) |> 
+  ungroup() |> 
+  select(cancer_type, cancer_abbrev, mean_mutation_count) |> 
+  unique() 
+
+STMN2_cryptic_cBio_mutations |> 
+  ggplot(aes(x = fct_reorder(cancer_abbrev, mean_mutation_count, median), y = mean_mutation_count)) +
+  geom_bar(stat = 'identity', aes(fill = cancer_abbrev)) +
+  labs(
+    x = "Cancer Type",
+    y = "Mean Mutation Count"
+  ) +
+  theme(legend.position = "none")
+
+# mutation data of one patient --------------------------------------------
+
+patient_mutations_orig <- read.csv("TCGA-A5-A0G2_mutations.tsv", sep = "\t", header = TRUE, na.strings = "", fill = TRUE) 
+
+patient_mutations <- patient_mutations_orig |> 
+  select(Gene, Protein.Change, Annotation, Functional.Impact, Chromosome, Start.Pos, End.Pos, Ref, Var, 
+         HGVSg, Mutation.Type, Variant.Type, Allele.Freq)
+
+    # number of mutations in each gene 
+
+patient_mutations |> 
+  count(Gene, sort = TRUE) |> 
+  filter(n > 17) |> 
+  ggplot(aes(x = fct_reorder(Gene, n, mean), y = n)) +
+  geom_bar(stat = 'identity', aes(fill = Gene)) +
+  labs(
+    x = "Gene",
+    y = "Mutation Count"
+  ) +
+  theme(legend.position = "none")
+
+    # types of mutations in TTN
+
+patient_mutations |> 
+  filter(Gene == "TTN") |> 
+  ggplot(aes(x = fct_rev(fct_infreq(Mutation.Type)))) +
+  geom_bar(aes(fill = Mutation.Type)) +
+  labs(
+    x = "Mutation Type",
+    y = "Count in TTN Gene"
+  ) +
+  theme(legend.position = "none")
+
+# TCGA biolinks -----------------------------------------------------------
+
+library(TCGAbiolinks)
+
+    # all cancer abbreviations
+
+cancer_abbrev <- unique(STMN2_cryptic_cBio$cancer_abbrev, na.rm = TRUE)
+cancer_abbrev
 
 
