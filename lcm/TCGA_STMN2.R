@@ -63,7 +63,7 @@ STMN2_clinical |>
   labs(
     x = "Cancer Type",
     y = "Number of Cases",
-    title = "STMN2 events are found in mostly breast and brain cancers" 
+    title = "STMN2 is expressed in mostly breast and brain cancers" 
   ) +
   theme(legend.position = "none", plot.title = element_text(size=10)) 
 
@@ -105,7 +105,7 @@ STMN2_clinical_jir_cryptic |>
   ) +
   theme(legend.position = "none", plot.title = element_text(size=9)) 
 
-# boxplot - cryptic STMN2 coverage in different cancer sites --------------
+# boxplot - overall STMN2 junction coverage in different cancer sites --------------
 
 STMN2_clinical_jir_cryptic |> 
   drop_na() |> 
@@ -121,6 +121,20 @@ STMN2_clinical_jir_cryptic |>
   geom_signif(comparisons = list(c("Stomach", "Breast"), c("Stomach", "Brain")),
               map_signif_level = TRUE,
               y_position = c(75, 80))
+
+# boxplot - cryptic STMN2 expression in different cancer sites ------------
+
+STMN2_clinical_jir_cryptic |> 
+  drop_na() |> 
+  filter(cgc_primary_site != "") |> 
+  ggplot(aes(x = STMN2_cryptic_coverage, 
+             y = fct_reorder(gdc_primary_site, STMN2_cryptic_coverage, median))) +
+  geom_boxplot(aes(fill = gdc_primary_site)) +
+  labs(
+    x = "Junction Average Coverage",
+    y = "Primary Site of Cancer",
+  ) +
+  theme(legend.position = "none", plot.title = element_text(size=10))
 
 # num / fraction of cases with STMN2 events in cancer types -----------------
 
@@ -164,32 +178,18 @@ cBio_clinical <- cBio_clinical |>
 # join cBio data with STMN2 cryptic table ---------------------------------
 
 STMN2_cryptic_cBio <- STMN2_clinical_jir_cryptic |> 
-  left_join(cBio_clinical, by = "case_submitter_id") |> 
-  relocate(cancer.y, .after = cancer.x) |> 
-  relocate(cancer_abbrev.y, .after = cancer_abbrev.x) |> 
-  relocate(Cancer.Type, .after = cancer_abbrev.y) |> 
-  select(-cancer.y, -cancer_abbrev.x, -cgc_primary_site, -Cancer.Type, -Sample.ID, -Overall.Survival..Months.) |> 
+  left_join(cBio_clinical, by = "case_submitter_id") 
+
+STMN2_cryptic_cBio <- STMN2_cryptic_cBio |> 
+  select(-cgc_primary_site, -Cancer.Type, -Sample.ID, -Overall.Survival..Months.) |> 
   rename("disease_survival_months" = "Months.of.disease.specific.survival") |> 
   relocate(case_submitter_id, .after = sample_id) |> 
-  rename("cancer_type" = "cancer.x") |> 
   relocate(cancer_type, .after = case_submitter_id) |> 
-  rename("cancer_abbrev" = "cancer_abbrev.y") |> 
-  relocate(cancer_abbrev, .after = cancer_type) |> 
   relocate(gdc_primary_site, .after = cancer_abbrev) |> 
   relocate(sample_type, .after = gdc_primary_site) |> 
-  rename("aneuploidy_score" = "Aneuploidy.Score") |> 
-  rename("mutation_count" = "Mutation.Count")
+  janitor::clean_names()
 
 # mutation counts ---------------------------------------------------------
-
-mean_per_junction <- group_column |> 
-  group_by(junction_name,disease) |> 
-  mutate(mean_n_spliced_reads = mean(n_spliced_reads)) |> 
-  ungroup() |> 
-  select(junction_name,disease,mean_n_spliced_reads) |> 
-  unique() |> #mean_n_spliced_reads for each junction_name separately for control and ALS
-  pivot_wider(names_from = 'disease',
-              values_from = 'mean_n_spliced_reads')
 
 STMN2_cryptic_cBio_mutations <- STMN2_cryptic_cBio |> 
   drop_na() |> 
