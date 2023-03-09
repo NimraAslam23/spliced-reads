@@ -81,4 +81,4 @@ jir <- junction_inclusion_ratio(list(cryptic_query_exact),
 jir_new <- jir |> 
   left_join(samples_with_cryptic,by = c('sample_id' = 'rail_id')) 
 
-
+write_csv(jir_new, "jir_new.csv")

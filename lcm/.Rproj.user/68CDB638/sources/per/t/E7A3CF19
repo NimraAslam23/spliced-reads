@@ -1,0 +1,26 @@
+{
+    "id": "E7A3CF19",
+    "path": "~/Documents/GitHub/spliced-reads/lcm/spliced_read_from_lcm.R",
+    "project_path": "spliced_read_from_lcm.R",
+    "type": "r_source",
+    "hash": "1184669854",
+    "contents": "",
+    "dirty": false,
+    "created": 1678373926062.0,
+    "source_on_save": false,
+    "relative_order": 5,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "21,0",
+        "scrollLine": "8"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1675939063,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1675939063,
+    "read_only": false,
+    "read_only_alternatives": []
+}

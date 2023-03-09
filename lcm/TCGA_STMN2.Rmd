@@ -21,71 +21,13 @@ library(ggsignif)
 ```
 
 ```{r snapcount_STMN2.R, include = FALSE}
-gene_name = "STMN2" 
-snapcount_coords_cryptic_STMN2 = "chr8:79611215-79616821"
-snapcount_coords_annotated_STMN2 = "chr8:79611215-79636801"
-strand_code = "+"
-
-cryptic_query <-  QueryBuilder(compilation = 'tcga',regions = snapcount_coords_cryptic_STMN2) 
-
-if(strand_code == "+"){
-  cryptic_query <- set_row_filters(cryptic_query, strand == "+") 
-}else if(strand_code == "-"){
-  cryptic_query <- set_row_filters(cryptic_query, strand == "-") 
-}
-
-juncs_on_cryptic <- query_jx(cryptic_query) 
-juncs_on_cryptic_flat <- query_jx(cryptic_query,return_rse = FALSE) 
-samples_with_cryptic <- juncs_on_cryptic@colData |> 
-  as.data.frame() 
-
-samples_with_cryptic <- samples_with_cryptic |> 
-  select(c("rail_id",
-           "gdc_cases.demographic.gender",
-           "gdc_cases.submitter_id",
-           "gdc_cases.project.name",
-           "gdc_cases.project.primary_site",
-           "gdc_cases.diagnoses.tumor_stage",
-           "gdc_cases.samples.sample_type",
-           "cgc_case_primary_site",
-           "junction_coverage", 
-           "junction_avg_coverage")) 
-
-juncs_on_cryptic_flat <- juncs_on_cryptic_flat |> 
-  select(chromosome,start,end,strand,samples) |> 
-  separate_rows(samples, sep = ',') |> 
-  filter(samples != "") |> 
-  separate(samples, into = c("rail_id","count")) |> 
-  mutate(rail_id = as.integer(rail_id)) |> 
-  mutate(count = as.numeric(count)) 
-
-juncs_on_cryptic_flat |> 
-  left_join(samples_with_cryptic) |> 
-  filter(end == 79616821)
-
-anno_query <-  QueryBuilder(compilation = 'tcga',regions = snapcount_coords_annotated_STMN2)
-anno_query <- set_coordinate_modifier(anno_query, Coordinates$Exact) 
-if(strand_code == "+"){
-  anno_query <- set_row_filters(anno_query, strand == "+") 
-}else if(strand_code == "-"){
-  anno_query <- set_row_filters(anno_query, strand == "-")
-}
-
-cryptic_query_exact <- set_coordinate_modifier(cryptic_query, Coordinates$Exact) 
-
-jir <- junction_inclusion_ratio(list(cryptic_query_exact),
-                                list(anno_query),
-                                group_names=c(glue::glue("{gene_name}_cryptic"),
-                                              glue::glue("{gene_name}_annotated")))
-
-jir_new <- jir |> 
-  left_join(samples_with_cryptic,by = c('sample_id' = 'rail_id')) 
+jir_new <- read.csv("jir_new.csv")
 ```
 
 
 ```{r GDC case IDs, include = FALSE}
-jir_new$gdc_cases.submitter_id
-#write_clip(jir_new$gdc_cases.submitter_id)
+jir_new$case_submitter_id
+#write_clip(jir_new$case_submitter_id)
 ```
 
 ```{r Import gene data from TCGA, include = FALSE}
@@ -148,9 +90,6 @@ BRCA = breast cancer; LGG = low-grade gliomas (brain tumours)
 # Cancers with cryptic STMN2 expression
 
 ```{r joining jir table with clinical table, include = FALSE}
-jir_new <- jir_new |> 
-  rename("case_submitter_id" = "gdc_cases.submitter_id")
-
 STMN2_clinical_jir <- jir_new |> 
   left_join(STMN2_clinical, by=c("case_submitter_id"))
 
@@ -351,6 +290,7 @@ patient_mutations |>
   ) +
   theme(legend.position = "none")
 ```
+
 
 # TCGA biolinks
 

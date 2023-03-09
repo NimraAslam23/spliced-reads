@@ -13,8 +13,10 @@ library(snapcount)
 library(ggsignif)
 library(TCGAbiolinks)
 
-jir_new$gdc_cases.submitter_id
-write_clip(jir_new$gdc_cases.submitter_id)
+jir_new <- read.csv("jir_new.csv")
+
+jir_new$case_submitter_id
+write_clip(jir_new$case_submitter_id)
 
 # Import gene data from TCGA ---------------------------------------------------
 
@@ -68,9 +70,6 @@ STMN2_clinical |>
   theme(legend.position = "none", plot.title = element_text(size=10)) 
 
 # joining jir table with clinical table -----------------------------------
-
-jir_new <- jir_new |> 
-  rename("case_submitter_id" = "gdc_cases.submitter_id")
 
 STMN2_clinical_jir <- jir_new |> 
   left_join(STMN2_clinical, by=c("case_submitter_id")) 
@@ -140,7 +139,7 @@ STMN2_clinical_jir_cryptic |>
 
 STMN2_events_different_cancers <- STMN2_clinical_jir_cryptic |> 
   drop_na() |>
-  janitor::tabyl(cancer_type) |> arrange(-percent)
+  janitor::tabyl(cancer) |> arrange(-percent)
 
 # num / fraction of cases with STMN2 events in cancer sites -----------------
 
@@ -177,27 +176,30 @@ cBio_clinical <- cBio_clinical |>
 
 # join cBio data with STMN2 cryptic table ---------------------------------
 
+cBio_clinical_2 <- cBio_clinical |> 
+  select(-Cancer.Type, -cancer, -Sample.ID, -Overall.Survival..Months., -cancer_abbrev)
+
 STMN2_cryptic_cBio <- STMN2_clinical_jir_cryptic |> 
-  left_join(cBio_clinical, by = "case_submitter_id") 
+  left_join(cBio_clinical_2, by = "case_submitter_id") 
 
 STMN2_cryptic_cBio <- STMN2_cryptic_cBio |> 
-  select(-cgc_primary_site, -Cancer.Type, -Sample.ID, -Overall.Survival..Months.) |> 
+  select(-cgc_primary_site) |> 
   rename("disease_survival_months" = "Months.of.disease.specific.survival") |> 
   relocate(case_submitter_id, .after = sample_id) |> 
-  relocate(cancer_type, .after = case_submitter_id) |> 
+  relocate(cancer, .after = case_submitter_id) |> 
   relocate(gdc_primary_site, .after = cancer_abbrev) |> 
   relocate(sample_type, .after = gdc_primary_site) |> 
   janitor::clean_names()
 
 # mutation counts ---------------------------------------------------------
 
-STMN2_cryptic_cBio_mutations <- STMN2_cryptic_cBio |> 
+STMN2_cryptic_cBio_mutations <- STMN2_cryptic_cBio |>
   drop_na() |> 
   filter(mutation_count !="NA") |> 
-  group_by(cancer_type) |> 
+  group_by(cancer) |> 
   mutate(mean_mutation_count = mean(as.numeric(mutation_count))) |> 
   ungroup() |> 
-  select(cancer_type, cancer_abbrev, mean_mutation_count) |> 
+  select(cancer, cancer_abbrev, mean_mutation_count) |> 
   unique() 
 
 STMN2_cryptic_cBio_mutations |> 
@@ -242,6 +244,99 @@ patient_mutations |>
   ) +
   theme(legend.position = "none")
 
+
+# STMN2 cryptic coverage vs mutation count --------------------------------
+
+STMN2_cryptic_cBio <- STMN2_cryptic_cBio |> 
+  mutate_at("mutation_count", as.numeric) 
+
+STMN2_cryptic_cBio |> 
+  drop_na() |> 
+  ggplot(aes(x = stmn2_cryptic_coverage, y = mutation_count)) +
+  labs(
+    x = "Number of STMN2 cryptic events",
+    y = "Mutation Count"
+  ) +
+  geom_point()
+
+# COSMIC Cancer Gene Consensus --------------------------------------------
+
+cosmic_cancer_genes <- read.csv("cosmic_cancer_gene_consensus.csv") |> 
+  rename("Gene" = "Gene.Symbol")
+
+# filter for cancer driver genes ------------------------------------------
+
+cosmic_patient_mutations <- filter(patient_mutations, Gene %in% cosmic_cancer_genes$Gene)
+                                                        
+  # number of mutations in each gene 
+
+cosmic_patient_mutations |> 
+  count(Gene, sort = TRUE) |> 
+  filter(n > 11) |> 
+  ggplot(aes(x = fct_reorder(Gene, n, mean), y = n)) +
+  geom_bar(stat = 'identity', aes(fill = Gene)) +
+  labs(
+    x = "Cancer Gene",
+    y = "Mutation Count"
+  ) +
+  theme(legend.position = "none")
+
+  # types of mutations in MUC16
+
+cosmic_patient_mutations |> 
+  filter(Gene == "MUC16") |> 
+  ggplot(aes(x = fct_rev(fct_infreq(Mutation.Type)))) +
+  geom_bar(aes(fill = Mutation.Type)) +
+  labs(
+    x = "Mutation Type",
+    y = "Count in MUC16 Gene"
+  ) +
+  theme(legend.position = "none")
+
+# type of cancer genes ----------------------------------------------------
+
+cosmic_patient_mutations <- cosmic_patient_mutations |> 
+  left_join(cosmic_cancer_genes, by = "Gene") 
+
+cosmic_patient_mutations <- cosmic_patient_mutations |> 
+  select(-Entrez.GeneId, -Tier, -Hallmark, -Chr.Band, -Somatic, -Germline, -Tumour.Types.Somatic., 
+         -Tumour.Types.Germline., -Cancer.Syndrome, -Molecular.Genetics, -Translocation.Partner, 
+         -Other.Germline.Mut, -Other.Syndrome, -Synonyms) 
+
+  # fusion
+      # Gene fusions, or translocations, resulting from chromosomal rearrangements are the most common mutation class. 
+      #They lead to chimeric transcripts or to deregulation of genes through juxtapositioning of novel promoter or enhancer regions.
+
+  # TSG = tumour suppressor gene
+
+  # oncogene
+
+cosmic_patient_mutations |> 
+  drop_na() |> 
+  filter(Role.in.Cancer !="") |> 
+  ggplot(aes(x = Role.in.Cancer)) +
+  geom_bar()
+
+cosmic_patient_mutations <- cosmic_patient_mutations |> 
+  mutate(TSG = ifelse(grepl("TSG", Role.in.Cancer), "yes", "no")) |> 
+  mutate(oncogene = ifelse(grepl("oncogene", Role.in.Cancer), "yes", "no")) |> 
+  mutate(fusion = ifelse(grepl("fusion", Role.in.Cancer), "yes", "no"))
+       
+cosmic_patient_mutations |> 
+  janitor::tabyl(TSG)
+
+cosmic_patient_mutations |> 
+  janitor::tabyl(oncogene)
+
+cosmic_patient_mutations |> 
+  janitor::tabyl(fusion)
+
+
+
+STMN2_events_different_cancers <- STMN2_clinical_jir_cryptic |> 
+  drop_na() |>
+  janitor::tabyl(cancer) |> arrange(-percent)
+  
 # TCGA biolinks -----------------------------------------------------------
 
 library(TCGAbiolinks)
