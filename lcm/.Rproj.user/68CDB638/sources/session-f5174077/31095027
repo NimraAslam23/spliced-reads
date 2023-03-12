@@ -1,27 +1,27 @@
 {
-    "id": "29F54DFE",
-    "path": "~/Documents/GitHub/spliced-reads/lcm/TCGA_STMN2.R",
-    "project_path": "TCGA_STMN2.R",
+    "id": "31095027",
+    "path": "~/Documents/GitHub/spliced-reads/lcm/ARHGAP32.R",
+    "project_path": "ARHGAP32.R",
     "type": "r_source",
-    "hash": "2340692530",
+    "hash": "0",
     "contents": "",
     "dirty": false,
-    "created": 1678370494509.0,
+    "created": 1678660193520.0,
     "source_on_save": false,
-    "relative_order": 2,
+    "relative_order": 4,
     "properties": {
         "tempName": "Untitled1",
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "308,0",
-        "scrollLine": "298"
+        "cursorPosition": "0,0",
+        "scrollLine": "0"
     },
     "folds": "",
-    "lastKnownWriteTime": 1678388217,
+    "lastKnownWriteTime": 1678660304,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1678388217698,
+    "last_content_update": 1678660304191,
     "read_only": false,
     "read_only_alternatives": []
 }

@@ -259,6 +259,16 @@ STMN2_cryptic_cBio |>
   ) +
   geom_point()
 
+STMN2_cryptic_cBio |> 
+  drop_na() |> 
+  filter(mutation_count < 400, stmn2_cryptic_coverage < 10) |> 
+  ggplot(aes(x = as.factor(stmn2_cryptic_coverage), y = mutation_count)) +
+  labs(
+    x = "Number of STMN2 cryptic events",
+    y = "Mutation Count"
+  ) +
+  geom_boxplot()
+
 # COSMIC Cancer Gene Consensus --------------------------------------------
 
 cosmic_cancer_genes <- read.csv("cosmic_cancer_gene_consensus.csv") |> 
@@ -322,20 +332,14 @@ cosmic_patient_mutations <- cosmic_patient_mutations |>
   mutate(oncogene = ifelse(grepl("oncogene", Role.in.Cancer), "yes", "no")) |> 
   mutate(fusion = ifelse(grepl("fusion", Role.in.Cancer), "yes", "no"))
        
-cosmic_patient_mutations |> 
+n_TSG <- cosmic_patient_mutations |> 
   janitor::tabyl(TSG)
 
-cosmic_patient_mutations |> 
+n_oncogene <- cosmic_patient_mutations |> 
   janitor::tabyl(oncogene)
 
-cosmic_patient_mutations |> 
+n_fusion <- cosmic_patient_mutations |> 
   janitor::tabyl(fusion)
-
-
-
-STMN2_events_different_cancers <- STMN2_clinical_jir_cryptic |> 
-  drop_na() |>
-  janitor::tabyl(cancer) |> arrange(-percent)
   
 # TCGA biolinks -----------------------------------------------------------
 

@@ -162,6 +162,7 @@ STMN2_clinical_jir_cryptic |>
   ) +
   theme(legend.position = "none", plot.title = element_text(size=10))
 ```
+**Figure 4**: 
 
 On average, cancers in the stomach and breast have the greatest number of reads supporting cryptic STMN2 events. Cancers of the brain have significantly fewer reads surpporting cryptic events. 
 
@@ -252,10 +253,13 @@ STMN2_cryptic_cBio_mutations |>
   geom_bar(stat = 'identity', aes(fill = cancer_abbrev)) +
   labs(
     x = "Cancer Type",
-    y = "Mean Mutation Count"
+    y = "Mean Mutation Count",
+    title = "Glioblastoma Multiforme has the greatest number of mutations"
   ) +
   theme(legend.position = "none")
 ```
+
+**Figure 5**: Among cancer patients with STMN2 cryptic expression, GBM (brain cancer) has the greatest number of mutations.
 
 ## Mutation Data of one patient
 
@@ -279,6 +283,8 @@ patient_mutations |>
   theme(legend.position = "none")
 ```
 
+**Figure 6**:
+
 ```{r types of mutations in TTN, echo = FALSE}
 patient_mutations |> 
   filter(Gene == "TTN") |> 
@@ -291,6 +297,126 @@ patient_mutations |>
   theme(legend.position = "none")
 ```
 
+**Figure 7**:
+
+## STMN2 cryptic expression 
+
+```{r STMN2 cryptic coverage vs mutation count}
+
+STMN2_cryptic_cBio <- STMN2_cryptic_cBio |> 
+  mutate_at("mutation_count", as.numeric) 
+
+STMN2_cryptic_cBio |> 
+  drop_na() |> 
+  ggplot(aes(x = stmn2_cryptic_coverage, y = mutation_count)) +
+  labs(
+    x = "Number of STMN2 cryptic events",
+    y = "Mutation Count"
+  ) +
+  geom_point()
+
+STMN2_cryptic_cBio |> 
+  drop_na() |> 
+  filter(mutation_count < 400, stmn2_cryptic_coverage < 10) |> 
+  ggplot(aes(x = as.factor(stmn2_cryptic_coverage), y = mutation_count)) +
+  labs(
+    x = "Number of STMN2 cryptic events",
+    y = "Mutation Count"
+  ) +
+  geom_boxplot()
+```
+
+**Figure 8**:
+
+# Cancer Driver Genes
+
+```{r COSMIC Cancer Gene Consensus, include = FALSE}
+cosmic_cancer_genes <- read.csv("cosmic_cancer_gene_consensus.csv") |> 
+  rename("Gene" = "Gene.Symbol")
+
+# filter for cancer driver genes
+
+cosmic_patient_mutations <- filter(patient_mutations, Gene %in% cosmic_cancer_genes$Gene)
+```
+
+## Mutations in each cancer gene
+
+```{r number of mutations in each cancer gene}
+cosmic_patient_mutations |> 
+  count(Gene, sort = TRUE) |> 
+  filter(n > 11) |> 
+  ggplot(aes(x = fct_reorder(Gene, n, mean), y = n)) +
+  geom_bar(stat = 'identity', aes(fill = Gene)) +
+  labs(
+    x = "Cancer Gene",
+    y = "Mutation Count"
+  ) +
+  theme(legend.position = "none")
+```
+
+**Figure 9**: Ovarian cancer gene MUC16 has the greatest number of mutations.
+
+```{r types of mutations in MUC16}
+cosmic_patient_mutations |> 
+  filter(Gene == "MUC16") |> 
+  ggplot(aes(x = fct_rev(fct_infreq(Mutation.Type)))) +
+  geom_bar(aes(fill = Mutation.Type)) +
+  labs(
+    x = "Mutation Type",
+    y = "Count in MUC16 Gene"
+  ) +
+  theme(legend.position = "none")
+```
+
+**Figure 10**: Ovarian cancer gene MUC16 has mostly missense mutations.
+
+## Types of cancer genes
+
+```{r types of cancer genes, echo = FALSE}
+cosmic_patient_mutations <- cosmic_patient_mutations |> 
+  left_join(cosmic_cancer_genes, by = "Gene") 
+
+cosmic_patient_mutations <- cosmic_patient_mutations |> 
+  select(-Entrez.GeneId, -Tier, -Hallmark, -Chr.Band, -Somatic, -Germline, -Tumour.Types.Somatic., 
+         -Tumour.Types.Germline., -Cancer.Syndrome, -Molecular.Genetics, -Translocation.Partner, 
+         -Other.Germline.Mut, -Other.Syndrome, -Synonyms) 
+
+  # fusion
+      # Gene fusions, or translocations, resulting from chromosomal rearrangements are the most common mutation class. 
+      #They lead to chimeric transcripts or to deregulation of genes through juxtapositioning of novel promoter or enhancer regions.
+
+  # TSG = tumour suppressor gene
+
+  # oncogene
+
+cosmic_patient_mutations |> 
+  drop_na() |> 
+  filter(Role.in.Cancer !="") |> 
+  ggplot(aes(x = Role.in.Cancer)) +
+  geom_bar()
+```
+
+```{r types, echo = FALSE}
+cosmic_patient_mutations <- cosmic_patient_mutations |> 
+  mutate(TSG = ifelse(grepl("TSG", Role.in.Cancer), "yes", "no")) |> 
+  mutate(oncogene = ifelse(grepl("oncogene", Role.in.Cancer), "yes", "no")) |> 
+  mutate(fusion = ifelse(grepl("fusion", Role.in.Cancer), "yes", "no"))
+
+n_TSG <- cosmic_patient_mutations |> 
+  janitor::tabyl(TSG)
+
+kable(n_TSG, caption = "45% of cancer genes with cryptic STMN2 expression are tumour suppressor genes.")
+
+n_oncogene <- cosmic_patient_mutations |> 
+  janitor::tabyl(oncogene)
+
+kable(n_oncogene, caption = "39% of cancer genes with cryptic STMN2 expression are oncogenes.")
+
+n_fusion <- cosmic_patient_mutations |> 
+  janitor::tabyl(fusion)
+
+kable(n_fusion, caption = "44% of cancer genes with cryptic STMN2 expression are gene fusions.")
+```
 
 # TCGA biolinks
 

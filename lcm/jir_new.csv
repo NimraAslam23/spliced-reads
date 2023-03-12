@@ -1,4 +1,4 @@
-sample_id,STMN2_cryptic_coverage,STMN2_annotated_coverage,jir,gdc_cases.demographic.gender,case_submitter_id,gdc_cases.project.name,gdc_cases.project.primary_site,gdc_cases.diagnoses.tumor_stage,gdc_cases.samples.sample_type,cgc_case_primary_site,junction_coverage,junction_avg_coverage
+sample_id,STMN2_cryptic_coverage,STMN2_annotated_coverage,jir,gdc_cases.demographic.gender,gdc_cases.submitter_id,gdc_cases.project.name,gdc_cases.project.primary_site,gdc_cases.diagnoses.tumor_stage,gdc_cases.samples.sample_type,cgc_case_primary_site,junction_coverage,junction_avg_coverage
 60495,0,860,0.9988385598141696,female,TCGA-QT-A5XO,Pheochromocytoma and Paraganglioma,Adrenal Gland,not reported,Primary Tumor,Nervous System,12493263,52.4633839073123
 61302,0,775,0.9987113402061856,female,TCGA-WB-A81N,Pheochromocytoma and Paraganglioma,Adrenal Gland,not reported,Primary Tumor,Nervous System,6974700,34.0133035531411
 66648,0,676,0.9985228951255539,female,TCGA-RW-A67Y,Pheochromocytoma and Paraganglioma,Adrenal Gland,not reported,Primary Tumor,Nervous System,7198920,35.4385688546702

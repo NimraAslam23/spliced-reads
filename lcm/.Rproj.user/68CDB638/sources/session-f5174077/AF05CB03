@@ -3,7 +3,7 @@
     "path": "~/Documents/GitHub/spliced-reads/lcm/TCGA_STMN2.Rmd",
     "project_path": "TCGA_STMN2.Rmd",
     "type": "r_markdown",
-    "hash": "18019549",
+    "hash": "2073543858",
     "contents": "",
     "dirty": false,
     "created": 1677188310083.0,
@@ -13,15 +13,15 @@
         "tempName": "Untitled1",
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "206,0",
-        "scrollLine": "192"
+        "cursorPosition": "327,0",
+        "scrollLine": "308"
     },
     "folds": "",
-    "lastKnownWriteTime": 1678370490,
+    "lastKnownWriteTime": 1678658096,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1678370490596,
+    "last_content_update": 1678658096804,
     "read_only": false,
     "read_only_alternatives": []
 }
