@@ -1,3 +1,10 @@
+---
+title: "STMN2"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(repurrrsive)
 library(jsonlite)
@@ -11,41 +18,46 @@ library(dplyr)
 library(knitr)
 library(snapcount)
 library(ggsignif)
-library(TCGAbiolinks)
+```
 
+<<<<<<<< HEAD:lcm/.Rproj.user/68CDB638/sources/session-f5174077/9EDC55A9-contents
+Gene name = "STMN2" 
+STMN2 cryptic coordinates = "chr8:79611215-79616821"
+STMN2 annotated coordinates = "chr8:79611215-79636801"
+STMN2 strand code = "+"
+
+```{r query (cryptic and anno), include = FALSE}
+STMN2_cryptic_query <- count_query(gene_name = "STMN2", snapcount_coords = "chr8:79611215-79616821", strand_code = "+")
+STMN2_anno_query <- count_query(gene_name = "STMN2", snapcount_coords = "chr8:79611215-79636801", strand_code = "+")
+```
+========
 jir_new <- read.csv("jir_new.csv")
 
 jir_new$case_submitter_id
 write_clip(jir_new$case_submitter_id)
+>>>>>>>> parent of 5702c87 (mutation and patient info for all mutations):lcm/.Rproj.user/68CDB638/sources/session-f5174077/29F54DFE-contents
 
-# Import gene data from TCGA ---------------------------------------------------
+```{r join cryptic and anno df, add jir column, include = FALSE}
+STMN2_cryptic_query <- STMN2_cryptic_query |> rename("cryptic_count" = "count")
+STMN2_anno_query <- STMN2_anno_query |> rename("anno_count" = "count")
 
-STMN2_events_genes_orig <- read.csv("STMN2_events_genes.tsv", sep = "\t", header = TRUE, na.strings="", fill = TRUE)
-head(STMN2_events_genes_orig)
+STMN2_query <- STMN2_cryptic_query |> 
+  select(gdc_cases.submitter_id, cryptic_count) |> 
+  left_join(STMN2_anno_query, by = "gdc_cases.submitter_id")
 
-STMN2_events_genes <- STMN2_events_genes_orig
+STMN2_query <- STMN2_query |> 
+  relocate(cryptic_count, .after = anno_count)
 
-STMN2_events_genes <- STMN2_events_genes |> 
-  rename("affected_cases_in_cohort" = "X..SSM.Affected.Cases.in.Cohort") |> 
-    # number of cases where gene is mutated / number of cases tested for simple somatic mutations (3,259)
-  rename("affected_cases_in_GDC" = "X..SSM.Affected.Cases.Across.the.GDC") |> 
-    # number of cases where gene contains simple somatic mutations / number of cases tested for simple somatic mutations portal wide (13,714)
-  rename("CNV_gain" = "X..CNV.Gain") |> 
-    # number of cases where CNV gain observed in gene / number of cases tested for copy number alteration in gene (3,344)
-  rename("CNV_loss" = "X..CNV.Loss") |> 
-    # number of cases where CNV loss observed in gene / number of cases tested for copy number alteration in gene (3,344)
-  rename("mutations" = "X..Mutations")
-    # unique simple somatic mutations in the gene in cohort 
+STMN2_query <- STMN2_query |> 
+  mutate(jir = anno_count/(anno_count + cryptic_count)) |> 
+  relocate(jir, .after = cryptic_count)
 
-# Import mutation data from TCGA ------------------------------------------
+#write_clip(STMN2_query$gdc_cases.submitter_id)
+```
 
-STMN2_events_mutations_orig <- read.csv("STMN2_events_mutations.tsv", sep = "\t", header = TRUE, na.strings = "", fill = TRUE)
-head(STMN2_events_mutations_orig)
+# Cancers with STMN2 expression
 
-STMN2_events_mutations <- STMN2_events_mutations_orig
-
-# Import clinical data from TCGA ------------------------------------------
-
+```{r Import clinical data from TCGA, include = FALSE}
 STMN2_clinical_orig <- read.csv("STMN2_clinical.tsv", sep = "\t", header = TRUE, na.strings = "", fill = TRUE)
 head(STMN2_clinical_orig)
 
@@ -55,9 +67,9 @@ STMN2_clinical <- STMN2_clinical|>
   select(case_submitter_id, project_id, age_at_index, ethnicity, gender, race, ajcc_pathologic_stage) |> 
   separate(project_id, into = c("project", "cancer_type")) |> 
   select(-project)
+```
 
-# bar plot - cancer types with cryptic STMN2 events -----------------------
-
+```{r bar plot - cancer types with STMN2 events}
 STMN2_clinical |> 
   ggplot(aes(x = fct_rev(fct_infreq(cancer_type)))) +
   geom_bar(aes(fill = cancer_type)) +
@@ -68,29 +80,41 @@ STMN2_clinical |>
     title = "STMN2 is expressed in mostly breast and brain cancers" 
   ) +
   theme(legend.position = "none", plot.title = element_text(size=10)) 
+```
+**Figure 1**: STMN2 events are found mostly in breast and brain cancer patients. 
+BRCA = breast cancer; LGG = low-grade gliomas (brain tumours)
 
-# joining jir table with clinical table -----------------------------------
+# Cancers with cryptic STMN2 expression
 
-STMN2_clinical_jir <- jir_new |> 
-  left_join(STMN2_clinical, by=c("case_submitter_id")) 
+```{r joining jir table with clinical table, include = FALSE}
+jir_new_STMN2 <- jir_new_STMN2 |> rename("case_submitter_id" = "gdc_cases.submitter_id")
+
+STMN2_clinical_jir <- jir_new_STMN2 |> 
+  left_join(STMN2_clinical, by=c("case_submitter_id"))
+
 STMN2_clinical_jir <- STMN2_clinical_jir |> 
   select(-gdc_cases.diagnoses.tumor_stage, -age_at_index, -gdc_cases.demographic.gender, 
-         -ajcc_pathologic_stage, -ethnicity, -race, -gender)
+         -ajcc_pathologic_stage, -ethnicity, -race, -cancer_type, -gender)
  
 STMN2_clinical_jir <- STMN2_clinical_jir |> 
-  rename("cancer" = "gdc_cases.project.name") |> 
+  rename("cancer_type" = "gdc_cases.project.name") |> 
   rename("gdc_primary_site" = "gdc_cases.project.primary_site") |> 
   rename("sample_type" = "gdc_cases.samples.sample_type") |> 
-  rename("cgc_primary_site" = "cgc_case_primary_site") |> 
-  rename("cancer_abbrev" = "cancer_type")
+  rename("cgc_primary_site" = "cgc_case_primary_site")
+```
 
-# filter for cryptic coverage > 2 -----------------------------------------
-
+```{r filter for cryptic coverage 2}
 STMN2_clinical_jir_cryptic <- STMN2_clinical_jir |> 
+<<<<<<<< HEAD:lcm/.Rproj.user/68CDB638/sources/session-f5174077/9EDC55A9-contents
+  filter(STMN2_cryptic_coverage > 2) 
+```
+========
   filter(STMN2_cryptic_coverage > 2)
+>>>>>>>> parent of 5702c87 (mutation and patient info for all mutations):lcm/.Rproj.user/68CDB638/sources/session-f5174077/29F54DFE-contents
 
-# bar plot - primary sites of cancers with cryptic STMN2 events -----------
+## Primary sites of cancers 
 
+```{r bar plot - primary sites of cancers with cryptic STMN2 events}
 STMN2_clinical_jir_cryptic |> 
   drop_na() |> 
   ggplot(aes(x = fct_rev(fct_infreq(gdc_primary_site)))) +
@@ -100,17 +124,22 @@ STMN2_clinical_jir_cryptic |>
     x = "Primary Site of Cancer",
     y = "Number of Cases",
     title = 
-      "Primary sites of cancers with cryptic STMN2 events are mostly the adrenal gland and brain" 
+  "Primary sites of cancers with cryptic STMN2 events are mostly the adrenal gland and brain" 
   ) +
   theme(legend.position = "none", plot.title = element_text(size=9)) 
+```
+**Figure 2**: Cryptic STMN2 events are found mostly in the adrenal gland and brain.
 
-# boxplot - overall STMN2 junction coverage in different cancer sites --------------
+Interestingly, Figure 2 shows that cryptic STMN2 expression is low in the breast. Comparing this to Figure 1, this shows that the STMN2 events expressed in breast cancers may be mostly annotated non-cryptic events. 
 
+## Cryptic STMN2 junction coverage in different sites of cancers
+
+```{r boxplot - overall STMN2 junction coverage in different cancer sites, warning = FALSE}
 STMN2_clinical_jir_cryptic |> 
   drop_na() |> 
   filter(cgc_primary_site != "") |> 
   ggplot(aes(x = junction_avg_coverage, y = fct_reorder(gdc_primary_site, 
-                                                        junction_avg_coverage, median))) +
+                                                  junction_avg_coverage, median))) +
   geom_boxplot(aes(fill = gdc_primary_site)) +
   labs(
     x = "Junction Average Coverage",
@@ -120,46 +149,48 @@ STMN2_clinical_jir_cryptic |>
   geom_signif(comparisons = list(c("Stomach", "Breast"), c("Stomach", "Brain")),
               map_signif_level = TRUE,
               y_position = c(75, 80))
+```
+**Figure 3**: Stomach and breast cancers are the most deeply sequenced.
 
-# boxplot - cryptic STMN2 expression in different cancer sites ------------
-
+```{r boxplot - cryptic STMN2 expression in different cancer sites}
 STMN2_clinical_jir_cryptic |> 
   drop_na() |> 
-  filter(cgc_primary_site != "") |> 
   ggplot(aes(x = STMN2_cryptic_coverage, 
              y = fct_reorder(gdc_primary_site, STMN2_cryptic_coverage, median))) +
   geom_boxplot(aes(fill = gdc_primary_site)) +
   labs(
-    x = "Junction Average Coverage",
+    x = "STMN2 Cryptic Coverage",
     y = "Primary Site of Cancer",
   ) +
   theme(legend.position = "none", plot.title = element_text(size=10))
+```
+**Figure 4**: On average, cancers in the stomach and breast have the greatest number of reads supporting cryptic STMN2 events. Cancers of the brain have significantly fewer reads surpporting cryptic events. 
 
-# num / fraction of cases with STMN2 events in cancer types -----------------
 
+## Which cancers have the most cryptic STMN2 events?
+
+```{r number / fraction of cases with STMN2 events in different cancers, echo = FALSE}
 STMN2_events_different_cancers <- STMN2_clinical_jir_cryptic |> 
   drop_na() |>
-  janitor::tabyl(cancer) |> arrange(-percent)
+  janitor::tabyl(cancer_type) |> arrange(-percent)
 
-# num / fraction of cases with STMN2 events in cancer sites -----------------
+kable(STMN2_events_different_cancers, 
+      caption = "Breast and brain cancers have high cryptic STMN2 expression.")
+```
 
+## Where are the cancers with cryptic STMN2 events located?
+
+```{r number / fraction of cases with STMN2 events in different primary cancer sites, echo = FALSE}
 STMN2_events_primary_sites1 <- STMN2_clinical_jir_cryptic |> 
   drop_na() |> 
   janitor::tabyl(gdc_primary_site) |> arrange(-percent)
 
-# All clinical data from TCGA ---------------------------------------------
+kable(STMN2_events_primary_sites1, caption = "Cancers with cryptic STMN2 events are found primarily in the adrenal gland and brain")
+```
 
-TCGA_all_clinical_orig <- read.csv("TCGA_all_clinical.tsv", sep = "\t", header = TRUE, na.strings = "", fill = TRUE)
-head(TCGA_all_clinical_orig)
+# cBioPortal Clinical Data
 
-TCGA_clinical <- TCGA_all_clinical_orig
-
-TCGA_clinical <- TCGA_clinical|> 
-  select(case_submitter_id, project_id, age_at_index, ethnicity, gender, race, ajcc_pathologic_stage) |> 
-  separate(project_id, into = c("project", "cancer_type")) |> 
-  select(-project)
-
-# All clinical data from cBioPortal ---------------------------------------
+```{r data import - cBioPortal Clinical Data, include = FALSE}
 
 cBio_all_clinical_orig <- read.csv("cBio_clinical_data.tsv", sep = "\t", header = TRUE, na.strings = "", fill = TRUE)
 
@@ -173,54 +204,82 @@ cBio_clinical <- cBio_clinical |>
   rename("case_submitter_id" = "Patient.ID") |> 
   rename("cancer" = "Cancer.Type.Detailed") |> 
   rename("cancer_abbrev" = "TCGA.PanCanAtlas.Cancer.Type.Acronym")
+```
 
-# join cBio data with STMN2 cryptic table ---------------------------------
-
-cBio_clinical_2 <- cBio_clinical |> 
-  select(-Cancer.Type, -cancer, -Sample.ID, -Overall.Survival..Months., -cancer_abbrev)
-
+```{r join cBio clinical data with STMN2 cryptic table, include = FALSE}
 STMN2_cryptic_cBio <- STMN2_clinical_jir_cryptic |> 
-  left_join(cBio_clinical_2, by = "case_submitter_id") 
+  left_join(cBio_clinical, by = "case_submitter_id") 
 
 STMN2_cryptic_cBio <- STMN2_cryptic_cBio |> 
-  select(-cgc_primary_site) |> 
+   select(-cgc_primary_site, -Cancer.Type, -Sample.ID, -Overall.Survival..Months.) |>
   rename("disease_survival_months" = "Months.of.disease.specific.survival") |> 
   relocate(case_submitter_id, .after = sample_id) |> 
-  relocate(cancer, .after = case_submitter_id) |> 
+  relocate(cancer_type, .after = case_submitter_id) |> 
   relocate(gdc_primary_site, .after = cancer_abbrev) |> 
   relocate(sample_type, .after = gdc_primary_site) |> 
   janitor::clean_names()
 
-# mutation counts ---------------------------------------------------------
+```
 
-STMN2_cryptic_cBio_mutations <- STMN2_cryptic_cBio |>
+## Mutation Counts
+
+```{r calculate mean n mutations for each cancer type, include = FALSE}
+STMN2_cryptic_cBio_mutations <- STMN2_cryptic_cBio |> 
   drop_na() |> 
   filter(mutation_count !="NA") |> 
-  group_by(cancer) |> 
+  group_by(cancer_type) |> 
   mutate(mean_mutation_count = mean(as.numeric(mutation_count))) |> 
   ungroup() |> 
-  select(cancer, cancer_abbrev, mean_mutation_count) |> 
+  select(cancer_type, cancer_abbrev, mean_mutation_count) |> 
   unique() 
+```
 
+```{r bar chart - n mutations for each cancer type}
 STMN2_cryptic_cBio_mutations |> 
   ggplot(aes(x = fct_reorder(cancer_abbrev, mean_mutation_count, median), y = mean_mutation_count)) +
   geom_bar(stat = 'identity', aes(fill = cancer_abbrev)) +
   labs(
     x = "Cancer Type",
-    y = "Mean Mutation Count"
+    y = "Mean Mutation Count",
+    title = "Glioblastoma Multiforme has the greatest number of mutations"
   ) +
   theme(legend.position = "none")
+```
 
-# mutation data of one patient --------------------------------------------
+There is an outlier in GBM for mutation count, which heavily skews the mean for this cancer type. 
 
+```{r boxplot - n mutations for each cancer type}
+STMN2_cryptic_cBio <- STMN2_cryptic_cBio |> 
+  mutate_at("mutation_count", as.numeric) 
+
+STMN2_cryptic_cBio |> 
+  drop_na() |> 
+  filter(mutation_count < 2500) |> 
+  ggplot(aes(x = fct_reorder(cancer_abbrev, mutation_count, median), 
+             y = mutation_count)) +
+  geom_boxplot() +
+  labs(
+    x = "Cancer Type",
+    y = "Mutation Count",
+    title = "UCEC and LUSC cancers have the greatest number of mutations"
+  ) +
+  geom_signif(comparisons = list(c("LUSC", "UCEC")),
+map_signif_level = TRUE,
+y_position = c(1000))
+```
+
+**Figure 5**: Among cancer patients with STMN2 cryptic expression, uterine corpus endometrial carcinoma (UCEC) has the greatest number of mutations.
+
+## Mutation Data of one patient
+
+```{r data import, include = FALSE}
 patient_mutations_orig <- read.csv("TCGA-A5-A0G2_mutations.tsv", sep = "\t", header = TRUE, na.strings = "", fill = TRUE) 
 
 patient_mutations <- patient_mutations_orig |> 
-  select(Gene, Protein.Change, Annotation, Functional.Impact, Chromosome, Start.Pos, End.Pos, Ref, Var, 
-         HGVSg, Mutation.Type, Variant.Type, Allele.Freq)
+  select(Gene, Protein.Change, Annotation, Functional.Impact, Chromosome, Start.Pos, End.Pos, Ref, Var, HGVSg, Mutation.Type, Variant.Type, Allele.Freq)
+```
 
-    # number of mutations in each gene 
-
+```{r number of mutations in each gene}
 patient_mutations |> 
   count(Gene, sort = TRUE) |> 
   filter(n > 17) |> 
@@ -231,11 +290,18 @@ patient_mutations |>
     y = "Mutation Count"
   ) +
   theme(legend.position = "none")
+```
 
-    # types of mutations in TTN
+**Figure 6**: Among cancer patients with STMN2 cryptic expression, the titin gene has the greatest number of mutations.
+
+```{r types of mutations in TTN}
+patient_mutations |> 
+  filter(Gene == "TTN") |> 
+  n_distinct()
 
 patient_mutations |> 
   filter(Gene == "TTN") |> 
+  unique() |> 
   ggplot(aes(x = fct_rev(fct_infreq(Mutation.Type)))) +
   geom_bar(aes(fill = Mutation.Type)) +
   labs(
@@ -243,43 +309,59 @@ patient_mutations |>
     y = "Count in TTN Gene"
   ) +
   theme(legend.position = "none")
+```
 
+**Figure 7**: Most of the mutations seen in the titin gene are missense mutations.
 
-# STMN2 cryptic coverage vs mutation count --------------------------------
+## STMN2 cryptic expression 
+
+```{r STMN2 cryptic coverage vs mutation count, warning = FALSE}
 
 STMN2_cryptic_cBio <- STMN2_cryptic_cBio |> 
   mutate_at("mutation_count", as.numeric) 
 
 STMN2_cryptic_cBio |> 
   drop_na() |> 
-  ggplot(aes(x = stmn2_cryptic_coverage, y = mutation_count)) +
+  filter(mutation_count < 400, stmn2_cryptic_coverage > 1) |> 
+  ggplot(aes(x = as.factor(stmn2_cryptic_coverage), y = mutation_count)) +
+  geom_boxplot() +
   labs(
     x = "Number of STMN2 cryptic events",
     y = "Mutation Count"
   ) +
-  geom_point()
+  geom_signif(comparisons = list(c("6", "8"), c("5", "6"), c("3", "6")),
+              map_signif_level = TRUE,
+              y_position = c(250, 300, 200))
+```
 
+```{r}
 STMN2_cryptic_cBio |> 
   drop_na() |> 
-  filter(mutation_count < 400, stmn2_cryptic_coverage < 10) |> 
-  ggplot(aes(x = as.factor(stmn2_cryptic_coverage), y = mutation_count)) +
+  filter(mutation_count < 2500) |> 
+  ggplot(aes(x = stmn2_cryptic_coverage, y = mutation_count)) +
+  geom_hex() +
   labs(
     x = "Number of STMN2 cryptic events",
     y = "Mutation Count"
-  ) +
-  geom_boxplot()
+  )
+```
 
-# COSMIC Cancer Gene Consensus --------------------------------------------
+**Figure 8**: There is no correlation between number of STMN2 cryptic events and number of mutations.
 
+# Cancer Driver Genes
+
+```{r COSMIC Cancer Gene Consensus, include = FALSE}
 cosmic_cancer_genes <- read.csv("cosmic_cancer_gene_consensus.csv") |> 
   rename("Gene" = "Gene.Symbol")
 
-# filter for cancer driver genes ------------------------------------------
+# filter for cancer driver genes
 
 cosmic_patient_mutations <- filter(patient_mutations, Gene %in% cosmic_cancer_genes$Gene)
-                                                        
-  # number of mutations in each gene 
+```
 
+## Mutations in each cancer gene
+
+```{r number of mutations in each cancer gene}
 cosmic_patient_mutations |> 
   count(Gene, sort = TRUE) |> 
   filter(n > 11) |> 
@@ -290,9 +372,11 @@ cosmic_patient_mutations |>
     y = "Mutation Count"
   ) +
   theme(legend.position = "none")
+```
 
-  # types of mutations in MUC16
+**Figure 9**: Ovarian cancer gene MUC16 has the greatest number of mutations.
 
+```{r types of mutations in MUC16}
 cosmic_patient_mutations |> 
   filter(Gene == "MUC16") |> 
   ggplot(aes(x = fct_rev(fct_infreq(Mutation.Type)))) +
@@ -302,9 +386,13 @@ cosmic_patient_mutations |>
     y = "Count in MUC16 Gene"
   ) +
   theme(legend.position = "none")
+```
 
-# type of cancer genes ----------------------------------------------------
+**Figure 10**: Ovarian cancer gene MUC16 has mostly missense mutations.
 
+## Types of cancer genes
+
+```{r types of cancer genes, include = FALSE}
 cosmic_patient_mutations <- cosmic_patient_mutations |> 
   left_join(cosmic_cancer_genes, by = "Gene") 
 
@@ -321,6 +409,39 @@ cosmic_patient_mutations <- cosmic_patient_mutations |>
 
   # oncogene
 
+<<<<<<<< HEAD:lcm/.Rproj.user/68CDB638/sources/session-f5174077/9EDC55A9-contents
+cosmic_patient_mutations <- cosmic_patient_mutations |> 
+  mutate(role_in_cancer = case_when(
+           (grepl("TSG", Role.in.Cancer)) ~  "TSG",
+            (grepl("oncogene", Role.in.Cancer)) ~ "oncogene",
+             Role.in.Cancer == "fusion" ~ 'fusion'))
+```
+
+```{r}
+cosmic_patient_mutations |> 
+  drop_na() |> 
+  ggplot(aes(x = role_in_cancer)) +
+  geom_bar() +
+  labs(
+    x = "Role of the gene in cancer",
+    y = "Number of mutations",
+    title = "Most of the mutations are found in tumour suppressor genes"
+  ) +
+  theme(legend.position = "none", plot.title = element_text(size=12))
+```
+
+**Figure 11**: Among the mutations found in cancer patients with cryptic STMN2 expression, majority of the mutations are in tumour suppressor genes.
+
+```{r types, echo = FALSE}
+n_role_in_cancer <- cosmic_patient_mutations |> 
+  drop_na() |> 
+  janitor::tabyl(role_in_cancer) |> arrange(-percent)
+
+kable(n_role_in_cancer, caption = "Almost half of the cancer genes mutated in patients with enrichment of cryptic STMN2 events are tumour suppressor genes.")
+```
+
+```{r COSMIC all mutations in census genes, include = FALSE}
+========
 cosmic_patient_mutations |> 
   drop_na() |> 
   filter(Role.in.Cancer !="") |> 
@@ -337,12 +458,31 @@ n_TSG <- cosmic_patient_mutations |>
 
 n_oncogene <- cosmic_patient_mutations |> 
   janitor::tabyl(oncogene)
+>>>>>>>> parent of 5702c87 (mutation and patient info for all mutations):lcm/.Rproj.user/68CDB638/sources/session-f5174077/29F54DFE-contents
 
 n_fusion <- cosmic_patient_mutations |> 
   janitor::tabyl(fusion)
   
 # TCGA biolinks -----------------------------------------------------------
 
+<<<<<<<< HEAD:lcm/.Rproj.user/68CDB638/sources/session-f5174077/9EDC55A9-contents
+#removing end digits from case_submitter_id
+cosmic_all_mutations_census_genes$case_submitter_id <- ifelse(grepl("^(\\w+-){2}\\w+$", 
+                                                                    cosmic_all_mutations_census_genes$case_submitter_id),
+                                                              cosmic_all_mutations_census_genes$case_submitter_id,
+                                                              sub("-\\d+$", "",
+                                                                  cosmic_all_mutations_census_genes$case_submitter_id))
+
+# left-join COSMIC all mutations to jir_cryptic ---------------------------
+
+STMN2_cryptic_patients_mutations <- cosmic_all_mutations_census_genes |> 
+  left_join(STMN2_clinical_jir_cryptic, by = "case_submitter_id")
+```
+
+```{r patients w cryptic vs patients w/o cryptic - mutations and genes}
+
+```
+========
 library(TCGAbiolinks)
 
     # all cancer abbreviations
@@ -351,3 +491,4 @@ cancer_abbrev <- unique(STMN2_cryptic_cBio$cancer_abbrev, na.rm = TRUE)
 cancer_abbrev
 
 
+>>>>>>>> parent of 5702c87 (mutation and patient info for all mutations):lcm/.Rproj.user/68CDB638/sources/session-f5174077/29F54DFE-contents

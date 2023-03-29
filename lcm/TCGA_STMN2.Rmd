@@ -259,7 +259,28 @@ STMN2_cryptic_cBio_mutations |>
   theme(legend.position = "none")
 ```
 
-**Figure 5**: Among cancer patients with STMN2 cryptic expression, GBM (brain cancer) has the greatest number of mutations.
+There is an outlier in GBM for mutation count, which heavily skews the mean for this cancer type. 
+
+```{r boxplot - n mutations for each cancer type}
+STMN2_cryptic_cBio <- STMN2_cryptic_cBio |> 
+  mutate_at("mutation_count", as.numeric) 
+
+STMN2_cryptic_cBio |> 
+  drop_na() |> 
+  filter(mutation_count < 2500) |> 
+  ggplot(aes(x = fct_reorder(cancer_abbrev, mutation_count, median), y = mutation_count)) +
+  geom_boxplot() +
+  labs(
+    x = "Cancer Type",
+    y = "Mutation Count",
+    title = "UCEC and LUSC cancers have the greatest number of mutations"
+  ) +
+  geom_signif(comparisons = list(c("LUSC", "UCEC")),
+map_signif_level = TRUE,
+y_position = c(1000))
+```
+
+**Figure 5**: Among cancer patients with STMN2 cryptic expression, uterine corpus endometrial carcinoma (UCEC) has the greatest number of mutations.
 
 ## Mutation Data of one patient
 
@@ -288,6 +309,11 @@ patient_mutations |>
 ```{r types of mutations in TTN, echo = FALSE}
 patient_mutations |> 
   filter(Gene == "TTN") |> 
+  n_distinct()
+
+patient_mutations |> 
+  filter(Gene == "TTN") |> 
+  unique() |> 
   ggplot(aes(x = fct_rev(fct_infreq(Mutation.Type)))) +
   geom_bar(aes(fill = Mutation.Type)) +
   labs(
@@ -308,6 +334,9 @@ STMN2_cryptic_cBio <- STMN2_cryptic_cBio |>
 
 STMN2_cryptic_cBio |> 
   drop_na() |> 
+<<<<<<< HEAD
+  filter(mutation_count < 400, stmn2_cryptic_coverage > 1) |> 
+=======
   ggplot(aes(x = stmn2_cryptic_coverage, y = mutation_count)) +
   labs(
     x = "Number of STMN2 cryptic events",
@@ -318,15 +347,38 @@ STMN2_cryptic_cBio |>
 STMN2_cryptic_cBio |> 
   drop_na() |> 
   filter(mutation_count < 400, stmn2_cryptic_coverage < 10) |> 
+>>>>>>> parent of 5702c87 (mutation and patient info for all mutations)
   ggplot(aes(x = as.factor(stmn2_cryptic_coverage), y = mutation_count)) +
+  geom_boxplot() +
   labs(
     x = "Number of STMN2 cryptic events",
     y = "Mutation Count"
   ) +
+<<<<<<< HEAD
+  geom_signif(comparisons = list(c("6", "8"), c("5", "6"), c("3", "6")),
+              map_signif_level = TRUE,
+              y_position = c(250, 300, 200))
+```
+
+```{r}
+STMN2_cryptic_cBio |> 
+  drop_na() |> 
+  filter(mutation_count < 2500) |> 
+  ggplot(aes(x = stmn2_cryptic_coverage, y = mutation_count)) +
+  geom_hex() +
+  labs(
+    x = "Number of STMN2 cryptic events",
+    y = "Mutation Count"
+  )
+```
+
+**Figure 8**: There is no correlation between number of STMN2 cryptic events and number of mutations.
+=======
   geom_boxplot()
 ```
 
 **Figure 8**:
+>>>>>>> parent of 5702c87 (mutation and patient info for all mutations)
 
 # Cancer Driver Genes
 
@@ -391,9 +443,20 @@ cosmic_patient_mutations <- cosmic_patient_mutations |>
 
 cosmic_patient_mutations |> 
   drop_na() |> 
+<<<<<<< HEAD
+  ggplot(aes(x = role_in_cancer)) +
+  geom_bar() +
+  labs(
+    x = "Role of the gene in cancer",
+    y = "Number of mutations",
+    title = "Most of the mutations are found in tumour suppressor genes"
+  ) +
+  theme(legend.position = "none", plot.title = element_text(size=12))
+=======
   filter(Role.in.Cancer !="") |> 
   ggplot(aes(x = Role.in.Cancer)) +
   geom_bar()
+>>>>>>> parent of 5702c87 (mutation and patient info for all mutations)
 ```
 
 ```{r types, echo = FALSE}
@@ -419,6 +482,10 @@ kable(n_fusion, caption = "44% of cancer genes with cryptic STMN2 expression are
 ```
 
 # TCGA biolinks
+
+```{r patients w cryptic vs patients w/o cryptic - mutations and genes}
+
+```
 
 ```{r include = FALSE}
 library(TCGAbiolinks)

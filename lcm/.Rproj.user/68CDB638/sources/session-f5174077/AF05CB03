@@ -1,18 +1,33 @@
 {
-    "id": "AF05CB03",
+    "id": "720DF4A7",
     "path": "~/Documents/GitHub/spliced-reads/lcm/TCGA_STMN2.Rmd",
     "project_path": "TCGA_STMN2.Rmd",
     "type": "r_markdown",
+<<<<<<<< HEAD:lcm/.Rproj.user/68CDB638/sources/session-f5174077/720DF4A7
+    "hash": "2447999939",
+========
     "hash": "2073543858",
+>>>>>>>> parent of 5702c87 (mutation and patient info for all mutations):lcm/.Rproj.user/68CDB638/sources/session-f5174077/AF05CB03
     "contents": "",
     "dirty": false,
-    "created": 1677188310083.0,
+    "created": 1679979769331.0,
     "source_on_save": false,
-    "relative_order": 1,
+    "relative_order": 8,
     "properties": {
         "tempName": "Untitled1",
         "source_window_id": "",
         "Source": "Source",
+<<<<<<<< HEAD:lcm/.Rproj.user/68CDB638/sources/session-f5174077/720DF4A7
+        "cursorPosition": "272,4",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1679003714,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1679003714,
+========
         "cursorPosition": "327,0",
         "scrollLine": "308"
     },
@@ -22,6 +37,7 @@
     "collab_server": "",
     "source_window": "",
     "last_content_update": 1678658096804,
+>>>>>>>> parent of 5702c87 (mutation and patient info for all mutations):lcm/.Rproj.user/68CDB638/sources/session-f5174077/AF05CB03
     "read_only": false,
     "read_only_alternatives": []
 }

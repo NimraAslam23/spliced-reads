@@ -1,67 +1,173 @@
-library(snapcount)
-library(dplyr)
+# gene_name = "SYNJ2" 
+# snapcount_coords_cryptic = "chr6:158017291-158019983"
+# snapcount_coords_annotated = "chr6:158017291-158028755"
+# strand_code = "+"
+
+library(tidyverse)
+library(repurrrsive)
+library(jsonlite)
+library(clipr)
+library(naniar)
+library(ggpubr)
+library(rstatix)
+library(ggplot2)
 library(tidyr)
+library(dplyr)
+library(knitr)
+library(snapcount)
+library(ggsignif)
 
-gene_name_SYNJ2 = "SYNJ2" 
-snapcount_coords_cryptic_SYNJ2 = "chr6:158017291-158019983"
-snapcount_coords_annotated_SYNJ2 = "chr6:158017291-158028755"
-strand_code_SYNJ2 = "+"
+# query - cryptic and anno ------------------------------------------------
 
-cryptic_query_SYNJ2 <-  QueryBuilder(compilation = 'tcga',regions = snapcount_coords_cryptic_SYNJ2) 
+SYNJ2_cryptic_query <- count_query(gene_name = "SYNJ2", snapcount_coords = "chr6:158017291-158019983", strand_code = "+")
+SYNJ2_anno_query <- count_query(gene_name = "SYNJ2", snapcount_coords = "chr6:158017291-158028755", strand_code = "+")
 
-if(strand_code_SYNJ2 == "+"){
-  cryptic_query_SYNJ2 <- set_row_filters(cryptic_query_SYNJ2, strand == "+") 
-}else if(strand_code_SYNJ2 == "-"){
-  cryptic_query_SYNJ2 <- set_row_filters(cryptic_query_SYNJ2, strand == "-") 
-}
+# join cryptic and anno df, add jir column --------------------------------
 
-cryptic_query_exact_SYNJ2 <- set_coordinate_modifier(cryptic_query_SYNJ2, Coordinates$Exact) 
+SYNJ2_cryptic_query <- SYNJ2_cryptic_query |> rename("cryptic_count" = "count")
+SYNJ2_anno_query <- SYNJ2_anno_query |> rename("anno_count" = "count")
 
-juncs_on_cryptic_SYNJ2 <- query_jx(cryptic_query_SYNJ2) 
-juncs_on_cryptic_flat_SYNJ2 <- query_jx(cryptic_query_SYNJ2,return_rse = FALSE) 
-samples_with_cryptic_SYNJ2 <- juncs_on_cryptic_SYNJ2@colData |> 
-  as.data.frame() 
+SYNJ2_query <- SYNJ2_cryptic_query |> 
+  select(gdc_cases.submitter_id, cryptic_count) |> 
+  left_join(SYNJ2_anno_query, by = "gdc_cases.submitter_id")
 
-samples_with_cryptic_SYNJ2 <- samples_with_cryptic_SYNJ2 |> 
-  select(c("rail_id",
-           "gdc_cases.demographic.gender",
-           "gdc_cases.submitter_id",
-           "gdc_cases.project.name",
-           "gdc_cases.project.primary_site",
-           "gdc_cases.diagnoses.tumor_stage",
-           "gdc_cases.samples.sample_type",
-           "cgc_case_primary_site",
-           "junction_coverage", 
-           "junction_avg_coverage")) 
+SYNJ2_query <- SYNJ2_query |> 
+  relocate(cryptic_count, .after = anno_count)
 
+SYNJ2_query <- SYNJ2_query |> 
+  mutate(jir = anno_count/(anno_count + cryptic_count)) |> 
+  relocate(jir, .after = cryptic_count)
 
-juncs_on_cryptic_flat_SYNJ2 <- juncs_on_cryptic_flat_SYNJ2 |> 
-  select(chromosome,start,end,strand,samples) |> 
-  separate_rows(samples, sep = ',') |>
-  filter(samples != "") |>
-  separate(samples, into = c("rail_id","count")) |>
-  mutate(rail_id = as.integer(rail_id)) |>
-  mutate(count = as.numeric(count))
+write_clip(SYNJ2_query$gdc_cases.submitter_id)
 
-juncs_on_cryptic_flat_SYNJ2 |> 
-  left_join(samples_with_cryptic_SYNJ2) |> 
-  filter(end == 158019983) |>
-  View()
+# clinical data from TCGA (case set) --------------------------------------
 
-anno_query_SYNJ2 <-  QueryBuilder(compilation = 'tcga',regions = snapcount_coords_annotated_SYNJ2)
-anno_query_SYNJ2 <- set_coordinate_modifier(anno_query_SYNJ2, Coordinates$Exact)
-if(strand_code_SYNJ2 == "+"){
-  anno_query_SYNJ2 <- set_row_filters(anno_query_SYNJ2, strand == "+")
-}else if(strand_code_SYNJ2 == "-"){
-  anno_query_SYNJ2 <- set_row_filters(anno_query_SYNJ2, strand == "-")
-}
+SYNJ2_clinical_orig <- read.csv("SYNJ2_clinical.tsv", sep = "\t", header = TRUE,
+                                   na.strings = "", fill = TRUE)
 
-jir_SYNJ2 <- junction_inclusion_ratio(list(cryptic_query_exact_SYNJ2),
-                                         list(anno_query_SYNJ2),
-                                         group_names=c(glue::glue("{gene_name_SYNJ2}_cryptic"),
-                                                       glue::glue("{gene_name_SYNJ2}_annotated")))
+SYNJ2_clinical <- SYNJ2_clinical_orig
 
-jir_new_SYNJ2 <- jir_SYNJ2 |> 
-  left_join(samples_with_cryptic_SYNJ2,by = c('sample_id' = 'rail_id')) 
+SYNJ2_clinical <- SYNJ2_clinical|> 
+  select(case_submitter_id, project_id, age_at_index, ethnicity, gender, race, ajcc_pathologic_stage) |> 
+  separate(project_id, into = c("project", "cancer_type")) |> 
+  select(-project)
 
-write_csv(jir_new_SYNJ2, "jir_new_SYNJ2.csv")
+# bar plot - cancer types with SYNJ2 events ----------------------------
+
+SYNJ2_clinical |> 
+  ggplot(aes(x = fct_rev(fct_infreq(cancer_type)))) +
+  geom_bar() +
+  coord_flip() +
+  labs(
+    x = "Cancer Type",
+    y = "Number of Cases",
+    title = ""
+  ) +
+  theme(plot.title = element_text(size=10))
+
+# join query table with clinical table ------------------------------------
+
+SYNJ2_clinical_jir <- SYNJ2_query |> rename("case_submitter_id" = "gdc_cases.submitter_id") |> 
+  left_join(SYNJ2_clinical, by=c("case_submitter_id")) |> 
+  select(-gdc_cases.diagnoses.tumor_stage, -age_at_index, -gdc_cases.demographic.gender, 
+         -ajcc_pathologic_stage, -ethnicity, -race, -cancer_type, -gender) |> 
+  rename("cancer_type" = "gdc_cases.project.name") |> 
+  rename("gdc_primary_site" = "gdc_cases.project.primary_site") |> 
+  rename("sample_type" = "gdc_cases.samples.sample_type") |> 
+  rename("cgc_primary_site" = "cgc_case_primary_site")
+
+SYNJ2_clinical_jir_cryptic <- SYNJ2_clinical_jir |> 
+  filter(cryptic_count > 2) 
+
+# primary sites of cancers with cryptic SYNJ2 events -------------------
+
+SYNJ2_clinical_jir_cryptic |> 
+  drop_na() |> 
+  ggplot(aes(x = fct_rev(fct_infreq(gdc_primary_site)))) +
+  geom_bar() +
+  coord_flip() +
+  labs(
+    x = "Primary Site of Cancer",
+    y = "Number of Cases",
+    title = ""
+  ) +
+  theme(plot.title = element_text(size=10))
+
+# cryptic SYNJ2 expression in different cancer sites -------------------
+
+SYNJ2_clinical_jir_cryptic |> 
+  drop_na() |> 
+  ggplot(aes(x = cryptic_count,
+             y = fct_reorder(gdc_primary_site, cryptic_count, median))) +
+  geom_boxplot() +
+  labs(
+    x = "SYNJ2 Cryptic Coverage",
+    y = "Primary Site of Cancer"
+  ) +
+  theme(plot.title = element_text(size=10))
+
+# which cancers have the most cryptic SYNJ2 events? --------------------
+
+SYNJ2_events_different_cancers <- SYNJ2_clinical_jir_cryptic |> 
+  drop_na() |> 
+  janitor::tabyl(cancer_type) |> arrange(-percent)
+
+# where are the cancers with cryptic SYNJ2 events located? -------------
+
+SYNJ2_events_primary_sites <- SYNJ2_clinical_jir_cryptic |> 
+  drop_na() |> 
+  janitor::tabyl(gdc_primary_site) |> arrange(-percent)
+
+# cBioPortal clinical data, join with SYNJ2 table ----------------------
+
+SYNJ2_cryptic_cBio <- SYNJ2_clinical_jir_cryptic |> 
+  left_join(cBio_clinical, by = "case_submitter_id") |> 
+  select(-cgc_primary_site, -Cancer.Type, -Overall.Survival..Months.) |>
+  rename("disease_survival_months" = "Months.of.disease.specific.survival") |> 
+  relocate(case_submitter_id, .after = Sample.ID) |> 
+  relocate(cancer_type, .after = case_submitter_id) |> 
+  relocate(gdc_primary_site, .after = cancer_abbrev) |> 
+  relocate(sample_type, .after = gdc_primary_site) |> 
+  janitor::clean_names()
+
+# boxplot - n mutations for each cancer type ------------------------------
+
+SYNJ2_cryptic_cBio <- SYNJ2_cryptic_cBio |> 
+  mutate_at("mutation_count", as.numeric)
+
+SYNJ2_cryptic_cBio |> 
+  drop_na() |> 
+  filter(mutation_count < 500) |> 
+  ggplot(aes(x = fct_reorder(cancer_abbrev, mutation_count, median),
+             y = mutation_count)) +
+  geom_boxplot() +
+  labs(
+    x = "Cancer Type",
+    y = "Mutation Count",
+    title = ""
+  ) 
+
+# cryptic coverage vs mutation count --------------------------------------
+
+SYNJ2_cryptic_cBio |> 
+  drop_na() |> 
+  filter(mutation_count < 300) |> 
+  ggplot(aes(x = as.factor(cryptic_count),
+             y = mutation_count)) +
+  geom_boxplot() +
+  labs(
+    x = "Number of SYNJ2 cryptic events",
+    y = "Mutation Count"
+  )
+
+SYNJ2_cryptic_cBio |> 
+  drop_na() |> 
+  filter(mutation_count < 500) |> 
+  ggplot(aes(x = cryptic_count, 
+             y = mutation_count)) +
+  geom_hex() +
+  labs(
+    x = "Number of SYNJ2 cryptic events",
+    y = "Mutation Count"
+  )
+

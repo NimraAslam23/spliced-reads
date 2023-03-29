@@ -261,7 +261,7 @@ STMN2_cryptic_cBio |>
 
 STMN2_cryptic_cBio |> 
   drop_na() |> 
-  filter(mutation_count < 400, stmn2_cryptic_coverage < 10) |> 
+  filter(mutation_count < 400, stmn2_cryptic_coverage > 10) |> 
   ggplot(aes(x = as.factor(stmn2_cryptic_coverage), y = mutation_count)) +
   labs(
     x = "Number of STMN2 cryptic events",

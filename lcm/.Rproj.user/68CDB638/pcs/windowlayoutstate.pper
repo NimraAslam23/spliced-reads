@@ -1,12 +1,20 @@
 {
     "left": {
+<<<<<<< HEAD
+        "splitterpos": 217,
+=======
         "splitterpos": 349,
+>>>>>>> parent of 5702c87 (mutation and patient info for all mutations)
         "topwindowstate": "NORMAL",
         "panelheight": 809,
         "windowheight": 847
     },
     "right": {
+<<<<<<< HEAD
+        "splitterpos": 316,
+=======
         "splitterpos": 384,
+>>>>>>> parent of 5702c87 (mutation and patient info for all mutations)
         "topwindowstate": "NORMAL",
         "panelheight": 809,
         "windowheight": 847
