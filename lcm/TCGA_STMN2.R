@@ -155,6 +155,19 @@ STMN2_events_primary_sites1 |>
     title = "Cancers with cryptic STMN2 events are primarily in the adrenal gland and brain"
   ) +
   theme(legend.position = "none", plot.title = element_text(size=8))
+# 46% of cancers with cryptic STMN2 events are in the adrenal gland
+
+# All pan-cancer clinical data
+
+pancancer_all_clinical_orig <- read.csv("pancancer_clinical_data.tsv", sep = "\t", header = TRUE, na.strings = "", fill = TRUE)
+head(pancancer_all_clinical_orig)
+
+pancancer_clinical <- pancancer_all_clinical_orig |> 
+  select(Study.ID, Patient.ID, Sample.ID, Cancer.Type, Cancer.Type.Detailed, Histology.Abbreviation, Mutation.Count,
+         Overall.Survival..Months., Project.Code, Sex) |> 
+  rename("cancer_type" = "Project.Code")
+
+pancancer_clinical$Project.Code <- gsub("-.*", "", pancancer_clinical$Project.Code)
 
 # All clinical data from TCGA ---------------------------------------------
 
@@ -219,10 +232,16 @@ STMN2_cryptic_cBio |>
     x = "Cancer Type",
     y = "Mutation Count",
     title = "UCEC and LUSC cancers have the greatest number of mutations"
+  #among the cancers with cryptic STMN2 events
   ) +
   geom_boxplot() +
   geom_signif(comparisons = list(c("UCEC", "LUSC")), test = "wilcox.test",
               map_signif_level = TRUE)
+
+STMN2_cryptic_cBio |> 
+  drop_na() |> 
+  filter(mutation_count < 2500) |> 
+  
 
 # mutation data of one patient --------------------------------------------
 
