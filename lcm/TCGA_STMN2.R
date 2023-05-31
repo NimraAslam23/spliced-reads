@@ -56,19 +56,6 @@ STMN2_clinical <- STMN2_clinical|>
   separate(project_id, into = c("project", "cancer_type")) |> 
   select(-project)
 
-# bar plot - cancer types with cryptic STMN2 events -----------------------
-
-STMN2_clinical |> 
-  ggplot(aes(x = fct_rev(fct_infreq(cancer_type)))) +
-  geom_bar(aes(fill = cancer_type)) +
-  coord_flip() +
-  labs(
-    x = "Cancer Type",
-    y = "Number of Cases",
-    title = "STMN2 is expressed in mostly breast and brain cancers" 
-  ) +
-  theme(legend.position = "none", plot.title = element_text(size=10)) 
-
 # joining jir table with clinical table -----------------------------------
 
 STMN2_clinical_jir <- jir_new |> 
@@ -88,21 +75,6 @@ STMN2_clinical_jir <- STMN2_clinical_jir |>
 
 STMN2_clinical_jir_cryptic <- STMN2_clinical_jir |> 
   filter(STMN2_cryptic_coverage > 2)
-
-# bar plot - primary sites of cancers with cryptic STMN2 events -----------
-
-STMN2_clinical_jir_cryptic |> 
-  drop_na() |> 
-  ggplot(aes(x = fct_rev(fct_infreq(gdc_primary_site)))) +
-  geom_bar(aes(fill = gdc_primary_site)) +
-  coord_flip() +
-  labs(
-    x = "Primary Site of Cancer",
-    y = "Number of Cases",
-    title = 
-      "Primary sites of cancers with cryptic STMN2 events are mostly the adrenal gland and brain" 
-  ) +
-  theme(legend.position = "none", plot.title = element_text(size=9)) 
 
 # boxplot - overall STMN2 junction coverage in different cancer sites --------------
 
@@ -141,11 +113,34 @@ STMN2_events_different_cancers <- STMN2_clinical_jir_cryptic |>
   drop_na() |>
   janitor::tabyl(cancer) |> arrange(-percent)
 
+STMN2_events_different_cancers |> 
+  mutate(percentage = percent*100) |> 
+  ggplot(aes(x = reorder(cancer_type, percentage), y = percentage)) +
+  geom_bar(aes(fill = cancer_type), stat = "identity") +
+  coord_flip() +
+  labs(
+    x = "Cancer Type",
+    y = "Percentage of Cases"
+  ) +
+  theme(legend.position = "none")
+
 # num / fraction of cases with STMN2 events in cancer sites -----------------
 
 STMN2_events_primary_sites1 <- STMN2_clinical_jir_cryptic |> 
   drop_na() |> 
   janitor::tabyl(gdc_primary_site) |> arrange(-percent)
+
+STMN2_events_primary_sites1 |> 
+  mutate(percentage = percent*100) |> 
+  ggplot(aes(x = reorder(gdc_primary_site, percentage), y = percentage)) +
+  geom_bar(aes(fill = gdc_primary_site), stat = "identity") +
+  coord_flip() +
+  labs(
+    x = "Primary Sites of Cancer",
+    y = "Percentage of Cases",
+    title = "Cancers with cryptic STMN2 events are primarily in the adrenal gland and brain"
+  ) +
+  theme(legend.position = "none", plot.title = element_text(size=8))
 
 # All clinical data from TCGA ---------------------------------------------
 
