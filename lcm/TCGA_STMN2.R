@@ -157,7 +157,8 @@ STMN2_events_primary_sites1 |>
   theme(legend.position = "none", plot.title = element_text(size=8))
 # 46% of cancers with cryptic STMN2 events are in the adrenal gland
 
-# All pan-cancer clinical data
+
+# All pan-cancer clinical data --------------------------------------------
 
 pancancer_all_clinical_orig <- read.csv("pancancer_clinical_data.tsv", sep = "\t", header = TRUE, na.strings = "", fill = TRUE)
 head(pancancer_all_clinical_orig)
@@ -165,17 +166,9 @@ head(pancancer_all_clinical_orig)
 pancancer_clinical <- pancancer_all_clinical_orig |> 
   select(Study.ID, Patient.ID, Sample.ID, Cancer.Type, Cancer.Type.Detailed, Histology.Abbreviation, Mutation.Count,
          Overall.Survival..Months., Project.Code, Sex) |> 
-  rename("cancer_type" = "Project.Code")
+  rename("cancer_abbrev" = "Project.Code")
 
 pancancer_clinical$Project.Code <- gsub("-.*", "", pancancer_clinical$Project.Code)
-
-# number of mutations in each cancer type
-
-total_mutations_each_cancer <- pancancer_clinical |> 
-  drop_na(Mutation.Count) |> 
-  filter(grepl("^\\d+$", Mutation.Count)) |>
-  group_by(cancer_type) |> 
-  summarise(total_mutations = sum(as.numeric(Mutation.Count)))
 
 # All clinical data from TCGA ---------------------------------------------
 
@@ -246,10 +239,40 @@ STMN2_cryptic_cBio |>
   geom_signif(comparisons = list(c("UCEC", "LUSC")), test = "wilcox.test",
               map_signif_level = TRUE)
 
-STMN2_cryptic_cBio |> 
-  drop_na() |> 
+
+# fraction of mutations in each cancer type that is found in cases with cryptic --------
+
+total_mutations_each_cancer <- pancancer_clinical |> 
+  drop_na(Mutation.Count) |> 
+  filter(grepl("^\\d+$", Mutation.Count)) |>
+  group_by(cancer_abbrev) |> 
+  summarise(total_mutations = sum(as.numeric(Mutation.Count)))
+
+total_mutations_each_cancer_with_cryptic <- STMN2_cryptic_cBio |> 
+  drop_na(mutation_count) |> 
   filter(mutation_count < 2500) |> 
-  
+  group_by(cancer_abbrev) |> 
+  summarise(total_mutations_cryptic = sum(mutation_count))
+
+mutations_each_cancer_general_vs_cryptic <- total_mutations_each_cancer |> 
+  left_join(total_mutations_each_cancer_with_cryptic, by=c("cancer_abbrev")) |> 
+  mutate(percent_with_cryptic = (total_mutations_cryptic/total_mutations)*100)
+  #16% of all mutations in LGG cancer are in cases with STMN2 cryptic events
+
+
+# fraction of each cancer that has cryptic STMN2 events -------------------
+
+total_each_cancer <- pancancer_clinical |> 
+  group_by(cancer_abbrev) |> 
+  summarise(total_cancer_abbrev = n())
+
+total_each_cancer_with_cryptic <- STMN2_cryptic_cBio |> 
+  group_by(cancer_abbrev) |> 
+  summarise(total_cancer_abbrev_with_cryptic = n())
+
+total_each_cancer_general_vs_cryptic <- total_each_cancer |> 
+  left_join(total_each_cancer_with_cryptic, by=c("cancer_abbrev")) |> 
+  mutate(percent_with_cryptic = (total_cancer_abbrev_with_cryptic/total_cancer_abbrev)*100)
 
 # mutation data of one patient --------------------------------------------
 
