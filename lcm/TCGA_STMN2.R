@@ -169,6 +169,14 @@ pancancer_clinical <- pancancer_all_clinical_orig |>
 
 pancancer_clinical$Project.Code <- gsub("-.*", "", pancancer_clinical$Project.Code)
 
+# number of mutations in each cancer type
+
+total_mutations_each_cancer <- pancancer_clinical |> 
+  drop_na(Mutation.Count) |> 
+  filter(grepl("^\\d+$", Mutation.Count)) |>
+  group_by(cancer_type) |> 
+  summarise(total_mutations = sum(as.numeric(Mutation.Count)))
+
 # All clinical data from TCGA ---------------------------------------------
 
 TCGA_all_clinical_orig <- read.csv("TCGA_all_clinical.tsv", sep = "\t", header = TRUE, na.strings = "", fill = TRUE)
