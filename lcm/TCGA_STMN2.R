@@ -80,7 +80,6 @@ STMN2_clinical_jir_cryptic <- STMN2_clinical_jir |>
 
 STMN2_clinical_jir_cryptic |> 
   drop_na() |> 
-  filter(cgc_primary_site != "") |> 
   ggplot(aes(x = junction_avg_coverage, y = fct_reorder(gdc_primary_site, 
                                                         junction_avg_coverage, median))) +
   geom_boxplot(aes(fill = gdc_primary_site)) +
@@ -93,20 +92,35 @@ STMN2_clinical_jir_cryptic |>
               map_signif_level = TRUE,
               y_position = c(75, 80))
 
-# boxplot - cryptic STMN2 expression in different cancer sites ------------
+# boxplot - cryptic STMN2 junction coverage in different cancer sites ------------
 
 STMN2_clinical_jir_cryptic |> 
   drop_na() |> 
-  filter(cgc_primary_site != "") |> 
   ggplot(aes(x = STMN2_cryptic_coverage, 
              y = fct_reorder(gdc_primary_site, STMN2_cryptic_coverage, median))) +
   geom_boxplot(aes(fill = gdc_primary_site)) +
   labs(
-    x = "Junction Average Coverage",
-    y = "Primary Site of Cancer",
+    x = "Cryptic Coverage",
+    y = "Primary Site of Cancer"
   ) +
   theme(legend.position = "none", plot.title = element_text(size=10))
 
+  # adding reads per million (rpm) column for coverage
+
+STMN2_clinical_jir_cryptic <- STMN2_clinical_jir_cryptic |> 
+  mutate(rpm = (STMN2_cryptic_coverage/junction_coverage)*1000000)
+
+STMN2_clinical_jir_cryptic |> 
+  drop_na() |> 
+  ggplot(aes(x = rpm,
+             y = fct_reorder(gdc_primary_site, rpm, median))) +
+  geom_boxplot(aes(fill = gdc_primary_site)) +
+  labs(
+    x = "reads per million",
+    y = "Primary Site of Cancer"
+  ) +
+  theme(legend.position = "none")
+  
 # num / fraction of cases with STMN2 events in cancer types -----------------
 
 STMN2_events_different_cancers <- STMN2_clinical_jir_cryptic |> 
@@ -186,7 +200,7 @@ STMN2_cryptic_cBio <- STMN2_cryptic_cBio |>
   relocate(sample_type, .after = gdc_primary_site) |> 
   janitor::clean_names()
 
-# mutation counts ---------------------------------------------------------
+# mutation counts per cancer type ---------------------------------------------------------
 
 STMN2_cryptic_cBio_mutations <- STMN2_cryptic_cBio |>
   drop_na() |> 
@@ -197,18 +211,22 @@ STMN2_cryptic_cBio_mutations <- STMN2_cryptic_cBio |>
   select(cancer, cancer_abbrev, mean_mutation_count) |> 
   unique() 
 
-STMN2_cryptic_cBio_mutations |> 
-  ggplot(aes(x = fct_reorder(cancer_abbrev, mean_mutation_count, median), y = mean_mutation_count)) +
-  geom_bar(stat = 'identity', aes(fill = cancer_abbrev)) +
+STMN2_cryptic_cBio |> 
+  drop_na() |> 
+  filter(mutation_count < 2500) |> 
+  ggplot(aes(x = fct_reorder(cancer_abbrev, mutation_count, median), y = mutation_count)) +
   labs(
     x = "Cancer Type",
-    y = "Mean Mutation Count"
+    y = "Mutation Count",
+    title = "UCEC and LUSC cancers have the greatest number of mutations"
   ) +
-  theme(legend.position = "none")
+  geom_boxplot() +
+  geom_signif(comparisons = list(c("UCEC", "LUSC")), test = "wilcox.test",
+              map_signif_level = TRUE)
 
 # mutation data of one patient --------------------------------------------
 
-patient_mutations_orig <- read.csv("TCGA-A5-A0G2_mutations.tsv", sep = "\t", header = TRUE, na.strings = "", fill = TRUE) 
+patient_mutations_orig <- read.csv("TCGA-06-5416_mutations.tsv", sep = "\t", header = TRUE, na.strings = "", fill = TRUE) 
 
 patient_mutations <- patient_mutations_orig |> 
   select(Gene, Protein.Change, Annotation, Functional.Impact, Chromosome, Start.Pos, End.Pos, Ref, Var, 
@@ -218,9 +236,9 @@ patient_mutations <- patient_mutations_orig |>
 
 patient_mutations |> 
   count(Gene, sort = TRUE) |> 
-  filter(n > 17) |> 
+  filter(n > 10) |> 
   ggplot(aes(x = fct_reorder(Gene, n, mean), y = n)) +
-  geom_bar(stat = 'identity', aes(fill = Gene)) +
+  geom_bar(stat = "identity", aes(fill = Gene)) +
   labs(
     x = "Gene",
     y = "Mutation Count"
@@ -273,11 +291,11 @@ cosmic_cancer_genes <- read.csv("cosmic_cancer_gene_consensus.csv") |>
 
 cosmic_patient_mutations <- filter(patient_mutations, Gene %in% cosmic_cancer_genes$Gene)
                                                         
-  # number of mutations in each gene 
+  # number of mutations in each cancer driver gene 
 
 cosmic_patient_mutations |> 
   count(Gene, sort = TRUE) |> 
-  filter(n > 11) |> 
+  filter(n > 5) |> 
   ggplot(aes(x = fct_reorder(Gene, n, mean), y = n)) +
   geom_bar(stat = 'identity', aes(fill = Gene)) +
   labs(
