@@ -259,6 +259,9 @@ mutations_each_cancer_general_vs_cryptic <- total_mutations_each_cancer |>
   mutate(percent_with_cryptic = (total_mutations_cryptic/total_mutations)*100)
   #16% of all mutations in LGG cancer are in cases with STMN2 cryptic events
 
+#calculating mutation burden (weighting total mutations against total cases) for general vs cryptic
+
+
 
 # fraction of each cancer that has cryptic STMN2 events -------------------
 
@@ -273,6 +276,16 @@ total_each_cancer_with_cryptic <- STMN2_cryptic_cBio |>
 total_each_cancer_general_vs_cryptic <- total_each_cancer |> 
   left_join(total_each_cancer_with_cryptic, by=c("cancer_abbrev")) |> 
   mutate(percent_with_cryptic = (total_cancer_abbrev_with_cryptic/total_cancer_abbrev)*100)
+
+total_each_cancer_general_vs_cryptic |> 
+  drop_na() |> 
+  ggplot(aes(x = reorder(cancer_abbrev, percent_with_cryptic), y = percent_with_cryptic)) +
+  geom_bar(aes(fill = cancer_abbrev), stat = "identity") +
+  labs(
+    x = "Cancer Type",
+    y = "Percentage of cases with cryptic STMN2 events"
+    ) +
+  theme(legend.position = "none")
 
 # mutation data of one patient --------------------------------------------
 
