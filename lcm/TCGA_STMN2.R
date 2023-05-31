@@ -261,7 +261,25 @@ mutations_each_cancer_general_vs_cryptic <- total_mutations_each_cancer |>
 
 #calculating mutation burden (weighting total mutations against total cases) for general vs cryptic
 
+mutations_each_cancer_general_vs_cryptic <- mutations_each_cancer_general_vs_cryptic |>
+  mutate(total_cancer_abbrev = total_each_cancer_general_vs_cryptic$total_cancer_abbrev) |> 
+  mutate(total_cancer_abbrev_with_cryptic = total_each_cancer_general_vs_cryptic$total_cancer_abbrev_with_cryptic) |> 
+  mutate(avg_mutation_per_case = total_mutations/total_cancer_abbrev) |> 
+  mutate(avg_mutation_per_case_cryptic = total_mutations_cryptic/total_cancer_abbrev_with_cryptic) |> 
+  select(-total_cancer_abbrev, -total_cancer_abbrev_with_cryptic)
 
+mutations_each_cancer_general_vs_cryptic |> 
+  drop_na() |> 
+  ggplot(aes(x = cancer_abbrev)) +
+  geom_bar(aes(y = avg_mutation_per_case, fill = "avg_mutation_per_case"), stat = "identity", position = "dodge") +
+  geom_bar(aes(y = avg_mutation_per_case_cryptic, fill = "avg_mutation_per_case_cryptic"), stat = "identity", position = "dodge") +
+  labs(
+    x = "Cancer Type",
+    y = "Average number of mutations per case",
+    fill = ""
+  ) +
+  scale_fill_manual(values = c("avg_mutation_per_case" = "violetred4", "avg_mutation_per_case_cryptic" = "royalblue1"),
+                    labels = c("All Cases", "Cryptic Cases only"))
 
 # fraction of each cancer that has cryptic STMN2 events -------------------
 
