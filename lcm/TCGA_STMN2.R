@@ -157,19 +157,6 @@ STMN2_events_primary_sites1 |>
   theme(legend.position = "none", plot.title = element_text(size=8))
 # 46% of cancers with cryptic STMN2 events are in the adrenal gland
 
-
-# All pan-cancer clinical data --------------------------------------------
-
-pancancer_all_clinical_orig <- read.csv("pancancer_clinical_data.tsv", sep = "\t", header = TRUE, na.strings = "", fill = TRUE)
-head(pancancer_all_clinical_orig)
-
-pancancer_clinical <- pancancer_all_clinical_orig |> 
-  select(Study.ID, Patient.ID, Sample.ID, Cancer.Type, Cancer.Type.Detailed, Histology.Abbreviation, Mutation.Count,
-         Overall.Survival..Months., Project.Code, Sex) |> 
-  rename("cancer_abbrev" = "Project.Code")
-
-pancancer_clinical$Project.Code <- gsub("-.*", "", pancancer_clinical$Project.Code)
-
 # All clinical data from TCGA ---------------------------------------------
 
 TCGA_all_clinical_orig <- read.csv("TCGA_all_clinical.tsv", sep = "\t", header = TRUE, na.strings = "", fill = TRUE)
@@ -242,7 +229,7 @@ STMN2_cryptic_cBio |>
 
 # fraction of mutations in each cancer type that is found in cases with cryptic --------
 
-total_mutations_each_cancer <- pancancer_clinical |> 
+total_mutations_each_cancer <- cBio_clinical |> 
   drop_na(Mutation.Count) |> 
   filter(grepl("^\\d+$", Mutation.Count)) |>
   group_by(cancer_abbrev) |> 
@@ -270,7 +257,7 @@ mutations_each_cancer_general_vs_cryptic <- mutations_each_cancer_general_vs_cry
 
 mutations_each_cancer_general_vs_cryptic |> 
   drop_na() |> 
-  ggplot(aes(x = cancer_abbrev)) +
+  ggplot(aes(x = reorder(cancer_abbrev, avg_mutation_per_case_cryptic))) +
   geom_bar(aes(y = avg_mutation_per_case, fill = "avg_mutation_per_case"), stat = "identity", position = "dodge") +
   geom_bar(aes(y = avg_mutation_per_case_cryptic, fill = "avg_mutation_per_case_cryptic"), stat = "identity", position = "dodge") +
   labs(
@@ -279,11 +266,11 @@ mutations_each_cancer_general_vs_cryptic |>
     fill = ""
   ) +
   scale_fill_manual(values = c("avg_mutation_per_case" = "violetred4", "avg_mutation_per_case_cryptic" = "royalblue1"),
-                    labels = c("All Cases", "Cryptic Cases only"))
+                    labels = c("All Cases", "STMN2 Cryptic Cases only"))
 
 # fraction of each cancer that has cryptic STMN2 events -------------------
 
-total_each_cancer <- pancancer_clinical |> 
+total_each_cancer <- cBio_clinical |> 
   group_by(cancer_abbrev) |> 
   summarise(total_cancer_abbrev = n())
 
