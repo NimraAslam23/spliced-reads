@@ -190,7 +190,8 @@ cBio_clinical_2 <- cBio_clinical |>
   select(-Cancer.Type, -cancer, -Sample.ID, -Overall.Survival..Months., -cancer_abbrev)
 
 STMN2_cryptic_cBio <- STMN2_clinical_jir_cryptic |> 
-  left_join(cBio_clinical_2, by = "case_submitter_id") 
+  left_join(cBio_clinical_2, by = "case_submitter_id") |> 
+  distinct()
 
 STMN2_cryptic_cBio <- STMN2_cryptic_cBio |> 
   select(-cgc_primary_site) |> 
