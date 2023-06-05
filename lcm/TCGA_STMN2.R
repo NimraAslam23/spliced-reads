@@ -12,6 +12,8 @@ library(knitr)
 library(snapcount)
 library(ggsignif)
 library(TCGAbiolinks)
+library(ggsurvfit)
+library(survival)
 
 jir_new <- read.csv("jir_new.csv")
 
@@ -268,6 +270,72 @@ mutations_each_cancer_general_vs_cryptic |>
   ) +
   scale_fill_manual(values = c("avg_mutation_per_case" = "violetred4", "avg_mutation_per_case_cryptic" = "royalblue1"),
                     labels = c("All Cases", "STMN2 Cryptic Cases only"))
+
+cBio_clinical |>
+  left_join(STMN2_clinical_jir,by = c("case_submitter_id")) |> 
+  select('case_submitter_id',Study.ID,cancer_abbrev,Mutation.Count,STMN2_cryptic_coverage,STMN2_annotated_coverage) |> 
+  separate(Study.ID,into = ('study_start'),remove = FALSE) |> 
+  unique() |> 
+  mutate(Mutation.Count = as.numeric(Mutation.Count)) |> 
+  filter(!is.na(Mutation.Count) & Mutation.Count != "NA") |> 
+  mutate(stmn2_cryptic_detected = STMN2_cryptic_coverage >= 2) |> 
+  group_by(study_start) |> 
+  mutate(n_total_samples = n_distinct(case_submitter_id)) |> 
+  mutate(n_detected_stmn2 = sum(stmn2_cryptic_detected,na.rm = TRUE)) |> 
+  ungroup() |> 
+  filter(!is.na(stmn2_cryptic_detected)) |> 
+  filter(n_detected_stmn2 > 2) |> 
+  ggplot(aes(x = study_start,
+             y = Mutation.Count)) + 
+  geom_boxplot(aes(fill = stmn2_cryptic_detected)) + 
+  labs(x = "Cancer Type",
+       y = "Mutation Count") +
+  coord_flip() + 
+  scale_y_continuous(trans = scales::pseudo_log_trans()) +
+  stat_compare_means(comparisons = list(c("TRUE", "FALSE")), label = "p.format")
+
+
+# survival comparisons ----------------------------------------------------
+
+survival_STMN2_cryptic <- cBio_clinical |> 
+  left_join(STMN2_clinical_jir, by = c("case_submitter_id")) |> 
+  select(Study.ID, case_submitter_id, Sample.ID, cancer_abbrev, Months.of.disease.specific.survival, Mutation.Count, 
+         Overall.Survival..Months., STMN2_cryptic_coverage, STMN2_annotated_coverage) |>
+  mutate(Months.of.disease.specific.survival = as.numeric(Months.of.disease.specific.survival)) |> 
+  filter(!is.na(Months.of.disease.specific.survival) & Months.of.disease.specific.survival != "NA") |> 
+  mutate(Mutation.Count = as.numeric(Mutation.Count)) |> 
+  filter(!is.na(Mutation.Count) & Mutation.Count != "NA") |> 
+  mutate(stmn2_cryptic_detected = STMN2_cryptic_coverage >= 2) |> 
+  group_by(cancer_abbrev) |> 
+  mutate(n_detected_stmn2 = sum(stmn2_cryptic_detected,na.rm = TRUE)) |> 
+  ungroup() |> 
+  filter(!is.na(stmn2_cryptic_detected)) |> 
+  filter(n_detected_stmn2 > 2) |> 
+  mutate(stmn2_cryptic_detected = as.numeric(stmn2_cryptic_detected)) #changes FALSE and TRUE to 0 and 1 respectively
+
+survfit(Surv(Months.of.disease.specific.survival, stmn2_cryptic_detected) ~ 1, data = subset(survival_STMN2_cryptic, stmn2_cryptic_detected==1)) |> 
+  ggsurvfit() +
+  labs(
+    x = "Months",
+    y = "Overall Survival Probability"
+  ) +
+  add_confidence_interval() 
+
+survfit(Surv(Months.of.disease.specific.survival, stmn2_cryptic_detected) ~ 1, data = subset(survival_STMN2_cryptic, stmn2_cryptic_detected==0)) |> 
+  ggsurvfit() +
+  labs(
+    x = "Months",
+    y = "Overall Survival Probability"
+  ) +
+  add_confidence_interval() 
+
+survfit(Surv(Months.of.disease.specific.survival, stmn2_cryptic_detected) ~ stmn2_cryptic_detected, data = survival_STMN2_cryptic) |> 
+  ggsurvfit() +
+  labs(
+    x = "Months",
+    y = "Overall Survival Probability"
+  ) +
+  add_confidence_interval() 
 
 # fraction of each cancer that has cryptic STMN2 events -------------------
 
