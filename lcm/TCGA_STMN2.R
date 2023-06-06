@@ -108,7 +108,7 @@ STMN2_clinical_jir_cryptic |>
   ) +
   theme(legend.position = "none", plot.title = element_text(size=10))
 
-  # adding reads per million (rpm) column for coverage
+  # adding reads per million (rpm) column for cryptic coverage
 
 STMN2_clinical_jir_cryptic <- STMN2_clinical_jir_cryptic |> 
   mutate(rpm = (STMN2_cryptic_coverage/junction_coverage)*1000000)
@@ -216,6 +216,17 @@ STMN2_cryptic_cBio_mutations <- STMN2_cryptic_cBio |>
   select(cancer, cancer_abbrev, mean_mutation_count) |> 
   unique() 
 
+STMN2_cryptic_cBio_mutations |> 
+  ggplot(aes(x = fct_reorder(cancer_abbrev, mean_mutation_count, median), y = mean_mutation_count)) +
+  geom_bar(stat = 'identity', aes(fill = cancer_abbrev)) +
+  labs(
+    x = "Cancer Type",
+    y = "Mean Mutation Count",
+    title = "Glioblastoma Multiforme has the greatest number of mutations"
+  ) +
+  theme(legend.position = "none")
+# There is an outlier in GBM for mutation count, which heavily skews the mean for this cancer type. 
+
 STMN2_cryptic_cBio |> 
   drop_na() |> 
   filter(mutation_count < 2500) |> 
@@ -294,6 +305,30 @@ cBio_clinical |>
   coord_flip() + 
   scale_y_continuous(trans = scales::pseudo_log_trans()) +
   stat_compare_means(comparisons = list(c("TRUE", "FALSE")), label = "p.format")
+
+# fraction of each cancer that has cryptic STMN2 events -------------------
+
+total_each_cancer <- cBio_clinical |> 
+  group_by(cancer_abbrev) |> 
+  summarise(total_cancer_abbrev = n())
+
+total_each_cancer_with_cryptic <- STMN2_cryptic_cBio |> 
+  group_by(cancer_abbrev) |> 
+  summarise(total_cancer_abbrev_with_cryptic = n())
+
+total_each_cancer_general_vs_cryptic <- total_each_cancer |> 
+  left_join(total_each_cancer_with_cryptic, by=c("cancer_abbrev")) |> 
+  mutate(percent_with_cryptic = (total_cancer_abbrev_with_cryptic/total_cancer_abbrev)*100)
+
+total_each_cancer_general_vs_cryptic |> 
+  drop_na() |> 
+  ggplot(aes(x = reorder(cancer_abbrev, percent_with_cryptic), y = percent_with_cryptic)) +
+  geom_bar(aes(fill = cancer_abbrev), stat = "identity") +
+  labs(
+    x = "Cancer Type",
+    y = "Percentage of cases with cryptic STMN2 events"
+  ) +
+  theme(legend.position = "none")
 
 
 # survival comparisons ----------------------------------------------------
@@ -396,29 +431,6 @@ survfit(Surv(Months.of.disease.specific.survival, stmn2_cryptic_detected) ~ stmn
   ) +
   add_confidence_interval() 
 
-# fraction of each cancer that has cryptic STMN2 events -------------------
-
-total_each_cancer <- cBio_clinical |> 
-  group_by(cancer_abbrev) |> 
-  summarise(total_cancer_abbrev = n())
-
-total_each_cancer_with_cryptic <- STMN2_cryptic_cBio |> 
-  group_by(cancer_abbrev) |> 
-  summarise(total_cancer_abbrev_with_cryptic = n())
-
-total_each_cancer_general_vs_cryptic <- total_each_cancer |> 
-  left_join(total_each_cancer_with_cryptic, by=c("cancer_abbrev")) |> 
-  mutate(percent_with_cryptic = (total_cancer_abbrev_with_cryptic/total_cancer_abbrev)*100)
-
-total_each_cancer_general_vs_cryptic |> 
-  drop_na() |> 
-  ggplot(aes(x = reorder(cancer_abbrev, percent_with_cryptic), y = percent_with_cryptic)) +
-  geom_bar(aes(fill = cancer_abbrev), stat = "identity") +
-  labs(
-    x = "Cancer Type",
-    y = "Percentage of cases with cryptic STMN2 events"
-    ) +
-  theme(legend.position = "none")
 
 # mutation data of one patient --------------------------------------------
 
