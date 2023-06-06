@@ -337,8 +337,9 @@ survfit(Surv(Months.of.disease.specific.survival, stmn2_cryptic_detected) ~ stmn
         data = survival_STMN2_cryptic) |> 
   ggsurvfit() +
   labs(
-    x = "Months",
-    y = "Overall Survival Probability"
+    x = "Months with disease",
+    y = "Overall Survival Probability",
+    title = "All Cancer Types"
   ) +
   add_confidence_interval() 
 
@@ -349,7 +350,7 @@ survival_STMN2_cryptic |>
   ggplot(aes(x = Months.of.disease.specific.survival, colour = stmn2_cryptic_detected)) +
   geom_density() +
   labs(
-    x = "Survival with disease (months)"  
+    x = "Survival months with disease"  
     )
     # same survival - cryptic vs non-cryptic (all cancers combined)
 
@@ -369,6 +370,31 @@ n_detected_non_cancer_abbrev <- survival_STMN2_cryptic |>
       # PCPG has 130 false, 51 true
       # GBM has 154 false, 11 true
   
+
+# PCPG survival analysis --------------------------------------------------
+
+survfit(Surv(Months.of.disease.specific.survival, stmn2_cryptic_detected) ~ stmn2_cryptic_detected, 
+        data = subset(survival_STMN2_cryptic, cancer_abbrev == "PCPG")) |> 
+  ggsurvfit() +
+  labs(
+    x = "Months with disease",
+    y = "Overall Survival Probability",
+    title = "PCPG Survival"
+  ) +
+  add_confidence_interval() 
+
+
+# GBM survival analysis ---------------------------------------------------
+
+survfit(Surv(Months.of.disease.specific.survival, stmn2_cryptic_detected) ~ stmn2_cryptic_detected, 
+        data = subset(survival_STMN2_cryptic, cancer_abbrev == "GBM")) |> 
+  ggsurvfit() +
+  labs(
+    x = "Months with disease",
+    y = "Overall Survival Probability",
+    title = "GBM Survival"
+  ) +
+  add_confidence_interval() 
 
 # fraction of each cancer that has cryptic STMN2 events -------------------
 
