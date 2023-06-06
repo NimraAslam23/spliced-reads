@@ -14,6 +14,7 @@ library(ggsignif)
 library(TCGAbiolinks)
 library(ggsurvfit)
 library(survival)
+library(survminer)
 
 jir_new <- read.csv("jir_new.csv")
 
@@ -311,9 +312,11 @@ survival_STMN2_cryptic <- cBio_clinical |>
   ungroup() |> 
   filter(!is.na(stmn2_cryptic_detected)) |> 
   filter(n_detected_stmn2 > 2) |> 
-  mutate(stmn2_cryptic_detected = as.numeric(stmn2_cryptic_detected)) #changes FALSE and TRUE to 0 and 1 respectively
-
-survfit(Surv(Months.of.disease.specific.survival, stmn2_cryptic_detected) ~ 1, data = subset(survival_STMN2_cryptic, stmn2_cryptic_detected==1)) |> 
+  mutate(stmn2_cryptic_detected = as.logical(stmn2_cryptic_detected)) |> #changes FALSE and TRUE to 0 and 1 respectively
+  distinct()
+  
+survfit(Surv(Months.of.disease.specific.survival, stmn2_cryptic_detected) ~ 1, 
+        data = subset(survival_STMN2_cryptic, stmn2_cryptic_detected==TRUE)) |> 
   ggsurvfit() +
   labs(
     x = "Months",
@@ -321,7 +324,8 @@ survfit(Surv(Months.of.disease.specific.survival, stmn2_cryptic_detected) ~ 1, d
   ) +
   add_confidence_interval() 
 
-survfit(Surv(Months.of.disease.specific.survival, stmn2_cryptic_detected) ~ 1, data = subset(survival_STMN2_cryptic, stmn2_cryptic_detected==0)) |> 
+survfit(Surv(Months.of.disease.specific.survival, stmn2_cryptic_detected) ~ 1, 
+        data = subset(survival_STMN2_cryptic, stmn2_cryptic_detected==FALSE)) |> 
   ggsurvfit() +
   labs(
     x = "Months",
@@ -329,14 +333,14 @@ survfit(Surv(Months.of.disease.specific.survival, stmn2_cryptic_detected) ~ 1, d
   ) +
   add_confidence_interval() 
 
-survfit(Surv(Months.of.disease.specific.survival, stmn2_cryptic_detected) ~ stmn2_cryptic_detected, data = survival_STMN2_cryptic) |> 
+survfit(Surv(Months.of.disease.specific.survival, stmn2_cryptic_detected) ~ stmn2_cryptic_detected, 
+        data = survival_STMN2_cryptic) |> 
   ggsurvfit() +
   labs(
     x = "Months",
     y = "Overall Survival Probability"
   ) +
   add_confidence_interval() 
-
 
 # density plot - months survival in cryptic vs non-cryptic ----------------
 
@@ -348,6 +352,23 @@ survival_STMN2_cryptic |>
     x = "Survival with disease (months)"  
     )
     # same survival - cryptic vs non-cryptic (all cancers combined)
+
+
+# number of STMN2 detected and non in each cancer type --------------------
+
+n_detected_non_cancer_abbrev <- survival_STMN2_cryptic |> 
+  group_by(cancer_abbrev, stmn2_cryptic_detected) |> 
+  summarise(count = n()) |> 
+  ungroup() |> 
+  pivot_wider(
+    names_from = stmn2_cryptic_detected,
+    values_from = count
+  ) |> 
+  rename("stmn2_cryptic_true" = "TRUE") |> 
+  rename("stmn2_cryptic_false" = "FALSE")
+      # PCPG has 130 false, 51 true
+      # GBM has 154 false, 11 true
+  
 
 # fraction of each cancer that has cryptic STMN2 events -------------------
 
