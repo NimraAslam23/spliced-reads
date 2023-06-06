@@ -337,6 +337,18 @@ survfit(Surv(Months.of.disease.specific.survival, stmn2_cryptic_detected) ~ stmn
   ) +
   add_confidence_interval() 
 
+
+# density plot - months survival in cryptic vs non-cryptic ----------------
+
+survival_STMN2_cryptic |> 
+  mutate(stmn2_cryptic_detected = as.logical(stmn2_cryptic_detected)) |> 
+  ggplot(aes(x = Months.of.disease.specific.survival, colour = stmn2_cryptic_detected)) +
+  geom_density() +
+  labs(
+    x = "Survival with disease (months)"  
+    )
+    # same survival - cryptic vs non-cryptic (all cancers combined)
+
 # fraction of each cancer that has cryptic STMN2 events -------------------
 
 total_each_cancer <- cBio_clinical |> 
