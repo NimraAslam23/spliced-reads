@@ -4,6 +4,7 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
+options(tinytex.verbose = TRUE)
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(repurrrsive)
@@ -25,7 +26,8 @@ library(survminer)
 ```
 
 ```{r snapcount_STMN2.R, include = FALSE}
-jir_new <- read.csv("jir_new.csv")
+jir_new <- read.csv("jir_new.csv") |> 
+  rename("case_submitter_id" = "gdc_cases.submitter_id")
 ```
 
 ```{r GDC case IDs, include = FALSE}
@@ -93,11 +95,10 @@ STMN2_clinical_jir_cryptic <- STMN2_clinical_jir |>
 
 ### Overall STMN2 junction coverage in different cancer sites
 
-```{r boxplot - overall STMN2 junction coverage in different cancer sites, echo = FALSE}
+```{r boxplot - overall STMN2 junction coverage in different cancer sites, echo = FALSE, warning = FALSE}
 STMN2_clinical_jir_cryptic |> 
   drop_na() |> 
-  ggplot(aes(x = junction_avg_coverage, y = fct_reorder(gdc_primary_site, 
-                                                        junction_avg_coverage, median))) +
+  ggplot(aes(x = junction_avg_coverage, y = fct_reorder(gdc_primary_site, junction_avg_coverage, median))) +
   geom_boxplot(aes(fill = gdc_primary_site)) +
   labs(
     x = "Junction Average Coverage",
@@ -108,7 +109,7 @@ STMN2_clinical_jir_cryptic |>
               map_signif_level = TRUE,
               y_position = c(75, 80))
 ```
-**Figure 1**: Stomach and breast cancers are the most deeply sequenced.
+**Figure 1**: Stomach and breast cancers are the most deeply sequenced in general.
 
 ### Cryptic STMN2 junction coverage in different cancer sites
 
@@ -124,9 +125,7 @@ STMN2_clinical_jir_cryptic |>
   ) +
   theme(legend.position = "none", plot.title = element_text(size=10))
 ```
-**Figure 2**:
-
-On average, cancers in the stomach and breast have the greatest number of reads supporting cryptic STMN2 events. Cancers of the brain have significantly fewer reads surpporting cryptic events. 
+**Figure 2**: 
 
 ```{r adding reads per million (rpm) column for cryptic coverage, echo = FALSE}
 STMN2_clinical_jir_cryptic <- STMN2_clinical_jir_cryptic |> 
@@ -145,17 +144,20 @@ STMN2_clinical_jir_cryptic |>
 ```
 **Figure 3**:
 
+On average, cancers in the stomach and breast have the greatest number of reads supporting cryptic STMN2 events. Cancers of the brain have significantly fewer reads surpporting cryptic events. 
+
+Cancers of the cervix, uterus and liver have the greatest cryptic coverage. However, there is only one data value for cancers of the cervix and liver. 
+
 # Cryptic STMN2 Expression
 
-## Cancers with cryptic STMN2 events
+## Cancers with STMN2 events (in general)
 
-```{r bar plot - cancer types with cryptic STMN2 events, include = FALSE}
-
-# Cancers with general STMN2 expression
-
-STMN2_clinical |> 
-  ggplot(aes(x = fct_rev(fct_infreq(cancer_type)))) +
-  geom_bar(aes(fill = cancer_type)) +
+```{r bar plot - cancer types with general STMN2 expression, echo = FALSE}
+STMN2_clinical_jir |> 
+  distinct() |> 
+  drop_na() |> 
+  ggplot(aes(x = fct_rev(fct_infreq(cancer_abbrev)))) +
+  geom_bar(aes(fill = cancer_abbrev)) +
   coord_flip() +
   labs(
     x = "Cancer Type",
@@ -163,15 +165,27 @@ STMN2_clinical |>
     title = "STMN2 is expressed in mostly breast and brain cancers" 
   ) +
   theme(legend.position = "none", plot.title = element_text(size=10)) 
-
-# Figure X: STMN2 events are found mostly in breast and brain cancer patients. 
 # BRCA = breast cancer; LGG = low-grade gliomas (brain tumours)
 ```
-**Figure 4**:
+**Figure 4**: STMN2 events are found mostly in breast and brain cancer patients. 
+
+```{r bar plot - cancer types with cryptic STMN2 expression, echo = FALSE}
+STMN2_clinical_jir_cryptic |> 
+  distinct() |> 
+  drop_na() |> 
+  ggplot(aes(x = fct_rev(fct_infreq(cancer_abbrev)))) +
+  geom_bar(aes(fill = cancer_abbrev)) +
+  coord_flip() +
+  labs(
+    x = "Cancer Type",
+    y = "Number of Cases"
+  ) +
+  theme(legend.position = "none", plot.title = element_text(size=10))
+```
 
 ### Primary sites of cancers 
 
-```{r bar plot - primary sites of cancers with cryptic STMN2 events}
+```{r bar plot - primary sites of cancers with cryptic STMN2 events, echo = FALSE}
 STMN2_clinical_jir_cryptic |> 
   drop_na() |> 
   ggplot(aes(x = fct_rev(fct_infreq(gdc_primary_site)))) +
@@ -181,7 +195,7 @@ STMN2_clinical_jir_cryptic |>
     x = "Primary Site of Cancer",
     y = "Number of Cases",
     title = 
-  "Primary sites of cancers with cryptic STMN2 events are mostly the adrenal gland and brain" 
+  "Cryptic STMN2 events are found mostly in cancers of the adrenal gland and brain" 
   ) +
   theme(legend.position = "none", plot.title = element_text(size=9)) 
 ```
@@ -203,8 +217,8 @@ kable(STMN2_events_different_cancers,
 
 STMN2_events_different_cancers |> 
   mutate(percentage = percent*100) |> 
-  ggplot(aes(x = reorder(cancer_type, percentage), y = percentage)) +
-  geom_bar(aes(fill = cancer_type), stat = "identity") +
+  ggplot(aes(x = reorder(cancer, percentage), y = percentage)) +
+  geom_bar(aes(fill = cancer), stat = "identity") +
   coord_flip() +
   labs(
     x = "Cancer Type",
@@ -272,16 +286,13 @@ cBio_clinical <- cBio_clinical |>
 
 ```{r join cBio clinical data with STMN2 cryptic table, include = FALSE}
 STMN2_cryptic_cBio <- STMN2_clinical_jir_cryptic |> 
-  left_join(cBio_clinical, by = "case_submitter_id") 
+  left_join(cBio_clinical, by = "case_submitter_id") |> 
+  janitor::clean_names()
 
 STMN2_cryptic_cBio <- STMN2_cryptic_cBio |> 
-   select(-cgc_primary_site, -Cancer.Type, -Sample.ID, -Overall.Survival..Months.) |> 
-  rename("disease_survival_months" = "Months.of.disease.specific.survival") |> 
-  relocate(case_submitter_id, .after = sample_id) |> 
-  relocate(cancer_type, .after = case_submitter_id) |> 
-  relocate(gdc_primary_site, .after = cancer_abbrev) |> 
-  relocate(sample_type, .after = gdc_primary_site) |> 
-  janitor::clean_names()
+   select(-c(cgc_primary_site, sample_id_2, cancer_abbrev_y, cancer_y, cancer_type)) |> 
+  rename("cancer_type" = "cancer_x") |> 
+  rename("cancer_abbrev" = "cancer_abbrev_x")
 ```
 
 ## Mutation Counts
@@ -311,7 +322,7 @@ STMN2_cryptic_cBio_mutations |>
 # There is an outlier in GBM for mutation count, which heavily skews the mean for this cancer type. 
 ```
 
-```{r boxplot - n mutations for each cancer type}
+```{r boxplot - n mutations for each cancer type, echo = FALSE, warning = FALSE}
 STMN2_cryptic_cBio <- STMN2_cryptic_cBio |> 
   mutate_at("mutation_count", as.numeric) 
 
@@ -333,7 +344,7 @@ y_position = c(1000))
 
 # Mutational burden 
 
-```{r fraction of mutations in each cancer type that is found in cases with cryptic}
+```{r fraction of mutations in each cancer type that is found in cases with cryptic, include = FALSE}
 total_mutations_each_cancer <- cBio_clinical |> 
   drop_na(Mutation.Count) |> 
   filter(grepl("^\\d+$", Mutation.Count)) |>
@@ -352,166 +363,9 @@ mutations_each_cancer_general_vs_cryptic <- total_mutations_each_cancer |>
   #16% of all mutations in LGG cancer are in cases with STMN2 cryptic events
 ```
 
-```{r alculating mutation burden (weighting total mutations against total cases) for general vs cryptic}
-mutations_each_cancer_general_vs_cryptic <- mutations_each_cancer_general_vs_cryptic |>
-  mutate(total_cancer_abbrev = total_each_cancer_general_vs_cryptic$total_cancer_abbrev) |> 
-  mutate(total_cancer_abbrev_with_cryptic = total_each_cancer_general_vs_cryptic$total_cancer_abbrev_with_cryptic) |> 
-  mutate(avg_mutation_per_case = total_mutations/total_cancer_abbrev) |> 
-  mutate(avg_mutation_per_case_cryptic = total_mutations_cryptic/total_cancer_abbrev_with_cryptic) |> 
-  select(-total_cancer_abbrev, -total_cancer_abbrev_with_cryptic)
-
-mutations_each_cancer_general_vs_cryptic |> 
-  drop_na() |> 
-  ggplot(aes(x = reorder(cancer_abbrev, avg_mutation_per_case_cryptic))) +
-  geom_bar(aes(y = avg_mutation_per_case, fill = "avg_mutation_per_case"), stat = "identity", position = "dodge") +
-  geom_bar(aes(y = avg_mutation_per_case_cryptic, fill = "avg_mutation_per_case_cryptic"), stat = "identity", position = "dodge") +
-  labs(
-    x = "Cancer Type",
-    y = "Average number of mutations per case",
-    fill = ""
-  ) +
-  scale_fill_manual(values = c("avg_mutation_per_case" = "violetred4", "avg_mutation_per_case_cryptic" = "royalblue1"),
-                    labels = c("All Cases", "STMN2 Cryptic Cases only"))
-
-cBio_clinical |>
-  left_join(STMN2_clinical_jir,by = c("case_submitter_id")) |> 
-  select('case_submitter_id',Study.ID,cancer_abbrev,Mutation.Count,STMN2_cryptic_coverage,STMN2_annotated_coverage) |> 
-  separate(Study.ID,into = ('study_start'),remove = FALSE) |> 
-  unique() |> 
-  mutate(Mutation.Count = as.numeric(Mutation.Count)) |> 
-  filter(!is.na(Mutation.Count) & Mutation.Count != "NA") |> 
-  mutate(stmn2_cryptic_detected = STMN2_cryptic_coverage >= 2) |> 
-  group_by(study_start) |> 
-  mutate(n_total_samples = n_distinct(case_submitter_id)) |> 
-  mutate(n_detected_stmn2 = sum(stmn2_cryptic_detected,na.rm = TRUE)) |> 
-  ungroup() |> 
-  filter(!is.na(stmn2_cryptic_detected)) |> 
-  filter(n_detected_stmn2 > 2) |> 
-  ggplot(aes(x = study_start,
-             y = Mutation.Count)) + 
-  geom_boxplot(aes(fill = stmn2_cryptic_detected)) + 
-  labs(x = "Cancer Type",
-       y = "Mutation Count") +
-  coord_flip() + 
-  scale_y_continuous(trans = scales::pseudo_log_trans()) +
-  stat_compare_means(comparisons = list(c("TRUE", "FALSE")), label = "p.format")
-```
-**Figure 9**: 
-
-# Survival Comparisons
-
-```{r, include = FALSE}
-survival_STMN2_cryptic <- cBio_clinical |> 
-  left_join(STMN2_clinical_jir, by = c("case_submitter_id")) |> 
-  select(Study.ID, case_submitter_id, Sample.ID, cancer_abbrev, Months.of.disease.specific.survival, Mutation.Count, 
-         Overall.Survival..Months., STMN2_cryptic_coverage, STMN2_annotated_coverage) |>
-  mutate(Months.of.disease.specific.survival = as.numeric(Months.of.disease.specific.survival)) |> 
-  filter(!is.na(Months.of.disease.specific.survival) & Months.of.disease.specific.survival != "NA") |> 
-  mutate(Mutation.Count = as.numeric(Mutation.Count)) |> 
-  filter(!is.na(Mutation.Count) & Mutation.Count != "NA") |> 
-  mutate(stmn2_cryptic_detected = STMN2_cryptic_coverage >= 2) |> 
-  group_by(cancer_abbrev) |> 
-  mutate(n_detected_stmn2 = sum(stmn2_cryptic_detected,na.rm = TRUE)) |> 
-  ungroup() |> 
-  filter(!is.na(stmn2_cryptic_detected)) |> 
-  filter(n_detected_stmn2 > 2) |> 
-  mutate(stmn2_cryptic_detected = as.logical(stmn2_cryptic_detected)) |> #changes FALSE and TRUE to 0 and 1 respectively
-  distinct()
-```
-
-```{r survival KM curve for cases with cryptic, echo = FALSE}
-survfit(Surv(Months.of.disease.specific.survival, stmn2_cryptic_detected) ~ 1, 
-        data = subset(survival_STMN2_cryptic, stmn2_cryptic_detected==TRUE)) |> 
-  ggsurvfit() +
-  labs(
-    x = "Months",
-    y = "Overall Survival Probability"
-  ) +
-  add_confidence_interval() 
-```
-**Figure 10**:
-
-```{r survival KM curve for cases with no cryptic, echo = FALSE}
-survfit(Surv(Months.of.disease.specific.survival, stmn2_cryptic_detected) ~ 1, 
-        data = subset(survival_STMN2_cryptic, stmn2_cryptic_detected==FALSE)) |> 
-  ggsurvfit() +
-  labs(
-    x = "Months",
-    y = "Overall Survival Probability"
-  ) +
-  add_confidence_interval() 
-```
-**Figure 11**:
-
-```{r survival KM curves - both cryptic and non, echo = FALSE}
-survfit(Surv(Months.of.disease.specific.survival, stmn2_cryptic_detected) ~ stmn2_cryptic_detected, 
-        data = survival_STMN2_cryptic) |> 
-  ggsurvfit() +
-  labs(
-    x = "Months with disease",
-    y = "Overall Survival Probability",
-    title = "All Cancer Types"
-  ) +
-  add_confidence_interval() 
-```
-**Figure 12**: 
-  
-```{r density plot - months survival in cryptic vs non-cryptic, echo = FALSE}
-survival_STMN2_cryptic |> 
-  mutate(stmn2_cryptic_detected = as.logical(stmn2_cryptic_detected)) |> 
-  ggplot(aes(x = Months.of.disease.specific.survival, colour = stmn2_cryptic_detected)) +
-  geom_density() +
-  labs(
-    x = "Survival months with disease"  
-    )
-    # same survival - cryptic vs non-cryptic (all cancers combined)
-```
-**Figure 13**: 
-
-```{r number of STMN2 detected and non in each cancer type, include = FALSE}
-n_detected_non_cancer_abbrev <- survival_STMN2_cryptic |> 
-  group_by(cancer_abbrev, stmn2_cryptic_detected) |> 
-  summarise(count = n()) |> 
-  ungroup() |> 
-  pivot_wider(
-    names_from = stmn2_cryptic_detected,
-    values_from = count
-  ) |> 
-  rename("stmn2_cryptic_true" = "TRUE") |> 
-  rename("stmn2_cryptic_false" = "FALSE")
-      # PCPG has 130 false, 51 true
-      # GBM has 154 false, 11 true
-```
-
-```{r PCPG survival analysis, echo = FALSE}
-survfit(Surv(Months.of.disease.specific.survival, stmn2_cryptic_detected) ~ stmn2_cryptic_detected, 
-        data = subset(survival_STMN2_cryptic, cancer_abbrev == "PCPG")) |> 
-  ggsurvfit() +
-  labs(
-    x = "Months with disease",
-    y = "Overall Survival Probability",
-    title = "PCPG Survival"
-  ) +
-  add_confidence_interval() 
-```
-**Figure 14**:
-
-```{r GBM survival analysis, echo = FALSE}
-survfit(Surv(Months.of.disease.specific.survival, stmn2_cryptic_detected) ~ stmn2_cryptic_detected, 
-        data = subset(survival_STMN2_cryptic, cancer_abbrev == "GBM")) |> 
-  ggsurvfit() +
-  labs(
-    x = "Months with disease",
-    y = "Overall Survival Probability",
-    title = "GBM Survival"
-  ) +
-  add_confidence_interval() 
-```
-**Figure 15**:
-
 # Fraction of each cancer that has cryptic STMN2 events 
 
-```{r barplot - % of cases of each cancer that have cryptic STMN2, echo = FALSE}
+```{r barplot - fraction of cases of each cancer that have cryptic STMN2, echo = FALSE}
 total_each_cancer <- cBio_clinical |> 
   group_by(cancer_abbrev) |> 
   summarise(total_cancer_abbrev = n())
@@ -534,7 +388,167 @@ total_each_cancer_general_vs_cryptic |>
     ) +
   theme(legend.position = "none")
 ```
-**Figure 16**: 
+**Figure 9**: 
+
+```{r calculating mutation burden (weighting total mutations against total cases) for general vs cryptic, echo = FALSE, warning = FALSE}
+mutations_each_cancer_general_vs_cryptic <- mutations_each_cancer_general_vs_cryptic |>
+  mutate(total_cancer_abbrev = total_each_cancer_general_vs_cryptic$total_cancer_abbrev) |> 
+  mutate(total_cancer_abbrev_with_cryptic = total_each_cancer_general_vs_cryptic$total_cancer_abbrev_with_cryptic) |> 
+  mutate(avg_mutation_per_case = total_mutations/total_cancer_abbrev) |> 
+  mutate(avg_mutation_per_case_cryptic = total_mutations_cryptic/total_cancer_abbrev_with_cryptic) |> 
+  select(-total_cancer_abbrev, -total_cancer_abbrev_with_cryptic)
+
+mutations_each_cancer_general_vs_cryptic |> 
+  drop_na() |> 
+  ggplot(aes(x = reorder(cancer_abbrev, avg_mutation_per_case_cryptic))) +
+  geom_bar(aes(y = avg_mutation_per_case, fill = "avg_mutation_per_case"), stat = "identity", position = "dodge") +
+  geom_bar(aes(y = avg_mutation_per_case_cryptic, fill = "avg_mutation_per_case_cryptic"), stat = "identity", position = "dodge") +
+  labs(
+    x = "Cancer Type",
+    y = "Average number of mutations per case",
+    fill = ""
+  ) +
+  scale_fill_manual(values = c("avg_mutation_per_case" = "violetred4", "avg_mutation_per_case_cryptic" = "royalblue1"),
+                    labels = c("All Cases", "STMN2 Cryptic Cases only"))
+
+cBio_clinical |>
+  left_join(STMN2_clinical_jir,by = c("case_submitter_id")) |> 
+  janitor::clean_names() |> 
+  rename("cancer_abbrev" = "cancer_abbrev_x") |> 
+  select(case_submitter_id, study_id, cancer_abbrev, mutation_count, stmn2_cryptic_coverage, stmn2_annotated_coverage) |> 
+  separate(study_id,into = ('study_start'),remove = FALSE) |> 
+  unique() |> 
+  mutate(mutation_count = as.numeric(mutation_count)) |> 
+  filter(!is.na(mutation_count) & mutation_count != "NA") |> 
+  mutate(stmn2_cryptic_detected = stmn2_cryptic_coverage >= 2) |> 
+  group_by(study_start) |> 
+  mutate(n_total_samples = n_distinct(case_submitter_id)) |> 
+  mutate(n_detected_stmn2 = sum(stmn2_cryptic_detected,na.rm = TRUE)) |> 
+  ungroup() |> 
+  filter(!is.na(stmn2_cryptic_detected)) |> 
+  filter(n_detected_stmn2 > 2) |> 
+  ggplot(aes(x = study_start,
+             y = mutation_count)) + 
+  geom_boxplot(aes(fill = stmn2_cryptic_detected)) + 
+  labs(x = "Cancer Type",
+       y = "Mutation Count") +
+  coord_flip() + 
+  scale_y_continuous(trans = scales::pseudo_log_trans()) +
+  stat_compare_means(comparisons = list(c("TRUE", "FALSE")), label = "p.format")
+```
+**Figure 10**: 
+
+# Survival Comparisons
+
+```{r, include = FALSE}
+survival_STMN2_cryptic <- cBio_clinical |> 
+  left_join(STMN2_clinical_jir, by = c("case_submitter_id")) |> 
+   janitor::clean_names() |> 
+  rename("cancer_abbrev" = "cancer_abbrev_x") |> 
+  select(case_submitter_id, study_id, sample_id, cancer_abbrev, mutation_count, stmn2_cryptic_coverage, stmn2_annotated_coverage, months_of_disease_specific_survival, overall_survival_months) |> 
+  mutate(months_of_disease_specific_survival = as.numeric(months_of_disease_specific_survival)) |> 
+  filter(!is.na(months_of_disease_specific_survival) & months_of_disease_specific_survival != "NA") |> 
+  mutate(mutation_count = as.numeric(mutation_count)) |> 
+  filter(!is.na(mutation_count) & mutation_count != "NA") |> 
+  mutate(stmn2_cryptic_detected = stmn2_cryptic_coverage >= 2) |> 
+  group_by(cancer_abbrev) |> 
+  mutate(n_detected_stmn2 = sum(stmn2_cryptic_detected,na.rm = TRUE)) |>
+  ungroup() |> 
+  filter(!is.na(stmn2_cryptic_detected)) |> 
+  filter(n_detected_stmn2 > 2) |> 
+  mutate(stmn2_cryptic_detected = as.logical(stmn2_cryptic_detected)) |> #changes FALSE and TRUE to 0 and 1 respectively
+  distinct()
+```
+
+```{r survival KM curve for cases with cryptic, echo = FALSE}
+survfit(Surv(months_of_disease_specific_survival, stmn2_cryptic_detected) ~ 1, 
+        data = subset(survival_STMN2_cryptic, stmn2_cryptic_detected==TRUE)) |> 
+  ggsurvfit() +
+  labs(
+    x = "Months",
+    y = "Overall Survival Probability"
+  ) +
+  add_confidence_interval() 
+```
+**Figure 11**:
+
+```{r survival KM curve for cases with no cryptic, echo = FALSE}
+survfit(Surv(months_of_disease_specific_survival, stmn2_cryptic_detected) ~ 1, 
+        data = subset(survival_STMN2_cryptic, stmn2_cryptic_detected==FALSE)) |> 
+  ggsurvfit() +
+  labs(
+    x = "Months",
+    y = "Overall Survival Probability"
+  ) +
+  add_confidence_interval() 
+```
+**Figure 12**:
+
+```{r survival KM curves - both cryptic and non, echo = FALSE}
+survfit(Surv(months_of_disease_specific_survival, stmn2_cryptic_detected) ~ stmn2_cryptic_detected, 
+        data = survival_STMN2_cryptic) |> 
+  ggsurvfit() +
+  labs(
+    x = "Months with disease",
+    y = "Overall Survival Probability",
+    title = "All Cancer Types"
+  ) +
+  add_confidence_interval() 
+```
+**Figure 13**: 
+  
+```{r density plot - months survival in cryptic vs non-cryptic, echo = FALSE}
+survival_STMN2_cryptic |> 
+  mutate(stmn2_cryptic_detected = as.logical(stmn2_cryptic_detected)) |> 
+  ggplot(aes(x = months_of_disease_specific_survival, colour = stmn2_cryptic_detected)) +
+  geom_density() +
+  labs(
+    x = "Survival months with disease"  
+    )
+    # same survival - cryptic vs non-cryptic (all cancers combined)
+```
+**Figure 14**: 
+
+```{r number of STMN2 detected and non in each cancer type, include = FALSE}
+n_detected_non_cancer_abbrev <- survival_STMN2_cryptic |> 
+  group_by(cancer_abbrev, stmn2_cryptic_detected) |> 
+  summarise(count = n()) |> 
+  ungroup() |> 
+  pivot_wider(
+    names_from = stmn2_cryptic_detected,
+    values_from = count
+  ) |> 
+  rename("stmn2_cryptic_true" = "TRUE") |> 
+  rename("stmn2_cryptic_false" = "FALSE")
+      # PCPG has 130 false, 51 true
+      # GBM has 154 false, 11 true
+```
+
+```{r PCPG survival analysis, echo = FALSE}
+survfit(Surv(months_of_disease_specific_survival, stmn2_cryptic_detected) ~ stmn2_cryptic_detected, 
+        data = subset(survival_STMN2_cryptic, cancer_abbrev == "PCPG")) |> 
+  ggsurvfit() +
+  labs(
+    x = "Months with disease",
+    y = "Overall Survival Probability",
+    title = "PCPG Survival"
+  ) +
+  add_confidence_interval() 
+```
+**Figure 15**:
+
+```{r GBM survival analysis, echo = FALSE}
+survfit(Surv(months_of_disease_specific_survival, stmn2_cryptic_detected) ~ stmn2_cryptic_detected, 
+        data = subset(survival_STMN2_cryptic, cancer_abbrev == "GBM")) |> 
+  ggsurvfit() +
+  labs(
+    x = "Months with disease",
+    y = "Overall Survival Probability",
+    title = "GBM Survival"
+  ) +
+  add_confidence_interval() 
+```
+**Figure 16**:
 
 ## Mutation Data of one patient
 
