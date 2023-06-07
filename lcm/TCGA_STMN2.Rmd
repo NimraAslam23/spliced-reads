@@ -357,7 +357,7 @@ total_mutations_each_cancer_with_cryptic <- STMN2_cryptic_cBio |>
   group_by(cancer_abbrev) |> 
   summarise(total_mutations_cryptic = sum(mutation_count))
 
-mutations_each_cancer_general_vs_cryptic <- total_mutations_each_cancer |> 
+mutations_each_cancer_general_vs_STMN2cryptic <- total_mutations_each_cancer |> 
   left_join(total_mutations_each_cancer_with_cryptic, by=c("cancer_abbrev")) |> 
   mutate(percent_with_cryptic = (total_mutations_cryptic/total_mutations)*100)
   #16% of all mutations in LGG cancer are in cases with STMN2 cryptic events
@@ -433,6 +433,32 @@ cBio_clinical |>
   labs(x = "Cancer Type",
        y = "Mutation Count") +
   coord_flip() + 
+  scale_y_continuous(trans = scales::pseudo_log_trans()) +
+  stat_compare_means(comparisons = list(c("gbm", "lgg")), label = "p.format")
+
+
+cBio_clinical |>
+  left_join(STMN2_clinical_jir,by = c("case_submitter_id")) |> 
+  janitor::clean_names() |> 
+  rename("cancer_abbrev" = "cancer_abbrev_x") |> 
+  select(case_submitter_id, study_id, cancer_abbrev, mutation_count, stmn2_cryptic_coverage, stmn2_annotated_coverage) |> 
+  separate(study_id,into = ('study_start'),remove = FALSE) |> 
+  unique() |> 
+  mutate(mutation_count = as.numeric(mutation_count)) |> 
+  filter(!is.na(mutation_count) & mutation_count != "NA") |> 
+  mutate(stmn2_cryptic_detected = stmn2_cryptic_coverage >= 2) |> 
+  group_by(study_start) |> 
+  mutate(n_total_samples = n_distinct(case_submitter_id)) |> 
+  mutate(n_detected_stmn2 = sum(stmn2_cryptic_detected,na.rm = TRUE)) |> 
+  ungroup() |> 
+  filter(!is.na(stmn2_cryptic_detected)) |> 
+  filter(n_detected_stmn2 > 2) |> 
+  ggplot(aes(x = stmn2_cryptic_detected,
+             y = mutation_count)) + 
+  geom_boxplot(aes(fill = stmn2_cryptic_detected)) + 
+  labs(x = "Cancer Type",
+       y = "Mutation Count") +
+  facet_wrap(~study_start) +
   scale_y_continuous(trans = scales::pseudo_log_trans()) +
   stat_compare_means(comparisons = list(c("TRUE", "FALSE")), label = "p.format")
 ```

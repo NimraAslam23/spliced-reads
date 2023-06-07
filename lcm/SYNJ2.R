@@ -171,3 +171,73 @@ SYNJ2_cryptic_cBio |>
     y = "Mutation Count"
   )
 
+# Mutational burden
+
+total_mutations_each_cancer <- cBio_clinical |> 
+  drop_na(Mutation.Count) |> 
+  filter(grepl("^\\d+$", Mutation.Count)) |>
+  group_by(cancer_abbrev) |> 
+  summarise(total_mutations = sum(as.numeric(Mutation.Count)))
+
+total_mutations_each_cancer_with_SYNJ2cryptic <- SYNJ2_cryptic_cBio |> 
+  drop_na(mutation_count) |> 
+  filter(mutation_count < 2500) |> 
+  group_by(cancer_abbrev) |> 
+  summarise(total_mutations_cryptic = sum(mutation_count))
+
+mutations_each_cancer_general_vs_SYNJ2cryptic <- total_mutations_each_cancer |> 
+  left_join(total_mutations_each_cancer_with_SYNJ2cryptic, by=c("cancer_abbrev")) |> 
+  mutate(percent_with_cryptic = (total_mutations_cryptic/total_mutations)*100)
+#16% of all mutations in LGG cancer are in cases with STMN2 cryptic events
+
+# Fraction of each cancer that has cryptic STMN2 events 
+
+total_each_cancer <- cBio_clinical |> 
+  group_by(cancer_abbrev) |> 
+  summarise(total_cancer_abbrev = n())
+
+total_each_cancer_with_SYNJ2cryptic <- SYNJ2_cryptic_cBio |> 
+  group_by(cancer_abbrev) |> 
+  summarise(total_cancer_abbrev_with_cryptic = n())
+
+total_each_cancer_general_vs_SYNJ2cryptic <- total_each_cancer |> 
+  left_join(total_each_cancer_with_SYNJ2cryptic, by=c("cancer_abbrev")) |> 
+  mutate(percent_with_cryptic = (total_cancer_abbrev_with_cryptic/total_cancer_abbrev)*100)
+
+total_each_cancer_general_vs_SYNJ2cryptic |> 
+  drop_na() |> 
+  ggplot(aes(x = reorder(cancer_abbrev, percent_with_cryptic), y = percent_with_cryptic)) +
+  geom_bar(aes(fill = cancer_abbrev), stat = "identity") +
+  labs(
+    x = "Cancer Type",
+    y = "Percentage of cases with cryptic SYNJ2 events"
+  ) +
+  theme(legend.position = "none")
+
+# calculating mutation burden
+
+cBio_clinical |>
+  left_join(SYNJ2_clinical_jir,by = c("case_submitter_id")) |> 
+  rename("synj2_cryptic_coverage" = "cryptic_count") |> 
+  rename("synj2_annotated_coverage" = "anno_count") |> 
+  janitor::clean_names() |> 
+  select(case_submitter_id, study_id, cancer_abbrev, mutation_count, synj2_cryptic_coverage, synj2_annotated_coverage) |> 
+  separate(study_id,into = ('study_start'),remove = FALSE) |> 
+  unique() |> 
+  mutate(mutation_count = as.numeric(mutation_count)) |> 
+  filter(!is.na(mutation_count) & mutation_count != "NA") |> 
+  mutate(synj2_cryptic_detected = synj2_cryptic_coverage >= 2) |> 
+  group_by(study_start) |> 
+  mutate(n_total_samples = n_distinct(case_submitter_id)) |> 
+  mutate(n_detected_synj2 = sum(synj2_cryptic_detected,na.rm = TRUE)) |> 
+  ungroup() |> 
+  filter(!is.na(synj2_cryptic_detected)) |> 
+  filter(n_detected_synj2 > 2) |> 
+  ggplot(aes(x = synj2_cryptic_detected,
+             y = mutation_count)) + 
+  geom_boxplot(aes(fill = synj2_cryptic_detected)) + 
+  labs(x = "Cancer Type",
+       y = "Mutation Count") +
+  facet_wrap(~study_start) +
+  scale_y_continuous(trans = scales::pseudo_log_trans()) +
+  stat_compare_means(comparisons = list(c("TRUE", "FALSE")), label = "p.format")
