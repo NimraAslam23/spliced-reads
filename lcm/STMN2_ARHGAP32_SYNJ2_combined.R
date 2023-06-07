@@ -13,6 +13,13 @@ library(snapcount)
 library(ggsignif)
 
 
+# any cases with all three or two cryptic events?
+
+intersect(STMN2_cryptic_cBio$case_submitter_id, ARHGAP32_cryptic_cBio$case_submitter_id) # none
+intersect(STMN2_cryptic_cBio$case_submitter_id, SYNJ2_cryptic_cBio$case_submitter_id) # none
+intersect(ARHGAP32_cryptic_cBio$case_submitter_id, SYNJ2_cryptic_cBio$case_submitter_id) 
+      # 9 cases with both ARHGAP32 and SYNJ2 cryptic events
+
 # joining all three df together (STMN2 cryptic, ARHGAP32 cryptic, SYNJ2 cryptic) --------
     # to get the cases that have all three cryptic events
 
