@@ -27,11 +27,16 @@ common_patients_ARHGAP32_SYNJ2 <- intersect(ARHGAP32_cryptic_cBio$case_submitter
 common_ARHGAP32_SYNJ2 <- ARHGAP32_cryptic_cBio |> 
   filter(sample_type == "Primary Tumor",
          case_submitter_id %in% common_patients_ARHGAP32_SYNJ2) |> 
-  select(case_submitter_id) |> 
+  select(case_submitter_id, start, end, strand, anno_count, cryptic_count, jir) |> 
   left_join(SYNJ2_cryptic_cBio, by = "case_submitter_id") |> 
   distinct() |> 
   filter(sample_type == "Primary Tumor") |> 
-  janitor::clean_names()
+  select(-cancer) |> 
+  janitor::clean_names() |> 
+  rename_all(~str_replace_all(.x, "_x", "_ARHGAP32")) |> 
+  rename_all(~str_replace_all(.x, "_y", "_SYNJ2")) 
+
+
 
 # joining all three df together (STMN2 cryptic, ARHGAP32 cryptic, SYNJ2 cryptic) --------
     # to get the cases that have all three cryptic events
