@@ -17,8 +17,24 @@ library(ggsignif)
 
 intersect(STMN2_cryptic_cBio$case_submitter_id, ARHGAP32_cryptic_cBio$case_submitter_id) # none
 intersect(STMN2_cryptic_cBio$case_submitter_id, SYNJ2_cryptic_cBio$case_submitter_id) # none
-intersect(ARHGAP32_cryptic_cBio$case_submitter_id, SYNJ2_cryptic_cBio$case_submitter_id) 
+common_patients_ARHGAP32_SYNJ2 <- intersect(ARHGAP32_cryptic_cBio$case_submitter_id, SYNJ2_cryptic_cBio$case_submitter_id) 
       # 9 cases with both ARHGAP32 and SYNJ2 cryptic events
+
+# which cancer type do you detect which cryptic event in? -----------------
+
+    # df with only the 9 ARHGAP32+SYNJ2 cases 
+
+ARHGAP32_cryptic_cBio |> 
+       distinct() |> 
+       filter(case_submitter_id %in% common_patients_ARHGAP32_SYNJ2) |> 
+  left_join(SYNJ2_cryptic_cBio, by = "case_submitter_id") |> 
+  distinct() |> 
+  filter(sample_type.x == "Primary Tumor") |> 
+  filter(sample_type.y == "Primary Tumor") |> 
+  View()
+
+
+common_patients_ARHGAP32_SYNJ2
 
 # joining all three df together (STMN2 cryptic, ARHGAP32 cryptic, SYNJ2 cryptic) --------
     # to get the cases that have all three cryptic events
