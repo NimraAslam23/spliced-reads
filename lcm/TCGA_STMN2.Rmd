@@ -276,7 +276,8 @@ cBio_clinical <- cBio_all_clinical_orig
 
 cBio_clinical <- cBio_clinical |> 
   select(Study.ID, Patient.ID, Sample.ID, Aneuploidy.Score, Cancer.Type, TCGA.PanCanAtlas.Cancer.Type.Acronym, Cancer.Type.Detailed,
-         Months.of.disease.specific.survival, Mutation.Count, Overall.Survival..Months.)
+         Months.of.disease.specific.survival, Mutation.Count, Overall.Survival..Months.,
+         Disease.specific.Survival.status)
 
 cBio_clinical <- cBio_clinical |> 
   rename("case_submitter_id" = "Patient.ID") |> 
@@ -471,7 +472,7 @@ survival_STMN2_cryptic <- cBio_clinical |>
   left_join(STMN2_clinical_jir, by = c("case_submitter_id")) |> 
    janitor::clean_names() |> 
   rename("cancer_abbrev" = "cancer_abbrev_x") |> 
-  select(case_submitter_id, study_id, sample_id, cancer_abbrev, mutation_count, stmn2_cryptic_coverage, stmn2_annotated_coverage, months_of_disease_specific_survival, overall_survival_months) |> 
+  select(case_submitter_id, study_id, sample_id, cancer_abbrev, mutation_count, stmn2_cryptic_coverage, stmn2_annotated_coverage, months_of_disease_specific_survival, overall_survival_months, disease_specific_survival_status) |> 
   mutate(months_of_disease_specific_survival = as.numeric(months_of_disease_specific_survival)) |> 
   filter(!is.na(months_of_disease_specific_survival) & months_of_disease_specific_survival != "NA") |> 
   mutate(mutation_count = as.numeric(mutation_count)) |> 
@@ -486,32 +487,43 @@ survival_STMN2_cryptic <- cBio_clinical |>
   distinct()
 ```
 
+```{r survival status column in STMN2 survival df}
+survival_STMN2_cryptic <- survival_STMN2_cryptic |> 
+  filter(!is.na(disease_specific_survival_status) & disease_specific_survival_status != "NA") |> 
+  mutate(disease_specific_survival_status = str_extract(disease_specific_survival_status, "^[^:]+"),
+         disease_specific_survival_status = as.numeric(disease_specific_survival_status))
+    # 1 = dead with tumor
+    # 0 = alive or dead tumor free
+```
+
 ```{r survival KM curve for cases with cryptic, echo = FALSE}
-survfit(Surv(months_of_disease_specific_survival, stmn2_cryptic_detected) ~ 1, 
+survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ 1, 
         data = subset(survival_STMN2_cryptic, stmn2_cryptic_detected==TRUE)) |> 
   ggsurvfit() +
   labs(
     x = "Months",
-    y = "Overall Survival Probability"
+    y = "Overall Survival Probability",
+    title = "No Cryptic Events"
   ) +
   add_confidence_interval() 
 ```
 **Figure 11**:
 
 ```{r survival KM curve for cases with no cryptic, echo = FALSE}
-survfit(Surv(months_of_disease_specific_survival, stmn2_cryptic_detected) ~ 1, 
+survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ 1, 
         data = subset(survival_STMN2_cryptic, stmn2_cryptic_detected==FALSE)) |> 
   ggsurvfit() +
   labs(
     x = "Months",
-    y = "Overall Survival Probability"
+    y = "Overall Survival Probability",
+    title = "Cryptic Events"
   ) +
   add_confidence_interval() 
 ```
 **Figure 12**:
 
 ```{r survival KM curves - both cryptic and non, echo = FALSE}
-survfit(Surv(months_of_disease_specific_survival, stmn2_cryptic_detected) ~ stmn2_cryptic_detected, 
+survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ stmn2_cryptic_detected, 
         data = survival_STMN2_cryptic) |> 
   ggsurvfit() +
   labs(
