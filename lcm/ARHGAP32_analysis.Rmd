@@ -279,3 +279,95 @@ cBio_clinical |>
   scale_y_continuous(trans = scales::pseudo_log_trans()) +
   stat_compare_means(comparisons = list(c("TRUE", "FALSE")), label = "p.format")
 ```
+
+# Survival Comparisons
+
+```{r, include = FALSE}
+survival_ARHGAP32_cryptic <- cBio_clinical |> 
+  left_join(ARHGAP32_clinical_jir, by = c("case_submitter_id")) |> 
+  rename("arhgap32_cryptic_coverage" = "cryptic_count") |> 
+  rename("arhgap32_annotated_coverage" = "anno_count") |> 
+  janitor::clean_names() |> 
+  select(case_submitter_id, study_id, sample_id, cancer_abbrev, mutation_count, arhgap32_cryptic_coverage, arhgap32_annotated_coverage, months_of_disease_specific_survival, overall_survival_months, disease_specific_survival_status) |> 
+  mutate(months_of_disease_specific_survival = as.numeric(months_of_disease_specific_survival)) |> 
+  filter(!is.na(months_of_disease_specific_survival) & months_of_disease_specific_survival != "NA") |> 
+  mutate(mutation_count = as.numeric(mutation_count)) |> 
+  filter(!is.na(mutation_count) & mutation_count != "NA") |> 
+  mutate(arhgap32_cryptic_detected = arhgap32_cryptic_coverage >= 2) |> 
+  group_by(cancer_abbrev) |> 
+  mutate(n_detected_arhgap32 = sum(arhgap32_cryptic_detected,na.rm = TRUE)) |>
+  ungroup() |> 
+  filter(!is.na(arhgap32_cryptic_detected)) |> 
+  filter(n_detected_arhgap32 > 2) |> 
+  mutate(arhgap32_cryptic_detected = as.logical(arhgap32_cryptic_detected)) |> #changes FALSE and TRUE to 0 and 1 respectively
+  distinct()
+```
+
+```{r survival status column in ARHGAP32 survival df, include = FALSE}
+survival_ARHGAP32_cryptic <- survival_ARHGAP32_cryptic |> 
+  filter(!is.na(disease_specific_survival_status) & disease_specific_survival_status != "NA") |> 
+  mutate(disease_specific_survival_status = str_extract(disease_specific_survival_status, "^[^:]+"),
+         disease_specific_survival_status = as.numeric(disease_specific_survival_status))
+    # 1 = dead with tumor
+    # 0 = alive or dead tumor free
+```
+
+```{r survival KM curve for cases with ARHGAP32 cryptic, echo = FALSE}
+survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ 1, 
+        data = subset(survival_ARHGAP32_cryptic, arhgap32_cryptic_detected==TRUE)) |> 
+  ggsurvfit() +
+  labs(
+    x = "Months",
+    y = "Overall Survival Probability",
+    title = "Kaplan-Meier Curve: ARHGAP32 Cryptic Events"
+  ) +
+  add_confidence_interval() 
+```
+
+```{r survival KM curve for cases with no ARHGAP32 cryptic, echo = FALSE}
+survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ 1, 
+        data = subset(survival_ARHGAP32_cryptic, arhgap32_cryptic_detected==FALSE)) |> 
+  ggsurvfit() +
+  labs(
+    x = "Months",
+    y = "Overall Survival Probability",
+    title = "Kaplan-Meier Curve: No ARHGAP32 Cryptic Events"
+  ) +
+  add_confidence_interval() 
+```
+
+```{r survival KM curves ARHGAP32 - both cryptic and non, echo = FALSE}
+survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ arhgap32_cryptic_detected, 
+        data = survival_ARHGAP32_cryptic) |> 
+  ggsurvfit() +
+  labs(
+    x = "Months with disease",
+    y = "Overall Survival Probability",
+    title = "Kaplan-Meier Curve: All Cancer Types (ARHGAP32)"
+  ) +
+  add_confidence_interval() 
+```
+  
+```{r density plot - months survival in cryptic vs non-cryptic ARHGAP32, echo = FALSE}
+survival_ARHGAP32_cryptic |> 
+  mutate(arhgap32_cryptic_detected = as.logical(arhgap32_cryptic_detected)) |> 
+  ggplot(aes(x = months_of_disease_specific_survival, colour = arhgap32_cryptic_detected)) +
+  geom_density() +
+  labs(
+    x = "Survival months with disease"  
+    )
+    # same survival - cryptic vs non-cryptic (all cancers combined)
+```
+
+```{r number of ARHGAP32 detected and non in each cancer type, include = FALSE}
+ARHGAP32_n_detected_non_cancer_abbrev <- survival_ARHGAP32_cryptic |> 
+  group_by(cancer_abbrev, arhgap32_cryptic_detected) |> 
+  summarise(count = n()) |> 
+  ungroup() |> 
+  pivot_wider(
+    names_from = arhgap32_cryptic_detected,
+    values_from = count
+  ) |> 
+  rename("arhgap32_cryptic_true" = "TRUE") |> 
+  rename("arhgap32_cryptic_false" = "FALSE")
+```

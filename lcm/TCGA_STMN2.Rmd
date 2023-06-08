@@ -496,46 +496,46 @@ survival_STMN2_cryptic <- survival_STMN2_cryptic |>
     # 0 = alive or dead tumor free
 ```
 
-```{r survival KM curve for cases with cryptic, echo = FALSE}
+```{r survival KM curve for cases with STMN2 cryptic, echo = FALSE}
 survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ 1, 
         data = subset(survival_STMN2_cryptic, stmn2_cryptic_detected==TRUE)) |> 
   ggsurvfit() +
   labs(
     x = "Months",
     y = "Overall Survival Probability",
-    title = "No Cryptic Events"
+    title = "Kaplan-Meier Curve: STMN2 Cryptic Events"
   ) +
   add_confidence_interval() 
 ```
 **Figure 11**:
 
-```{r survival KM curve for cases with no cryptic, echo = FALSE}
+```{r survival KM curve for cases with no STMN2 cryptic, echo = FALSE}
 survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ 1, 
         data = subset(survival_STMN2_cryptic, stmn2_cryptic_detected==FALSE)) |> 
   ggsurvfit() +
   labs(
     x = "Months",
     y = "Overall Survival Probability",
-    title = "Cryptic Events"
+    title = "Kaplan-Meier Curve: No STMN2 Cryptic Events"
   ) +
   add_confidence_interval() 
 ```
 **Figure 12**:
 
-```{r survival KM curves - both cryptic and non, echo = FALSE}
+```{r survival KM curves STMN2 - both cryptic and non, echo = FALSE}
 survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ stmn2_cryptic_detected, 
         data = survival_STMN2_cryptic) |> 
   ggsurvfit() +
   labs(
     x = "Months with disease",
     y = "Overall Survival Probability",
-    title = "All Cancer Types"
+    title = "Kaplan-Meier Curve: All Cancer Types (STMN2)"
   ) +
   add_confidence_interval() 
 ```
 **Figure 13**: 
   
-```{r density plot - months survival in cryptic vs non-cryptic, echo = FALSE}
+```{r density plot - months survival in cryptic vs non-cryptic STMN2, echo = FALSE}
 survival_STMN2_cryptic |> 
   mutate(stmn2_cryptic_detected = as.logical(stmn2_cryptic_detected)) |> 
   ggplot(aes(x = months_of_disease_specific_survival, colour = stmn2_cryptic_detected)) +
@@ -548,7 +548,7 @@ survival_STMN2_cryptic |>
 **Figure 14**: 
 
 ```{r number of STMN2 detected and non in each cancer type, include = FALSE}
-n_detected_non_cancer_abbrev <- survival_STMN2_cryptic |> 
+STMN2_n_detected_non_cancer_abbrev <- survival_STMN2_cryptic |> 
   group_by(cancer_abbrev, stmn2_cryptic_detected) |> 
   summarise(count = n()) |> 
   ungroup() |> 
@@ -561,32 +561,6 @@ n_detected_non_cancer_abbrev <- survival_STMN2_cryptic |>
       # PCPG has 130 false, 51 true
       # GBM has 154 false, 11 true
 ```
-
-```{r PCPG survival analysis, echo = FALSE}
-survfit(Surv(months_of_disease_specific_survival, stmn2_cryptic_detected) ~ stmn2_cryptic_detected, 
-        data = subset(survival_STMN2_cryptic, cancer_abbrev == "PCPG")) |> 
-  ggsurvfit() +
-  labs(
-    x = "Months with disease",
-    y = "Overall Survival Probability",
-    title = "PCPG Survival"
-  ) +
-  add_confidence_interval() 
-```
-**Figure 15**:
-
-```{r GBM survival analysis, echo = FALSE}
-survfit(Surv(months_of_disease_specific_survival, stmn2_cryptic_detected) ~ stmn2_cryptic_detected, 
-        data = subset(survival_STMN2_cryptic, cancer_abbrev == "GBM")) |> 
-  ggsurvfit() +
-  labs(
-    x = "Months with disease",
-    y = "Overall Survival Probability",
-    title = "GBM Survival"
-  ) +
-  add_confidence_interval() 
-```
-**Figure 16**:
 
 ## Mutation Data of one patient
 
