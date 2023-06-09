@@ -37,6 +37,19 @@ common_ARHGAP32_SYNJ2 <- ARHGAP32_cryptic_cBio |>
   rename_all(~str_replace_all(.x, "_y", "_SYNJ2")) 
 
 
+    # raw cryptic counts
+
+common_ARHGAP32_SYNJ2 |> 
+  pivot_longer(cols = c(cryptic_count_ARHGAP32, cryptic_count_SYNJ2),
+               names_to = "gene",
+               values_to = "cryptic count") |>  
+  mutate(gene = str_replace(gene, "cryptic_count_", "")) |> 
+  pivot_longer(cols = c(anno_count_ARHGAP32, anno_count_SYNJ2),
+               names_to = "gene2",
+               values_to = "anno count") |> 
+  View()
+
+    # jir 
 
 # joining all three df together (STMN2 cryptic, ARHGAP32 cryptic, SYNJ2 cryptic) --------
     # to get the cases that have all three cryptic events
