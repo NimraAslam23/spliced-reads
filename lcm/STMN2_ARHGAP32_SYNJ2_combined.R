@@ -15,41 +15,105 @@ library(ggsignif)
 
 # any cases with all three or two cryptic events?
 
-intersect(STMN2_cryptic_cBio$case_submitter_id, ARHGAP32_cryptic_cBio$case_submitter_id) # none
+common_patients_STMN2_ARHGAP32 <- intersect(STMN2_cryptic_cBio$case_submitter_id, ARHGAP32_cryptic_cBio$case_submitter_id) 
+      # 5 cases
 intersect(STMN2_cryptic_cBio$case_submitter_id, SYNJ2_cryptic_cBio$case_submitter_id) # none
 common_patients_ARHGAP32_SYNJ2 <- intersect(ARHGAP32_cryptic_cBio$case_submitter_id, SYNJ2_cryptic_cBio$case_submitter_id) 
-      # 9 cases with both ARHGAP32 and SYNJ2 cryptic events
+      # 31 cases with both ARHGAP32 and SYNJ2 cryptic events
 
 # which cancer type do you detect which cryptic event in? -----------------
 
-    # df with only the 9 ARHGAP32+SYNJ2 cases 
+# df with ARHGAP32 SYNJ2 cases ------------------------------------------
 
 common_ARHGAP32_SYNJ2 <- ARHGAP32_cryptic_cBio |> 
-  filter(sample_type == "Primary Tumor",
-         case_submitter_id %in% common_patients_ARHGAP32_SYNJ2) |> 
+  filter(case_submitter_id %in% common_patients_ARHGAP32_SYNJ2) |> 
   select(case_submitter_id, start, end, strand, anno_count, cryptic_count, jir) |> 
   left_join(SYNJ2_cryptic_cBio, by = "case_submitter_id") |> 
   distinct() |> 
-  filter(sample_type == "Primary Tumor") |> 
   select(-cancer) |> 
+  filter(sample_type == "Primary Tumor") |> 
   janitor::clean_names() |> 
   rename_all(~str_replace_all(.x, "_x", "_ARHGAP32")) |> 
   rename_all(~str_replace_all(.x, "_y", "_SYNJ2")) 
 
+  # within each patient, what is the fraction of cryptic to annotated reads?
+common_ARHGAP32_SYNJ2 |> 
+  select(case_submitter_id,gdc_primary_site,disease_survival_months,mutation_count,jir_ARHGAP32,jir_SYNJ2) |> 
+  pivot_longer(cols = c(jir_ARHGAP32,jir_SYNJ2),
+               names_to = "gene",
+               values_to = "cryptic_jir") |>  
+  mutate(gene = str_replace(gene, "jir_", "")) |> 
+  mutate(cryptic_jir = 1 - cryptic_jir) |> 
+  ggplot(aes(x = gene,y = cryptic_jir)) + 
+  geom_boxplot()
 
-    # raw cryptic counts
+  # within each patient, is ARHGAP32 or SYNJ2 cryptic expressed at a higher rate?
+common_ARHGAP32_SYNJ2 |> 
+  select(case_submitter_id,gdc_primary_site,disease_survival_months,mutation_count,jir_ARHGAP32,jir_SYNJ2) |> 
+  pivot_longer(cols = c(jir_ARHGAP32,jir_SYNJ2),
+               names_to = "gene",
+               values_to = "cryptic_jir") |>  
+  mutate(gene = str_replace(gene, "jir_", "")) |> 
+  mutate(cryptic_jir = 1 - cryptic_jir) |> 
+  ggplot(aes(x = gene,y = cryptic_jir,group = case_submitter_id)) + 
+  geom_point() +
+  geom_line()
 
 common_ARHGAP32_SYNJ2 |> 
-  pivot_longer(cols = c(cryptic_count_ARHGAP32, cryptic_count_SYNJ2),
-               names_to = "gene",
-               values_to = "cryptic count") |>  
-  mutate(gene = str_replace(gene, "cryptic_count_", "")) |> 
-  pivot_longer(cols = c(anno_count_ARHGAP32, anno_count_SYNJ2),
-               names_to = "gene2",
-               values_to = "anno count") |> 
-  View()
+  select(case_submitter_id,gdc_primary_site,disease_survival_months,mutation_count,jir_ARHGAP32,jir_SYNJ2) |> 
+  mutate(jir_ARHGAP32 = 1 - jir_ARHGAP32 , jir_SYNJ2 = 1 - jir_SYNJ2) |> 
+  mutate(arh_ratio = log2(jir_ARHGAP32 / jir_SYNJ2)) |> 
+  ggplot(aes(y = arh_ratio,x = 1)) + 
+  geom_violin() + 
+  geom_hline(yintercept = 0) + 
+  ylab("Log2Fold Ratio of ARHGAP32 to SYNJ2 cryptic expression")
 
-    # jir 
+# df with STMN2 ARHGAP32 cases --------------------------------------------
+
+common_STMN2_ARHGAP32 <- STMN2_cryptic_cBio |> 
+  filter(sample_type == "Primary Tumor",
+         case_submitter_id %in% common_patients_STMN2_ARHGAP32) |> 
+  select(case_submitter_id, stmn2_cryptic_coverage, stmn2_annotated_coverage, jir) |> 
+  left_join(ARHGAP32_cryptic_cBio, by = "case_submitter_id") |> 
+  distinct() |> 
+  filter(sample_type == "Primary Tumor") |> 
+  janitor::clean_names() |> 
+  select(-c(chromosome, start, end, strand, rail_id, junction_coverage, junction_avg_coverage)) |> 
+  rename_all(~str_replace_all(.x, "_x", "_STMN2")) |> 
+  rename_all(~str_replace_all(.x, "_y", "_ARHGAP32")) |> 
+  rename("cryptic_count_STMN2" = "stmn2_cryptic_coverage",
+         "anno_count_STMN2" = "stmn2_annotated_coverage",
+         "anno_count_ARHGAP32" = "anno_count",
+         "cryptic_count_ARHGAP32" = "cryptic_count")
+
+# df with all common cases ------------------------------------------------
+
+all_common_cases <- common_STMN2_ARHGAP32 |> 
+  full_join(common_ARHGAP32_SYNJ2) 
+
+all_common_cases |> 
+  pivot_longer(cols = c(jir_STMN2, jir_ARHGAP32, jir_SYNJ2),
+               names_to = "gene",
+               values_to = "cryptic_jir") |> 
+  mutate(gene = str_replace(gene, "jir_", "")) |> 
+  mutate(cryptic_jir = 1 - cryptic_jir) |> 
+  ggplot(aes(x = gene, 
+             y = cryptic_jir,
+             group = case_submitter_id)) +
+  geom_point() +
+  geom_line()
+
+
+# case set of all 14 common patients --------------------------------------
+
+all_common_cases <- all_common_cases |> 
+  mutate(case_id = paste0(study_id, ":", case_submitter_id))
+
+write_clip(unique(all_common_cases$case_id)) # copies all common patients to clipboard
+write_clip(unique(all_common_cases$case_submitter_id))
+
+
+
 
 # joining all three df together (STMN2 cryptic, ARHGAP32 cryptic, SYNJ2 cryptic) --------
     # to get the cases that have all three cryptic events

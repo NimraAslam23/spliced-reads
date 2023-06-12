@@ -16,10 +16,6 @@ library(ggplot2)
 library(tidyr)
 library(dplyr)
 library(knitr)
-if (!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-
-BiocManager::install("snapcount")
 library(snapcount)
 library(ggsignif)
 ```
@@ -90,7 +86,8 @@ ARHGAP32_clinical |>
   coord_flip() +
   labs(
     x = "Cancer Type",
-    y = "Number of Cases"
+    y = "Number of Cases",
+    title = "ARHGAP32 is expressed most in breast cancers"
   ) +
   theme(plot.title = element_text(size=10))
 

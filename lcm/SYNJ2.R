@@ -141,11 +141,14 @@ SYNJ2_cryptic_cBio |>
   ggplot(aes(x = fct_reorder(cancer_abbrev, mutation_count, median),
              y = mutation_count)) +
   geom_boxplot() +
+  coord_flip() +
   labs(
     x = "Cancer Type",
-    y = "Mutation Count",
-    title = ""
-  ) 
+    y = "Mutation Count"
+  ) +
+  geom_signif(comparisons = list(c("ESCA", "HNSC")),
+              map_signif_level = TRUE,
+              y_position = c(450))
 
 # cryptic coverage vs mutation count --------------------------------------
 
@@ -158,7 +161,10 @@ SYNJ2_cryptic_cBio |>
   labs(
     x = "Number of SYNJ2 cryptic events",
     y = "Mutation Count"
-  )
+  ) + 
+  geom_signif(comparisons = list(c("8", "9"), c("7","9")),
+              map_signif_level = TRUE,
+              y_position = c(230,210))
 
 SYNJ2_cryptic_cBio |> 
   drop_na() |> 
@@ -241,3 +247,89 @@ cBio_clinical |>
   facet_wrap(~study_start) +
   scale_y_continuous(trans = scales::pseudo_log_trans()) +
   stat_compare_means(comparisons = list(c("TRUE", "FALSE")), label = "p.format")
+
+
+# Survival comparisons ----------------------------------------------------
+
+survival_SYNJ2_cryptic <- cBio_clinical |>
+  left_join(SYNJ2_clinical_jir,by = c("case_submitter_id")) |> 
+  rename("synj2_cryptic_coverage" = "cryptic_count") |> 
+  rename("synj2_annotated_coverage" = "anno_count") |> 
+  janitor::clean_names() |> 
+  select(case_submitter_id, study_id, sample_id, cancer_abbrev, mutation_count, synj2_cryptic_coverage, synj2_annotated_coverage, months_of_disease_specific_survival, overall_survival_months, disease_specific_survival_status) |> 
+  mutate(months_of_disease_specific_survival = as.numeric(months_of_disease_specific_survival)) |> 
+  filter(!is.na(months_of_disease_specific_survival) & months_of_disease_specific_survival != "NA") |> 
+  mutate(mutation_count = as.numeric(mutation_count)) |> 
+  filter(!is.na(mutation_count) & mutation_count != "NA") |> 
+  mutate(synj2_cryptic_detected = synj2_cryptic_coverage >= 2) |> 
+  group_by(cancer_abbrev) |> 
+  mutate(n_detected_synj2 = sum(synj2_cryptic_detected,na.rm = TRUE)) |>
+  ungroup() |> 
+  filter(!is.na(synj2_cryptic_detected)) |> 
+  filter(n_detected_synj2 > 2) |> 
+  mutate(synj2_cryptic_detected = as.logical(synj2_cryptic_detected)) |> #changes FALSE and TRUE to 0 and 1 respectively
+  distinct()
+
+# survival status column
+survival_SYNJ2_cryptic <- survival_SYNJ2_cryptic |> 
+  filter(!is.na(disease_specific_survival_status) & disease_specific_survival_status != "NA") |> 
+  mutate(disease_specific_survival_status = str_extract(disease_specific_survival_status, "^[^:]+"),
+         disease_specific_survival_status = as.numeric(disease_specific_survival_status))
+# 1 = dead with tumor
+# 0 = alive or dead tumor free
+
+# survival KM curve for cases with SYNJ2 cryptic
+survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ 1, 
+        data = subset(survival_SYNJ2_cryptic, synj2_cryptic_detected==TRUE)) |> 
+  ggsurvfit() +
+  labs(
+    x = "Months",
+    y = "Overall Survival Probability",
+    title = "Kaplan-Meier Curve: SYNJ2 Cryptic Events"
+  ) +
+  add_confidence_interval() 
+
+# survival KM curve for cases with no cryptic
+survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ 1, 
+        data = subset(survival_SYNJ2_cryptic, synj2_cryptic_detected==FALSE)) |> 
+  ggsurvfit() +
+  labs(
+    x = "Months",
+    y = "Overall Survival Probability",
+    title = "Kaplan-Meier Curve: No SYNJ2 Cryptic Events"
+  ) +
+  add_confidence_interval() 
+
+# survival KM curve - both cryptic and non
+survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ synj2_cryptic_detected, 
+        data = survival_SYNJ2_cryptic) |> 
+  ggsurvfit() +
+  labs(
+    x = "Months with disease",
+    y = "Overall Survival Probability",
+    title = "Kaplan-Meier Curve: All Cancer Types (SYNJ2)"
+  ) +
+  add_confidence_interval() 
+
+
+# density plot - months survival in cryptic vs non
+survival_SYNJ2_cryptic |> 
+  mutate(synj2_cryptic_detected = as.logical(synj2_cryptic_detected)) |> 
+  ggplot(aes(x = months_of_disease_specific_survival, colour = synj2_cryptic_detected)) +
+  geom_density() +
+  labs(
+    x = "Survival months with disease"  
+  )
+# same survival - cryptic vs non-cryptic (all cancers combined)
+
+# number of SYNJ2 detected and non in each cancer type
+SYNJ2_n_detected_non_cancer_abbrev <- survival_SYNJ2_cryptic |> 
+  group_by(cancer_abbrev, synj2_cryptic_detected) |> 
+  summarise(count = n()) |> 
+  ungroup() |> 
+  pivot_wider(
+    names_from = synj2_cryptic_detected,
+    values_from = count
+  ) |> 
+  rename("synj2_cryptic_true" = "TRUE") |> 
+  rename("synj2_cryptic_false" = "FALSE")

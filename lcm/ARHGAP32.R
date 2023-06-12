@@ -52,18 +52,6 @@ ARHGAP32_clinical <- ARHGAP32_clinical|>
   separate(project_id, into = c("project", "cancer_type")) |> 
   select(-project)
 
-# bar plot - cancer types with ARHGAP32 events ----------------------------
-
-ARHGAP32_clinical |> 
-  ggplot(aes(x = fct_rev(fct_infreq(cancer_type)))) +
-  geom_bar() +
-  coord_flip() +
-  labs(
-    x = "Cancer Type",
-    y = "Number of Cases",
-    title = "ARHGAP32 is expressed in most breast cancers"
-  ) +
-  theme(plot.title = element_text(size=10))
 
 # join query table with clinical table ------------------------------------
 
@@ -77,7 +65,20 @@ ARHGAP32_clinical_jir <- ARHGAP32_query |> rename("case_submitter_id" = "gdc_cas
   rename("cgc_primary_site" = "cgc_case_primary_site")
 
 ARHGAP32_clinical_jir_cryptic <- ARHGAP32_clinical_jir |> 
-  filter(cryptic_count > 5) 
+  filter(cryptic_count > 2) 
+
+# bar plot - cancer types with ARHGAP32 events ----------------------------
+
+ARHGAP32_clinical |> 
+  ggplot(aes(x = fct_rev(fct_infreq(cancer_type)))) +
+  geom_bar() +
+  coord_flip() +
+  labs(
+    x = "Cancer Type",
+    y = "Number of Cases",
+    title = "ARHGAP32 is expressed most in breast cancers"
+  ) +
+  theme(plot.title = element_text(size=10))
 
 # primary sites of cancers with cryptic ARHGAP32 events -------------------
 
@@ -124,10 +125,6 @@ ARHGAP32_cryptic_cBio <- ARHGAP32_clinical_jir_cryptic |>
   left_join(cBio_clinical, by = "case_submitter_id") |> 
   select(-cgc_primary_site, -Cancer.Type, -Overall.Survival..Months.) |>
   rename("disease_survival_months" = "Months.of.disease.specific.survival") |> 
-  relocate(case_submitter_id, .after = Sample.ID) |> 
-  relocate(cancer_type, .after = case_submitter_id) |> 
-  relocate(gdc_primary_site, .after = cancer_abbrev) |> 
-  relocate(sample_type, .after = gdc_primary_site) |> 
   janitor::clean_names()
 
 # boxplot - n mutations for each cancer type ------------------------------
@@ -141,11 +138,14 @@ ARHGAP32_cryptic_cBio |>
   ggplot(aes(x = fct_reorder(cancer_abbrev, mutation_count, median),
              y = mutation_count)) +
   geom_boxplot() +
+  coord_flip() +
   labs(
     x = "Cancer Type",
-    y = "Mutation Count",
-    title = ""
-  ) 
+    y = "Mutation Count"
+  ) +
+  geom_signif(comparisons = list(c("SKCM", "COAD"),c("COAD", "LUAD")),
+              map_signif_level = TRUE,
+              y_position = c(1750, 1500))
 
 # cryptic coverage vs mutation count --------------------------------------
 
@@ -158,7 +158,10 @@ ARHGAP32_cryptic_cBio |>
   labs(
     x = "Number of ARHGAP32 cryptic events",
     y = "Mutation Count"
-  )
+  ) +
+  geom_signif(comparisons = list(c("10", "16")),
+              map_signif_level = TRUE,
+              y_position = c(600))
 
 ARHGAP32_cryptic_cBio |> 
   drop_na() |> 
@@ -171,7 +174,7 @@ ARHGAP32_cryptic_cBio |>
     y = "Mutation Count"
   )
 
-# Mutational burden
+# Mutational burden -------------------------------------------------------
 
 total_mutations_each_cancer <- cBio_clinical |> 
   drop_na(Mutation.Count) |> 
@@ -190,7 +193,7 @@ mutations_each_cancer_general_vs_ARHGAP32cryptic <- total_mutations_each_cancer 
   mutate(percent_with_cryptic = (total_mutations_cryptic/total_mutations)*100)
 #16% of all mutations in LGG cancer are in cases with STMN2 cryptic events
 
-# Fraction of each cancer that has cryptic STMN2 events 
+# Fraction of each cancer that has cryptic STMN2 events  ------------------
 
 total_each_cancer <- cBio_clinical |> 
   group_by(cancer_abbrev) |> 
@@ -214,7 +217,9 @@ total_each_cancer_general_vs_ARHGAP32cryptic |>
   ) +
   theme(legend.position = "none")
 
-# calculating mutation burden
+
+# calculating mutation burden ---------------------------------------------
+
 
 cBio_clinical |>
   left_join(ARHGAP32_clinical_jir,by = c("case_submitter_id")) |> 
@@ -241,3 +246,93 @@ cBio_clinical |>
   facet_wrap(~study_start) +
   scale_y_continuous(trans = scales::pseudo_log_trans()) +
   stat_compare_means(comparisons = list(c("TRUE", "FALSE")), label = "p.format")
+
+# Survival Comparisons
+
+survival_ARHGAP32_cryptic <- cBio_clinical |> 
+  left_join(ARHGAP32_clinical_jir, by = c("case_submitter_id")) |> 
+  rename("arhgap32_cryptic_coverage" = "cryptic_count") |> 
+  rename("arhgap32_annotated_coverage" = "anno_count") |> 
+  janitor::clean_names() |> 
+  select(case_submitter_id, study_id, sample_id, cancer_abbrev, mutation_count, arhgap32_cryptic_coverage, arhgap32_annotated_coverage, months_of_disease_specific_survival, overall_survival_months, disease_specific_survival_status) |> 
+  mutate(months_of_disease_specific_survival = as.numeric(months_of_disease_specific_survival)) |> 
+  filter(!is.na(months_of_disease_specific_survival) & months_of_disease_specific_survival != "NA") |> 
+  mutate(mutation_count = as.numeric(mutation_count)) |> 
+  filter(!is.na(mutation_count) & mutation_count != "NA") |> 
+  mutate(arhgap32_cryptic_detected = arhgap32_cryptic_coverage >= 2) |> 
+  group_by(cancer_abbrev) |> 
+  mutate(n_detected_arhgap32 = sum(arhgap32_cryptic_detected,na.rm = TRUE)) |>
+  ungroup() |> 
+  filter(!is.na(arhgap32_cryptic_detected)) |> 
+  filter(n_detected_arhgap32 > 2) |> 
+  mutate(arhgap32_cryptic_detected = as.logical(arhgap32_cryptic_detected)) |> #changes FALSE and TRUE to 0 and 1 respectively
+  distinct()
+
+# survival status column
+survival_ARHGAP32_cryptic <- survival_ARHGAP32_cryptic |> 
+  filter(!is.na(disease_specific_survival_status) & disease_specific_survival_status != "NA") |> 
+  mutate(disease_specific_survival_status = str_extract(disease_specific_survival_status, "^[^:]+"),
+         disease_specific_survival_status = as.numeric(disease_specific_survival_status))
+# 1 = dead with tumor
+# 0 = alive or dead tumor free
+
+# survival KM curve for cases with ARHGAP32 cryptic
+survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ 1, 
+        data = subset(survival_ARHGAP32_cryptic, arhgap32_cryptic_detected==TRUE)) |> 
+  ggsurvfit() +
+  labs(
+    x = "Months",
+    y = "Overall Survival Probability",
+    title = "Kaplan-Meier Curve: ARHGAP32 Cryptic Events"
+  ) +
+  add_confidence_interval() 
+
+
+# survival KM curve for cases with no cryptic
+survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ 1, 
+        data = subset(survival_ARHGAP32_cryptic, arhgap32_cryptic_detected==FALSE)) |> 
+  ggsurvfit() +
+  labs(
+    x = "Months",
+    y = "Overall Survival Probability",
+    title = "Kaplan-Meier Curve: No ARHGAP32 Cryptic Events"
+  ) +
+  add_confidence_interval() 
+
+
+# survival KM curve - both cryptic and non
+survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ arhgap32_cryptic_detected, 
+        data = survival_ARHGAP32_cryptic) |> 
+  ggsurvfit() +
+  labs(
+    x = "Months with disease",
+    y = "Overall Survival Probability",
+    title = "Kaplan-Meier Curve: All Cancer Types (ARHGAP32)"
+  ) +
+  add_confidence_interval() 
+
+
+# density plot - months survival in cryptic vs non
+survival_ARHGAP32_cryptic |> 
+  mutate(arhgap32_cryptic_detected = as.logical(arhgap32_cryptic_detected)) |> 
+  ggplot(aes(x = months_of_disease_specific_survival, colour = arhgap32_cryptic_detected)) +
+  geom_density() +
+  labs(
+    x = "Survival months with disease"  
+  )
+# same survival - cryptic vs non-cryptic (all cancers combined)
+
+
+# number of ARHGAP32 detected and non in each cancer type
+ARHGAP32_n_detected_non_cancer_abbrev <- survival_ARHGAP32_cryptic |> 
+  group_by(cancer_abbrev, arhgap32_cryptic_detected) |> 
+  summarise(count = n()) |> 
+  ungroup() |> 
+  pivot_wider(
+    names_from = arhgap32_cryptic_detected,
+    values_from = count
+  ) |> 
+  rename("arhgap32_cryptic_true" = "TRUE") |> 
+  rename("arhgap32_cryptic_false" = "FALSE")
+
+
