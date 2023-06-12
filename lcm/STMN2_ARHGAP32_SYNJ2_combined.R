@@ -112,50 +112,48 @@ all_common_cases <- all_common_cases |>
 write_clip(unique(all_common_cases$case_id)) # copies all common patients to clipboard
 write_clip(unique(all_common_cases$case_submitter_id))
 
+read_save_mutation_data <- function(filename) {
+  # Read file into a dataframe
+  df <- read.csv(filename, sep = "\t")
+  # Clean the filename
+  cleaned_filename <- gsub("-", "_", filename)
+  cleaned_filename <- gsub("_mutations.tsv", "", cleaned_filename)
+  # Extract case_submitter_id from the filename
+  case_submitter_id <- gsub("_", "-", cleaned_filename)
+  # Add the case_submitter_id column to the dataframe
+  df$case_submitter_id <- case_submitter_id
+  # Save the dataframe with the cleaned filename
+  cleaned_filename <- paste0(cleaned_filename, "_mut")
+  assign(cleaned_filename, df, envir = .GlobalEnv)
+}
+
+# List all mutation files in the working directory
+mutation_files <- list.files(pattern = "^TCGA.*_mutations.tsv$")
+
+# Loop through the mutation files and apply the function
+for (filename in mutation_files) {
+  df <- read.csv(filename, sep = "\t")
+  # Check if the dataframe is empty
+  if(nrow(df) == 0) {
+    cat("Skipping", filename, "as it has no data. \n")
+    next # Skip to the next iteration
+  }
+  read_save_mutation_data(filename)
+}
 
 
 
-# joining all three df together (STMN2 cryptic, ARHGAP32 cryptic, SYNJ2 cryptic) --------
-    # to get the cases that have all three cryptic events
 
-STMN2_cryptic_cBio <- STMN2_cryptic_cBio |> 
-  select(c(STMN2_cryptic_coverage, STMN2_annotated_coverage, jir, case_submitter_id, cancer_type, gdc_primary_site,
-           junction_coverage, junction_avg_coverage, rpm, Months.of.disease.specific.survival, Mutation.Count)) |> 
-  rename("STMN2_jir" = "jir") |> 
-  rename("STMN2_junction_coverage" = "junction_coverage") |> 
-  rename("STMN2_junction_avg_coverage" = "junction_avg_coverage") |> 
-  rename("STMN2_rpm" = "rpm") |> 
-  rename("STMN2_months_survival" = "Months.of.disease.specific.survival") |> 
-  rename("STMN2_mutation_count" = "Mutation.Count") |> 
-  distinct()
 
-ARHGAP32_cryptic_cBio <- ARHGAP32_cryptic_cBio |> 
-  select(c(cryptic_count, anno_count, jir, case_submitter_id, junction_coverage, junction_avg_coverage, cancer_abbrev, 
-           disease_survival_months, mutation_count)) |> 
-  rename("ARHGAP32_cryptic_count" = "cryptic_count") |> 
-  rename("ARHGAP32_anno_count" = "anno_count") |> 
-  rename("ARHGAP32_jir" = "jir") |> 
-  rename("ARHGAP32_junction_coverage" = "junction_coverage") |> 
-  rename("ARHGAP32_junction_avg_coverage" = "junction_avg_coverage") |> 
-  rename("ARHGAP32_months_survival" = "disease_survival_months") |> 
-  rename("ARHGAP32_mutation_count" = "mutation_count") |> 
-  distinct()
 
-SYNJ2_cryptic_cBio <- SYNJ2_cryptic_cBio |> 
-  select(c(cryptic_count, anno_count, jir, junction_coverage, junction_avg_coverage, case_submitter_id, 
-           disease_survival_months, mutation_count)) |> 
-  rename("SYNJ2_cryptic_count" = "cryptic_count") |> 
-  rename("SYNJ2_anno_count" = "anno_count") |> 
-  rename("SYNJ2_jir" = "jir") |> 
-  rename("SYNJ2_junction_coverage" = "junction_coverage") |> 
-  rename("SYNJ2_junction_avg_coverage" = "junction_avg_coverage") |> 
-  rename("SYNJ2_months_survival" = "disease_survival_months") |> 
-  rename("SYNJ2_mutation_count" = "mutation_count") |> 
-  distinct()
 
-STMN2_ARHGAP32_SYNJ2_cryptic <- STMN2_cryptic_cBio |> 
-  inner_join(SYNJ2_cryptic_cBio, by="case_submitter_id") |> 
-  inner_join(ARHGAP32_cryptic_cBio, by="case_submitter_id")
+
+
+
+
+
+
+
 
 # raw cryptic counts and psi column ---------------------------------------
 
