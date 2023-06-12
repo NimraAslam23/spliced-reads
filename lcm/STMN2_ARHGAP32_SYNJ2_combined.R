@@ -152,9 +152,12 @@ for (df in mut_dataframes) {
   joined_df <- left_join(get(df), all_common_cases, by = "case_submitter_id")
   # update the dataframe in the global environment
   assign(df, joined_df, envir = .GlobalEnv)
+  # combine all mutation dataframes into one
+  mut_dataframes <- ls()[grep("_mut$", ls())]
+  combined_mut_df <- bind_rows(mget(mut_dataframes))
 }
 
-
+# combining all mutation dataframes into one ------------------------------
 
 
 
