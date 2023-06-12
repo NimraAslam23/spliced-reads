@@ -142,7 +142,17 @@ for (filename in mutation_files) {
 }
 
 
+# joining clinical data to mutation data ----------------------------------
 
+# filter the dataframes ending with "_mut"
+mut_dataframes <- ls()[grep("_mut$", ls())]
+
+# perform left join for each dataframe
+for (df in mut_dataframes) {
+  joined_df <- left_join(get(df), all_common_cases, by = "case_submitter_id")
+  # update the dataframe in the global environment
+  assign(df, joined_df, envir = .GlobalEnv)
+}
 
 
 
