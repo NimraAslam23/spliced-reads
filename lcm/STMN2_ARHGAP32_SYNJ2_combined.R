@@ -12,6 +12,34 @@ library(knitr)
 library(snapcount)
 library(ggsignif)
 
+# files to run for this script:
+    # STMN2_cryptic_cBio
+    # ARHGAP32_cryptic_cBio
+    # SYNJ2_cryptic_cBio
+
+
+# functions in this script ------------------------------------------------
+
+read_save_mutation_data <- function(filename) {
+  df <- janitor::clean_names(read.csv(filename, sep = "\t"))
+  return(df)
+}
+# read_save_mutation_data("TCGA-VQ-A91N_mutations.tsv") |> View()
+
+combine_mutation_data <- function(folder_path, pattern = "^TCGA.*_mutations.tsv$") {
+  mutation_files <- list.files(folder_path,
+                               pattern = pattern,
+                               full.names = TRUE)
+  #print(mutation_files)
+  df <- purrr::map(mutation_files, read_save_mutation_data)
+  patient_id <- purrr::simplify(purrr::map(mutation_files, basename))
+  patient_id = gsub("_mutations.tsv", "", patient_id)
+  non_empty_df <- df[sapply(df, function(x) nrow(x) > 0)]
+  non_empty_patient_id <- patient_id[sapply(df, function(x) nrow(x) > 0)]
+  df <- purrr::map2(non_empty_df, non_empty_patient_id, ~cbind(.x, case_submitter_id = .y))
+  df <- data.table::rbindlist(df)
+  return(df)
+}
 
 # any cases with all three or two cryptic events?
 
@@ -112,61 +140,7 @@ all_common_cases <- all_common_cases |>
 write_clip(unique(all_common_cases$case_id)) # copies all common patients to clipboard
 write_clip(unique(all_common_cases$case_submitter_id))
 
-read_save_mutation_data <- function(filename) {
-  # Read file into a dataframe
-  df <- read.csv(filename, sep = "\t")
-  # Clean the filename
-  cleaned_filename <- gsub("-", "_", filename)
-  cleaned_filename <- gsub("_mutations.tsv", "", cleaned_filename)
-  # Extract case_submitter_id from the filename
-  case_submitter_id <- gsub("_", "-", cleaned_filename)
-  # Add the case_submitter_id column to the dataframe
-  df$case_submitter_id <- case_submitter_id
-  # Save the dataframe with the cleaned filename
-  cleaned_filename <- paste0(cleaned_filename, "_mut")
-  assign(cleaned_filename, df, envir = .GlobalEnv)
-}
-
-# List all mutation files in the working directory
-mutation_files <- list.files(pattern = "^TCGA.*_mutations.tsv$")
-
-# Loop through the mutation files and apply the function
-for (filename in mutation_files) {
-  df <- read.csv(filename, sep = "\t")
-  # Check if the dataframe is empty
-  if(nrow(df) == 0) {
-    cat("Skipping", filename, "as it has no data. \n")
-    next # Skip to the next iteration
-  }
-  read_save_mutation_data(filename)
-}
-
-
-# joining clinical data to mutation data ----------------------------------
-
-# filter the dataframes ending with "_mut"
-mut_dataframes <- ls()[grep("_mut$", ls())]
-
-# perform left join for each dataframe
-for (df in mut_dataframes) {
-  joined_df <- left_join(get(df), all_common_cases, by = "case_submitter_id")
-  # update the dataframe in the global environment
-  assign(df, joined_df, envir = .GlobalEnv)
-  # combine all mutation dataframes into one
-  mut_dataframes <- ls()[grep("_mut$", ls())]
-  combined_mut_df <- bind_rows(mget(mut_dataframes))
-}
-
-# combining all mutation dataframes into one ------------------------------
-
-
-
-
-
-
-
-
-
+combined_mut_df <- combine_mutation_data("/Users/nimraaslam/Documents/GitHub/spliced-reads/lcm")
 
 # raw cryptic counts and psi column ---------------------------------------
 

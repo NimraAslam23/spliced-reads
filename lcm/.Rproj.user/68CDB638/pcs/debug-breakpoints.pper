@@ -30,21 +30,6 @@
                 "type": 1,
                 "is_package_breakpoint": false,
                 "package_name": ""
-            },
-            {
-                "id": 2,
-                "path": "~/Documents/GitHub/spliced-reads/lcm/STMN2_ARHGAP32_SYNJ2_combined.R",
-                "line_number": 151,
-                "function_steps": "",
-                "function_name": "toplevel",
-                "state": 1,
-                "editor_state": 1,
-                "editor_line_number": 151,
-                "is_pending_debug_completion": false,
-                "needs_updated_steps": false,
-                "type": 1,
-                "is_package_breakpoint": false,
-                "package_name": ""
             }
         ]
     }
