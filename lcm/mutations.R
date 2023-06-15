@@ -134,12 +134,6 @@ for (project in project_list_7) {
   }
 }
 
-
-all_m
-
-
-
-
 # still need to go through this code --------------------------------------
 
 project_list <- c("TCGA-BRCA", "TCGA-THCA", "TCGA-UCEC", "TCGA-ACC", 
@@ -159,7 +153,7 @@ for (project in project_list) {
       data.type = "Masked Somatic Mutation",
       access = "open"
     )
-    GDCdownload(query) #What is this line doing? Does it actually assign to somethign? 
+    GDCdownload(query)  
     maf <- GDCprepare(query)
     if (!is.null(maf$data) && nrow(maf$data) > 0) {
       write.csv(maf)
@@ -169,6 +163,8 @@ for (project in project_list) {
     print('file exists')
     print(file_output)
   }
+  
+  write.table(maf, file="/Users/nimraaslam/Documents/GitHub/spliced-reads/lcm/maf.txt", sep=',')
   
 }
 
