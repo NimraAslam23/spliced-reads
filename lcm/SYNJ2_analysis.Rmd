@@ -364,3 +364,55 @@ SYNJ2_n_detected_non_cancer_abbrev <- survival_SYNJ2_cryptic |>
   rename("synj2_cryptic_true" = "TRUE") |> 
   rename("synj2_cryptic_false" = "FALSE")
 ```
+
+# Comparing Aneuploidy cancer-by-cancer
+
+```{r boxplot aneuploidy score cancer-by-cancer in cryptic vs none}
+
+aneuploidy_SYNJ2 <- cBio_clinical |>
+  left_join(SYNJ2_clinical_jir,by = c("case_submitter_id")) |> 
+  rename("synj2_cryptic_coverage" = "cryptic_count") |> 
+  rename("synj2_annotated_coverage" = "anno_count") |> 
+  janitor::clean_names() |> 
+  select(case_submitter_id, study_id, cancer_abbrev, aneuploidy_score, synj2_cryptic_coverage, synj2_annotated_coverage) |> 
+  separate(study_id,into = ('study_start'),remove = FALSE) |> 
+  unique() |> 
+  mutate(aneuploidy_score = as.numeric(aneuploidy_score)) |> 
+  filter(!is.na(aneuploidy_score) & aneuploidy_score != "NA") |> 
+  mutate(synj2_cryptic_detected = synj2_cryptic_coverage >= 2) |> 
+  group_by(study_start) |> 
+  mutate(n_total_samples = n_distinct(case_submitter_id)) |> 
+  mutate(n_detected_synj2 = sum(synj2_cryptic_detected,na.rm = TRUE)) |> 
+  ungroup() |> 
+  filter(!is.na(synj2_cryptic_detected)) |> 
+  filter(n_detected_synj2 > 2) |> 
+  group_by(study_start) |> 
+  mutate(wilcox_result = list(broom::tidy(wilcox.test(aneuploidy_score ~ synj2_cryptic_detected, exact=FALSE)))) |> 
+  add_significance() |> 
+  ungroup() |> 
+  unnest(wilcox_result)
+ 
+#write.table(aneuploidy_ARHGAP32, file="/Users/nimraaslam/Documents/GitHub/spliced-reads/lcm/aneuploidy_ARHGAP32.txt", sep=',')
+  
+aneuploidy_SYNJ2 |> 
+  ggplot(aes(x = synj2_cryptic_detected,
+             y = aneuploidy_score)) + 
+  geom_boxplot(aes(fill = synj2_cryptic_detected)) + 
+  labs(x = "Cancer Type",
+       y = "Aneuploidy Score") +
+  facet_wrap(~study_start) +
+  stat_compare_means(comparisons = list(c("TRUE", "FALSE")), label = "p.format") +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.25))) +
+  theme(legend.position = "bottom") +
+  guides(fill = guide_legend(title = "Cryptic SYNJ2 detected")) +
+  theme(
+    axis.title.x = element_text(size = 12, face = "bold"),
+    axis.title.y = element_text(size = 12, face = "bold"),
+    axis.text.x = element_text(size = 10),
+    axis.text.y = element_text(size = 10),
+    strip.text = element_text(size = 10, face = "bold"),
+   strip.background = element_rect(fill = "lightgray"),
+    legend.text = element_text(size = 10),
+    legend.title = element_text(size = 12)
+  )
+```
