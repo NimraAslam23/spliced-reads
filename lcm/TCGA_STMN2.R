@@ -369,12 +369,12 @@ cBio_clinical |>
   ungroup() |> 
   filter(!is.na(stmn2_cryptic_detected)) |> 
   filter(n_detected_stmn2 > 2) |> 
-  ggplot(aes(x = study_start,
+  ggplot(aes(x = stmn2_cryptic_detected,
              y = mutation_count)) + 
   geom_boxplot(aes(fill = stmn2_cryptic_detected)) + 
   labs(x = "Cancer Type",
        y = "Mutation Count") +
-  coord_flip() + 
+  facet_wrap(~study_start) +
   scale_y_continuous(trans = scales::pseudo_log_trans()) +
   stat_compare_means(comparisons = list(c("TRUE", "FALSE")), label = "p.format")
 

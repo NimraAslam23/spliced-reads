@@ -56,13 +56,11 @@ common_patients_ARHGAP32_SYNJ2 <- intersect(ARHGAP32_cryptic_cBio$case_submitter
 common_ARHGAP32_SYNJ2 <- ARHGAP32_cryptic_cBio |> 
   filter(case_submitter_id %in% common_patients_ARHGAP32_SYNJ2) |> 
   select(case_submitter_id, start, end, strand, anno_count, cryptic_count, jir) |> 
-  left_join(SYNJ2_cryptic_cBio, by = "case_submitter_id") |> 
+  left_join(ARHGAP32_cryptic_cBio, by = "case_submitter_id", suffix = c("_ARHGAP32","_SYNJ2")) |> 
   distinct() |> 
   select(-cancer) |> 
   filter(sample_type == "Primary Tumor") |> 
-  janitor::clean_names() |> 
-  rename_all(~str_replace_all(.x, "_x", "_ARHGAP32")) |> 
-  rename_all(~str_replace_all(.x, "_y", "_SYNJ2")) 
+  janitor::clean_names() 
 
   # within each patient, what is the fraction of cryptic to annotated reads?
 common_ARHGAP32_SYNJ2 |> 
@@ -102,17 +100,11 @@ common_STMN2_ARHGAP32 <- STMN2_cryptic_cBio |>
   filter(sample_type == "Primary Tumor",
          case_submitter_id %in% common_patients_STMN2_ARHGAP32) |> 
   select(case_submitter_id, stmn2_cryptic_coverage, stmn2_annotated_coverage, jir) |> 
-  left_join(ARHGAP32_cryptic_cBio, by = "case_submitter_id") |> 
+  left_join(ARHGAP32_cryptic_cBio, by = "case_submitter_id",suffix = c("_STMN2","_ARHGAP32")) |>   
   distinct() |> 
   filter(sample_type == "Primary Tumor") |> 
   janitor::clean_names() |> 
-  select(-c(chromosome, start, end, strand, rail_id, junction_coverage, junction_avg_coverage)) |> 
-  rename_all(~str_replace_all(.x, "_x", "_STMN2")) |> 
-  rename_all(~str_replace_all(.x, "_y", "_ARHGAP32")) |> 
-  rename("cryptic_count_STMN2" = "stmn2_cryptic_coverage",
-         "anno_count_STMN2" = "stmn2_annotated_coverage",
-         "anno_count_ARHGAP32" = "anno_count",
-         "cryptic_count_ARHGAP32" = "cryptic_count")
+  select(-c(chromosome, start, end, strand, rail_id, junction_coverage, junction_avg_coverage)) 
 
 # df with all common cases ------------------------------------------------
 
