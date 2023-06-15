@@ -336,3 +336,51 @@ ARHGAP32_n_detected_non_cancer_abbrev <- survival_ARHGAP32_cryptic |>
   rename("arhgap32_cryptic_false" = "FALSE")
 
 
+# Comparing Aneuploidy cancer-by-cancer
+
+aneuploidy_ARHGAP32 <- cBio_clinical |>
+  left_join(ARHGAP32_clinical_jir,by = c("case_submitter_id")) |> 
+  rename("arhgap32_cryptic_coverage" = "cryptic_count") |> 
+  rename("arhgap32_annotated_coverage" = "anno_count") |> 
+  janitor::clean_names() |> 
+  select(case_submitter_id, study_id, cancer_abbrev, aneuploidy_score, arhgap32_cryptic_coverage, arhgap32_annotated_coverage) |> 
+  separate(study_id,into = ('study_start'),remove = FALSE) |> 
+  unique() |> 
+  mutate(aneuploidy_score = as.numeric(aneuploidy_score)) |> 
+  filter(!is.na(aneuploidy_score) & aneuploidy_score != "NA") |> 
+  mutate(arhgap32_cryptic_detected = arhgap32_cryptic_coverage >= 2) |> 
+  group_by(study_start) |> 
+  mutate(n_total_samples = n_distinct(case_submitter_id)) |> 
+  mutate(n_detected_arhgap32 = sum(arhgap32_cryptic_detected,na.rm = TRUE)) |> 
+  ungroup() |> 
+  filter(!is.na(arhgap32_cryptic_detected)) |> 
+  filter(n_detected_arhgap32 > 2) |> 
+  group_by(study_start) |> 
+  mutate(wilcox_result = list(broom::tidy(wilcox.test(aneuploidy_score ~ arhgap32_cryptic_detected, exact=FALSE)))) |> 
+  add_significance() |> 
+  ungroup() |> 
+  unnest(wilcox_result)
+
+#write.table(aneuploidy_ARHGAP32, file="/Users/nimraaslam/Documents/GitHub/spliced-reads/lcm/aneuploidy_ARHGAP32.txt", sep=',')
+
+aneuploidy_ARHGAP32 |> 
+  ggplot(aes(x = arhgap32_cryptic_detected,
+             y = aneuploidy_score)) + 
+  geom_boxplot(aes(fill = arhgap32_cryptic_detected)) + 
+  labs(x = "Cancer Type",
+       y = "Aneuploidy Score") +
+  facet_wrap(~study_start) +
+  stat_compare_means(comparisons = list(c("TRUE", "FALSE")), label = "p.format") +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.25))) +
+  theme(legend.position = "bottom") +
+  guides(fill = guide_legend(title = "Cryptic ARHGAP32 detected")) +
+  theme(
+    axis.title.x = element_text(size = 12, face = "bold"),
+    axis.title.y = element_text(size = 12, face = "bold"),
+    axis.text.x = element_text(size = 10),
+    axis.text.y = element_text(size = 10),
+    strip.text = element_text(size = 10, face = "bold"),
+    strip.background = element_rect(fill = "lightgray"),
+    legend.text = element_text(size = 10),
+    legend.title = element_text(size = 12)
+  )

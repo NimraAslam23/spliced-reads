@@ -367,7 +367,7 @@ SYNJ2_n_detected_non_cancer_abbrev <- survival_SYNJ2_cryptic |>
 
 # Comparing Aneuploidy cancer-by-cancer
 
-```{r boxplot aneuploidy score cancer-by-cancer in cryptic vs none}
+```{r boxplot aneuploidy score cancer-by-cancer in cryptic vs none, echo = FALSE}
 
 aneuploidy_SYNJ2 <- cBio_clinical |>
   left_join(SYNJ2_clinical_jir,by = c("case_submitter_id")) |> 

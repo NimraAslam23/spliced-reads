@@ -518,7 +518,7 @@ STMN2_n_detected_non_cancer_abbrev <- survival_STMN2_cryptic |>
 
 # Comparing Aneuploidy cancer-by-cancer
 
-```{r boxplot aneuploidy score cancer-by-cancer in cryptic vs none}
+```{r boxplot aneuploidy score cancer-by-cancer in cryptic vs none, echo = FALSE}
 aneuploidy_STMN2 <- cBio_clinical |>
   left_join(STMN2_clinical_jir,by = c("case_submitter_id")) |> 
   janitor::clean_names() |> 

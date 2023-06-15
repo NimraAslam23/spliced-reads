@@ -453,32 +453,53 @@ n_detected_non_cancer_abbrev <- survival_STMN2_cryptic |>
   rename("stmn2_cryptic_false" = "FALSE")
       # PCPG has 130 false, 51 true
       # GBM has 154 false, 11 true
-  
-
-# PCPG survival analysis --------------------------------------------------
-
-survfit(Surv(months_of_disease_specific_survival, stmn2_cryptic_detected) ~ stmn2_cryptic_detected, 
-        data = subset(survival_STMN2_cryptic, cancer_abbrev == "PCPG")) |> 
-  ggsurvfit() +
-  labs(
-    x = "Months with disease",
-    y = "Overall Survival Probability",
-    title = "PCPG Survival"
-  ) +
-  add_confidence_interval() 
 
 
-# GBM survival analysis ---------------------------------------------------
+# Comparing Aneuploidy cancer-by-cancer
 
-survfit(Surv(months_of_disease_specific_survival, stmn2_cryptic_detected) ~ stmn2_cryptic_detected, 
-        data = subset(survival_STMN2_cryptic, cancer_abbrev == "GBM")) |> 
-  ggsurvfit() +
-  labs(
-    x = "Months with disease",
-    y = "Overall Survival Probability",
-    title = "GBM Survival"
-  ) +
-  add_confidence_interval() 
+aneuploidy_STMN2 <- cBio_clinical |>
+  left_join(STMN2_clinical_jir,by = c("case_submitter_id")) |> 
+  janitor::clean_names() |> 
+  rename("cancer_abbrev" = "cancer_abbrev_x") |> 
+  select(case_submitter_id, study_id, cancer_abbrev, aneuploidy_score, stmn2_cryptic_coverage, stmn2_annotated_coverage) |> 
+  separate(study_id,into = ('study_start'),remove = FALSE) |> 
+  unique() |> 
+  mutate(aneuploidy_score = as.numeric(aneuploidy_score)) |> 
+  filter(!is.na(aneuploidy_score) & aneuploidy_score != "NA") |> 
+  mutate(stmn2_cryptic_detected = stmn2_cryptic_coverage >= 2) |> 
+  group_by(study_start) |> 
+  mutate(n_total_samples = n_distinct(case_submitter_id)) |> 
+  mutate(n_detected_stmn2 = sum(stmn2_cryptic_detected,na.rm = TRUE)) |> 
+  ungroup() |> 
+  filter(!is.na(stmn2_cryptic_detected)) |> 
+  filter(n_detected_stmn2 > 2) |> 
+  group_by(study_start) |> 
+  mutate(wilcox_result = list(broom::tidy(wilcox.test(aneuploidy_score ~ stmn2_cryptic_detected, exact=FALSE)))) |> 
+  add_significance() |> 
+  ungroup() |> 
+  unnest(wilcox_result)
+
+aneuploidy_STMN2 |> 
+  ggplot(aes(x = stmn2_cryptic_detected,
+             y = aneuploidy_score)) + 
+  geom_boxplot(aes(fill = stmn2_cryptic_detected)) + 
+  labs(x = "Cancer Type",
+       y = "Aneuploidy Score") +
+  facet_wrap(~study_start) +
+  stat_compare_means(comparisons = list(c("TRUE", "FALSE")), label = "p.format") +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.25))) +
+  theme(legend.position = "bottom") +
+  guides(fill = guide_legend(title = "Cryptic STMN2 detected")) +
+  theme(
+    axis.title.x = element_text(size = 12, face = "bold"),
+    axis.title.y = element_text(size = 12, face = "bold"),
+    axis.text.x = element_text(size = 10),
+    axis.text.y = element_text(size = 10),
+    strip.text = element_text(size = 10, face = "bold"),
+    strip.background = element_rect(fill = "lightgray"),
+    legend.text = element_text(size = 10),
+    legend.title = element_text(size = 12)
+  )
 
 
 # mutation data of one patient --------------------------------------------
