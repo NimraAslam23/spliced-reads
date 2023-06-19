@@ -16,6 +16,8 @@ library(ggsignif)
     # STMN2_cryptic_cBio
     # ARHGAP32_cryptic_cBio
     # SYNJ2_cryptic_cBio
+    # all_mutation_data
+    # mutation_clinical_data
 
 
 # functions in this script ------------------------------------------------
@@ -56,16 +58,17 @@ common_patients_ARHGAP32_SYNJ2 <- intersect(ARHGAP32_cryptic_cBio$case_submitter
 common_ARHGAP32_SYNJ2 <- ARHGAP32_cryptic_cBio |> 
   filter(case_submitter_id %in% common_patients_ARHGAP32_SYNJ2) |> 
   select(case_submitter_id, start, end, strand, anno_count, cryptic_count, jir) |> 
-  left_join(ARHGAP32_cryptic_cBio, by = "case_submitter_id", suffix = c("_ARHGAP32","_SYNJ2")) |> 
+  left_join(SYNJ2_cryptic_cBio, by = "case_submitter_id", suffix = c("_ARHGAP32","_SYNJ2")) |> 
   distinct() |> 
+  drop_na() |> 
   select(-cancer) |> 
   filter(sample_type == "Primary Tumor") |> 
   janitor::clean_names() 
 
   # within each patient, what is the fraction of cryptic to annotated reads?
 common_ARHGAP32_SYNJ2 |> 
-  select(case_submitter_id,gdc_primary_site,disease_survival_months,mutation_count,jir_ARHGAP32,jir_SYNJ2) |> 
-  pivot_longer(cols = c(jir_ARHGAP32,jir_SYNJ2),
+  select(case_submitter_id,gdc_primary_site,disease_survival_months,mutation_count,jir_arhgap32,jir_synj2) |> 
+  pivot_longer(cols = c(jir_arhgap32,jir_synj2),
                names_to = "gene",
                values_to = "cryptic_jir") |>  
   mutate(gene = str_replace(gene, "jir_", "")) |> 
@@ -75,8 +78,8 @@ common_ARHGAP32_SYNJ2 |>
 
   # within each patient, is ARHGAP32 or SYNJ2 cryptic expressed at a higher rate?
 common_ARHGAP32_SYNJ2 |> 
-  select(case_submitter_id,gdc_primary_site,disease_survival_months,mutation_count,jir_ARHGAP32,jir_SYNJ2) |> 
-  pivot_longer(cols = c(jir_ARHGAP32,jir_SYNJ2),
+  select(case_submitter_id,gdc_primary_site,disease_survival_months,mutation_count,jir_arhgap32,jir_synj2) |> 
+  pivot_longer(cols = c(jir_arhgap32,jir_synj2),
                names_to = "gene",
                values_to = "cryptic_jir") |>  
   mutate(gene = str_replace(gene, "jir_", "")) |> 
@@ -86,9 +89,9 @@ common_ARHGAP32_SYNJ2 |>
   geom_line()
 
 common_ARHGAP32_SYNJ2 |> 
-  select(case_submitter_id,gdc_primary_site,disease_survival_months,mutation_count,jir_ARHGAP32,jir_SYNJ2) |> 
-  mutate(jir_ARHGAP32 = 1 - jir_ARHGAP32 , jir_SYNJ2 = 1 - jir_SYNJ2) |> 
-  mutate(arh_ratio = log2(jir_ARHGAP32 / jir_SYNJ2)) |> 
+  select(case_submitter_id,gdc_primary_site,disease_survival_months,mutation_count,jir_arhgap32,jir_synj2) |> 
+  mutate(jir_arhgap32 = 1 - jir_arhgap32 , jir_synj2 = 1 - jir_synj2) |> 
+  mutate(arh_ratio = log2(jir_arhgap32 / jir_synj2)) |> 
   ggplot(aes(y = arh_ratio,x = 1)) + 
   geom_violin() + 
   geom_hline(yintercept = 0) + 
@@ -112,7 +115,7 @@ all_common_cases <- common_STMN2_ARHGAP32 |>
   full_join(common_ARHGAP32_SYNJ2) 
 
 all_common_cases |> 
-  pivot_longer(cols = c(jir_STMN2, jir_ARHGAP32, jir_SYNJ2),
+  pivot_longer(cols = c(jir_stmn2, jir_arhgap32, jir_synj2),
                names_to = "gene",
                values_to = "cryptic_jir") |> 
   mutate(gene = str_replace(gene, "jir_", "")) |> 
@@ -127,12 +130,28 @@ all_common_cases |>
 # case set of all 14 common patients --------------------------------------
 
 all_common_cases <- all_common_cases |> 
-  mutate(case_id = paste0(study_id, ":", case_submitter_id))
+  mutate(case_id = paste0(study_id, ":", case_submitter_id)) |> 
+  distinct()
 
 write_clip(unique(all_common_cases$case_id)) # copies all common patients to clipboard
 write_clip(unique(all_common_cases$case_submitter_id))
 
-combined_mut_df <- combine_mutation_data("/Users/nimraaslam/Documents/GitHub/spliced-reads/lcm")
+
+# filter mutation_clinical_data for 14 common patients only ---------------
+
+x <- mutation_clinical_data |> 
+  filter(case_submitter_id %in% all_common_cases)
+
+intersect(all_common_cases$case_submitter_id, mutation_clinical_data$case_submitter_id)
+
+
+intersect(STMN2_cryptic_cBio$case_submitter_id, SYNJ2_cryptic_cBio$case_submitter_id)
+
+
+
+
+
+
 
 # raw cryptic counts and psi column ---------------------------------------
 
