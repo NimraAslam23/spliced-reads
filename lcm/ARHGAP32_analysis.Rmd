@@ -1,5 +1,5 @@
 ---
-title: "ARHGAP32_analysis"
+title: "ARHGAP32 Cryptic Analysis"
 output: pdf_document
 ---
 
@@ -18,19 +18,96 @@ library(dplyr)
 library(knitr)
 library(snapcount)
 library(ggsignif)
+library(TCGAbiolinks)
+library(ggsurvfit)
+library(survival)
+library(survminer)
 ```
 
-# Querying for cryptic and annotated ARHGAP32 reads
+# Introduction
 
+TDP43-dependent cryptic ARHGAP32 events have been detected in cancer patients. These patients have been sequenced and their cryptic reads and clinical data stored in the TCGA database. We wanted to know if these ARHGAP32 cryptic events are expressed more in particular subset(s) of cancers and if these cancers with TDP43-dependent cryptic splicing show enrichment of mutations in particular genes and pathways. 
+
+```{r functions, include = FALSE}
+count_query <- function(gene_name, snapcount_coords, strand_code) {
+  cryptic_query <-  QueryBuilder(compilation = 'tcga',regions = snapcount_coords) 
+  
+  if(strand_code == "+"){
+    cryptic_query <- set_row_filters(cryptic_query, strand == "+") 
+  }else if(strand_code == "-"){
+    cryptic_query <- set_row_filters(cryptic_query, strand == "-") 
+  }
+  
+  cryptic_query_exact <- set_coordinate_modifier(cryptic_query, Coordinates$Exact) 
+  print("junction querying beginning")
+  juncs_on <- query_jx(cryptic_query) 
+  juncs_on_flat <- query_jx(cryptic_query,return_rse = FALSE) 
+  samples_with <- juncs_on@colData |> 
+    as.data.frame()
+  print("junction querying done")
+  samples_with <- samples_with |> 
+    select(c("rail_id",
+             "gdc_cases.demographic.gender",
+             "gdc_cases.submitter_id",
+             "gdc_cases.project.name",
+             "gdc_cases.project.primary_site",
+             "gdc_cases.diagnoses.tumor_stage",
+             "gdc_cases.samples.sample_type",
+             "cgc_case_primary_site",
+             "junction_coverage",
+             "junction_avg_coverage")) 
+  
+  juncs_on_flat <- juncs_on_flat |> 
+    select(chromosome,start,end,strand,samples) |> 
+    separate_rows(samples, sep = ',') |> 
+    filter(samples != "") |> 
+    separate(samples, into = c("rail_id","count")) |> 
+    mutate(rail_id = as.integer(rail_id)) |> 
+    mutate(count = as.numeric(count)) 
+  
+  gene_df <- juncs_on_flat |> 
+    left_join(samples_with) |> 
+    filter(end == str_split(snapcount_coords,'-',simplify = TRUE)[[2]]) |> 
+    filter(start == str_split(str_split(snapcount_coords,'-',simplify = TRUE)[[1]],":",simplify = TRUE)[[2]])
+  return(gene_df)
+}
+```
+
+AL provided the specific genomic coordinates of TDP43-dependent STMN2 cryptic and annotated reads. A function was created to query junctions in the TCGA database for reads with the specified coordinates: 
+
+```{r ARHGAP32 cryptic and annotated reads, include = FALSE}
 gene_name = "ARHGAP32" 
 snapcount_coords_cryptic = "chr11:128992047-128998318"
 snapcount_coords_annotated = "chr11:128988126-128998318"
 strand_code = "-"
-
-```{r querying for cryptic and annotated ARHGAP32 reads}
-ARHGAP32_cryptic_query <- count_query(gene_name = "ARHGAP32", snapcount_coords = "chr11:128992047-128998318", strand_code = "-")
-ARHGAP32_anno_query <- count_query(gene_name = "ARHGAP32", snapcount_coords = "chr11:128988126-128998318", strand_code = "-")
 ```
+
+
+
+* Gene name = `r gene_name`
+
+* Snapcount coordinates (cryptic) = `r snapcount_coords_cryptic`
+
+* Snapcount coordinates (annotated) = `r snapcount_coords_annotated`
+
+* Strand code = `r strand_code`
+
+
+
+```{r querying for cryptic and annotated ARHGAP32 reads, include = FALSE}
+
+#ARHGAP32_cryptic_query <- count_query(gene_name = "ARHGAP32", snapcount_coords = "chr11:128992047-128998318", strand_code = "-")
+#ARHGAP32_anno_query <- count_query(gene_name = "ARHGAP32", snapcount_coords = "chr11:128988126-128998318", strand_code = "-")
+
+#write.table(ARHGAP32_cryptic_query, file = "ARHGAP32_cryptic_query.txt")
+#write.table(ARHGAP32_anno_query, file = "ARHGAP32_anno_query.txt")
+
+ARHGAP32_cryptic_query <- read.table("ARHGAP32_cryptic_query.txt", sep="", header = T)
+ARHGAP32_anno_query <- read.table("ARHGAP32_anno_query.txt", sep="", header = T)
+
+```
+
+The resulting data included genomic information, sample-related clinical data and junction coverage information for cryptic and annotated reads, separately, and were read in as tables.
 
 ```{r join cryptic and anno df, add jir column, include = FALSE}
 ARHGAP32_cryptic_query <- ARHGAP32_cryptic_query |> rename("cryptic_count" = "count")
@@ -44,15 +121,16 @@ ARHGAP32_query <- ARHGAP32_query |>
   relocate(cryptic_count, .after = anno_count)
 
 ARHGAP32_query <- ARHGAP32_query |> 
-  mutate(jir = anno_count/(anno_count + cryptic_count)) |> 
+  mutate(jir = cryptic_count/(anno_count + cryptic_count)) |> 
   relocate(jir, .after = cryptic_count)
 
 #write_clip(ARHGAP32_query$gdc_cases.submitter_id)
 ```
 
-```{r clinical data from TCGA (case set), include = FALSE}
-ARHGAP32_clinical_orig <- read.csv("ARHGAP32_clinical.tsv", sep = "\t", header = TRUE,
-                                   na.strings = "", fill = TRUE)
+The ARHGAP32 cryptic and annotated query tables were joined into a single dataframe (**ARHGAP32_query**) and a "jir" (junction inclusion ratio) column was added to reflect the fraction of cryptic reads for each case:
+
+```{r Import clinical data from TCGA, include = FALSE}
+ARHGAP32_clinical_orig <- read.csv("ARHGAP32_clinical.tsv", sep = "\t", header = TRUE, na.strings = "", fill = TRUE)
 
 ARHGAP32_clinical <- ARHGAP32_clinical_orig
 
@@ -60,172 +138,303 @@ ARHGAP32_clinical <- ARHGAP32_clinical|>
   select(case_submitter_id, project_id, age_at_index, ethnicity, gender, race, ajcc_pathologic_stage) |> 
   separate(project_id, into = c("project", "cancer_type")) |> 
   select(-project)
+
+head(ARHGAP32_clinical)
 ```
+
+A case set was made on TCGA containing all cancer patients with these TDP43-dependent STMN2 events and their clinical data downloaded and joined with the existing dataframe to make the **ARHGAP32_clinical_jir** dataframe. 
+
+In order to investigate cryptic STMN2 expression in these patients, a new dataframe (**ARHGAP32_clinical_jir_cryptic**) was made by filtering for patients with cryptic counts greater than 2. This is an arbitrary cut-off used for all cryptic events investigated. 
 
 ```{r join query table with clinical table, include = FALSE}
-
-ARHGAP32_clinical_jir <- ARHGAP32_query |> rename("case_submitter_id" = "gdc_cases.submitter_id") |> 
+ARHGAP32_clinical_jir <- ARHGAP32_query |> 
+  rename("case_submitter_id" = "gdc_cases.submitter_id") |> 
   left_join(ARHGAP32_clinical, by=c("case_submitter_id")) |> 
-  select(-gdc_cases.diagnoses.tumor_stage, -age_at_index, -gdc_cases.demographic.gender, 
-         -ajcc_pathologic_stage, -ethnicity, -race, -cancer_type, -gender) |> 
-  rename("cancer_type" = "gdc_cases.project.name") |> 
-  rename("gdc_primary_site" = "gdc_cases.project.primary_site") |> 
-  rename("sample_type" = "gdc_cases.samples.sample_type") |> 
-  rename("cgc_primary_site" = "cgc_case_primary_site")
+  janitor::clean_names()
+  
+ARHGAP32_clinical_jir <- ARHGAP32_clinical_jir |> 
+  select(-c(gdc_cases_diagnoses_tumor_stage, age_at_index, gdc_cases_demographic_gender, ajcc_pathologic_stage, ethnicity, race, gender)) |>   rename("cancer_abbrev" = "cancer_type")
 
-ARHGAP32_clinical_jir_cryptic <- ARHGAP32_clinical_jir |> 
-  filter(cryptic_count > 5) 
+# filter for cryptic coverage
+ARHGAP32_clinical_jir_cryptic <- ARHGAP32_clinical_jir |> filter(cryptic_count > 2) 
+
+head(ARHGAP32_clinical_jir_cryptic)
 ```
 
+# Cancers with ARHGAP32 expression (in general)
 
-```{r cancer types with ARHGAP32 events, primary sites of cancers with cryptic ARHGAP32 events, fig.show = "hold", out.width = "50%", echo = FALSE}
+To visualise the ARHGAP32 reads data, a bar chart was plotted to compare the expression of ARHGAP32 across the different cancer types. This was plotted using all data (**ARHGAP32_clinical_jir**) rather than the cryptic filtered dataframe, and it compares the absolute read counts.
 
-ARHGAP32_clinical |> 
-  ggplot(aes(x = fct_rev(fct_infreq(cancer_type)))) +
-  geom_bar() +
+```{r bar plot - cancer types with general ARHGAP32 expression, out.width = "90%", echo = FALSE}
+ARHGAP32_clinical_jir |> 
+  distinct() |> 
+  drop_na() |> 
+  ggplot(aes(x = fct_rev(fct_infreq(cancer_abbrev)))) +
+  geom_bar(aes(fill = cancer_abbrev)) +
   coord_flip() +
   labs(
     x = "Cancer Type",
     y = "Number of Cases",
-    title = "ARHGAP32 is expressed most in breast cancers"
+    title = ""
   ) +
-  theme(plot.title = element_text(size=10))
+  theme(legend.position = "none", plot.title = element_text(size=10))
+# BRCA = breast cancer; HNSC = head and neck cancer
+```
+
+**Figure 1**: ARHGAP32 is expressed in mostly breast and head/neck cancer patients.
+
+# Cancers with cryptic ARHGAP32 events
+
+The same bar chart was then plotted using the cryptic filtered dataframe (**ARHGAP32_clinical_jir_cryptic**) to compare the expression of only the cryptic ARHGAP32 events across the different cancer types. Again, this plot compares the absolute read counts of the cryptic events.
+
+```{r bar plot - cancer types with ARHGAP32 events, primary sites with cryptic, out.width="50%", echo = FALSE}
+ARHGAP32_clinical_jir_cryptic |> 
+  drop_na() |> 
+  ggplot(aes(x = fct_rev(fct_infreq(cancer_abbrev)))) +
+  geom_bar(aes(fill = cancer_abbrev)) +
+  coord_flip() +
+  labs(
+    x = "Cancer Type",
+    y = "Number of Cases",
+    title = "(a)"
+  ) +
+  theme(plot.title = element_text(size=15),
+        axis.title.x = element_text(size = 15, face = "bold"),
+        axis.title.y = element_text(size = 15, face = "bold"),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        legend.position = "none") 
 
 ARHGAP32_clinical_jir_cryptic |> 
   drop_na() |> 
-  ggplot(aes(x = fct_rev(fct_infreq(gdc_primary_site)))) +
-  geom_bar() +
+  ggplot(aes(x = fct_rev(fct_infreq(gdc_cases_project_primary_site)))) +
+  geom_bar(aes(fill = gdc_cases_project_primary_site)) +
   coord_flip() +
   labs(
     x = "Primary Site of Cancer",
-    y = "Number of Cases"
+    y = "Number of Cases",
+    title = "(b)"
   ) +
-  theme(plot.title = element_text(size=10))
+  theme(plot.title = element_text(size=15),
+        axis.title.x = element_text(size = 15, face = "bold"),
+        axis.title.y = element_text(size = 15, face = "bold"),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        legend.position = "none") 
 ```
 
-**Figure 1**: ARHGAP32 is expressed in mostly breast cancers
+**Figure 2**: (a) Cryptic ARHGAP32 events are found mostly in breast cancers. (b) Cryptic ARHGAP32 events are found most abundantly in cancers of the breast.
 
-```{r cryptic ARHGAP32 expression in different cancer sites, echo = FALSE}
+## Junction coverage
+
+Overall ARHGAP32 junction coverage was visualised in the different primary sites of cancers to see if the high cryptic read counts in breast cancers were due to higher overall ARHGAP32 coverage in those cancers (Figure 3a). Cryptic ARHGAP32 junction coverage was also investigated by calculating 'reads per million' as the fraction of cryptic reads of the overall junction coverage (Figure 3b). 
+
+```{r boxplot - ARHGAP32 junction coverage, out.width = "50%", echo = FALSE, warning = FALSE} 
+#overall ARHGAP32 junction coverage in different cancer sites
+ARHGAP32_clinical_jir_cryptic |> 
+  drop_na() |> 
+  ggplot(aes(x = junction_avg_coverage, 
+             y = fct_reorder(gdc_cases_project_primary_site, junction_avg_coverage, median))) +
+  geom_boxplot(aes(fill = gdc_cases_project_primary_site)) +
+  labs(
+    x = "Junction Average Coverage",
+    y = "Primary Site of Cancer",
+    title = "(a)"
+  ) + 
+  theme(plot.title = element_text(size=15),
+        axis.title.x = element_text(size = 15, face = "bold"),
+        axis.title.y = element_text(size = 15, face = "bold"),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        legend.position = "none") 
+
+
+
+
+#adding reads per million (rpm) column for cryptic coverage
+ARHGAP32_clinical_jir_cryptic <- ARHGAP32_clinical_jir_cryptic |> 
+  mutate(rpm = (cryptic_count/junction_coverage)*1000000)
 
 ARHGAP32_clinical_jir_cryptic |> 
   drop_na() |> 
-  ggplot(aes(x = cryptic_count,
-             y = fct_reorder(gdc_primary_site, cryptic_count, median))) +
-  geom_boxplot() +
+  ggplot(aes(x = rpm,
+             y = fct_reorder(gdc_cases_project_primary_site, rpm, median))) +
+  geom_boxplot(aes(fill = gdc_cases_project_primary_site)) +
+  labs(
+    x = "reads per million",
+    y = "Primary Site of Cancer",
+    title = "(b)"
+  ) +
+    theme(plot.title = element_text(size=15),
+        axis.title.x = element_text(size = 15, face = "bold"),
+        axis.title.y = element_text(size = 15, face = "bold"),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        legend.position = "none")
+```
+
+**Figure 3**: (a) Liver, stomach, esophageal and ovarian cancers are the most deeply sequenced. (b) Cancers with the greatest cryptic coverage. 
+
+The breast is not very deeply sequenced so the high cryptic count is likely significant in these cancers. There is only one patient with cancer of the adrenal gland who has TDP43-dependent cryptic ARHGAp32 events, hence the single data value for adrenal gland. There is an extreme data value for colorectal cancer, which indicates that it is one patient with a larger number of ARHGAP32 cryptic reads that is influencing the overall cryptic coverage for this cancer subset.
+
+
+
+```{r boxplot - cryptic ARHGAP32 expression in different cancer sites, include = FALSE}
+ARHGAP32_clinical_jir_cryptic |> 
+  drop_na() |> 
+  ggplot(aes(x = cryptic_count, 
+             y = fct_reorder(gdc_cases_project_primary_site, cryptic_count, median))) +
+  geom_boxplot(aes(fill = gdc_cases_project_primary_site)) +
   labs(
     x = "ARHGAP32 Cryptic Coverage",
-    y = "Primary Site of Cancer"
+    y = "Primary Site of Cancer",
   ) +
-  theme(plot.title = element_text(size=10)) 
+  theme(plot.title = element_text(size=10),
+        legend.position = "none")
+
+
 ```
 
-**Figure 2**:
+## Which cancers have the most cryptic ARHGAP32 events?
 
-```{r which cancers have the most cryptic ARHGAP32 events?, echo = FALSE}
+To investigate where we are seeing most of the cryptic ARHGAP32 events, the number of cases of each cancer type (with cryptic ARHGAP32) was weighted against the total number of cases with cryptic ARHGAP32.
 
+```{r which cancers have the most cryptic ARHGAP32 events?, out.width = "90%", echo = FALSE}
 ARHGAP32_events_different_cancers <- ARHGAP32_clinical_jir_cryptic |> 
-  drop_na() |> 
-  janitor::tabyl(cancer_type) |> arrange(-percent)
+  drop_na(cancer_abbrev) |> 
+  janitor::tabyl(cancer_abbrev) |> arrange(desc(percent))
 
-kable(ARHGAP32_events_different_cancers, caption = "Breast invasive carcinoma has the most cryptic ARHGAP32 events.")
+kable(ARHGAP32_events_different_cancers, 
+      caption = "Breast cancer has high cryptic ARHGAP32 expression.")
+
+ARHGAP32_events_different_cancers |> 
+  mutate(percentage = percent*100) |> 
+  ggplot(aes(x = reorder(cancer_abbrev, percentage), y = percentage)) + 
+  geom_bar(aes(fill = cancer_abbrev), stat = "identity") +
+  coord_flip() +
+  labs(
+    x = "Cancer Type",
+    y = "Percentage of Cases"
+  ) +
+  theme(legend.position = "none")
 ```
 
-```{r where are the cancers with cryptic ARHGAP32 events located?, echo = FALSE}
+**Figure 4**: High proportion of cryptic ARHGAP32 events are in BRCA cancer. 
 
+The majority of the cryptic ARHGAP32 events are expressed in BRCA (19.9% of cryptic cases), consistent with previous results. 
+
+## Where are the cancers with cryptic ARHGAP32 events located?
+
+A similar calculation was done to see where these cryptic events are occurring (i.e., where these cancers are located in the body). The number of cases of each primary cancer site (with cryptic ARHGAP32) was weighted against the total number of cases with cryptic ARHGAP32.
+
+```{r where are the cancers with cryptic ARHGAP32 events located?, out.width = "90%", echo = FALSE}
 ARHGAP32_events_primary_sites <- ARHGAP32_clinical_jir_cryptic |> 
   drop_na() |> 
-  janitor::tabyl(gdc_primary_site) |> arrange(-percent)
+  janitor::tabyl(gdc_cases_project_primary_site) |> arrange(-percent)
 
-kable(ARHGAP32_events_primary_sites, caption = "Cancers in the breast have the most cryptic ARHGAP32 events.")
+kable(ARHGAP32_events_primary_sites, caption = "")
+
+ARHGAP32_events_primary_sites |> 
+  mutate(percentage = percent*100) |> 
+  ggplot(aes(x = reorder(gdc_cases_project_primary_site, percentage), 
+             y = percentage)) +
+  geom_bar(aes(fill = gdc_cases_project_primary_site), stat = "identity") +
+  coord_flip() +
+  labs(
+    x = "Primary Sites of Cancer",
+    y = "Percentage of Cases"
+  ) +
+  theme(legend.position = "none", plot.title = element_text(size=8))
+
 ```
 
-```{r cBioPortal clinical data, join with ARHGAP32 table, include = FALSE}
+**Figure 5**: Cancers with cryptic ARHGAP32 events are primarily in the breast.
 
+Consistent with all previous results so far, most of the cryptic ARHGAP32 events seen in cancer patients are in cancers of the breast (20.7% of all cases).
+
+# Mutational Burden
+
+```{r data import - cBioPortal Clinical Data, include = FALSE}
+
+cBio_all_clinical_orig <- read.csv("cBio_clinical_data.tsv", sep = "\t", header = TRUE, na.strings = "", fill = TRUE)
+
+cBio_clinical <- cBio_all_clinical_orig
+
+cBio_clinical <- cBio_clinical |> 
+  select(Study.ID, Patient.ID, Sample.ID, Aneuploidy.Score, Cancer.Type, TCGA.PanCanAtlas.Cancer.Type.Acronym, Cancer.Type.Detailed,
+         Months.of.disease.specific.survival, Mutation.Count, Overall.Survival..Months., Disease.specific.Survival.status)
+
+cBio_clinical <- cBio_clinical |> 
+  rename("case_submitter_id" = "Patient.ID") |> 
+  rename("cancer" = "Cancer.Type.Detailed") |> 
+  rename("cancer_abbrev" = "TCGA.PanCanAtlas.Cancer.Type.Acronym")
+```
+
+All of the available clinical data for cancer patients on cBioPortal was downloaded and read in as a dataframe (**cBio_clinical**); this was **not** limited to only the patient with cryptic ARHGAP32 expression. The resulting dataframe contains information on individual cancer patients: cancer type, survival, mutation count and aneuploidy score.
+
+```{r join cBioPortal clinical data with ARHGAP32 table, include = FALSE}
 ARHGAP32_cryptic_cBio <- ARHGAP32_clinical_jir_cryptic |> 
   left_join(cBio_clinical, by = "case_submitter_id") |> 
-  select(-cgc_primary_site, -Cancer.Type, -Overall.Survival..Months.) |>
-  rename("disease_survival_months" = "Months.of.disease.specific.survival") |> 
-  janitor::clean_names()
+  janitor::clean_names() |> 
+  select(-c(cgc_case_primary_site, cancer_abbrev_y, cancer_type)) |> 
+  rename("cancer_abbrev" = "cancer_abbrev_x")
 ```
 
-```{r boxplot - n mutations for each cancer type, echo = FALSE}
+The **cBio_clinical** dataframe was joined to the existing dataframe containing the patients exhibiting cryptic ARHGAP32 expression (**ARHGAP32_clinical_jir_cryptic**). This join added the clinical data to only the relevant patients of interest (i.e., those with cryptic ARHGAP32) to produce the **ARHGAP32_cryptic_cBio** dataframe.
 
-ARHGAP32_cryptic_cBio <- ARHGAP32_cryptic_cBio |> 
-  mutate_at("mutation_count", as.numeric)
-
+```{r boxplot - n mutations for each cancer type, include = FALSE, warning = FALSE}
 ARHGAP32_cryptic_cBio |> 
+  mutate_at("mutation_count", as.numeric) |> 
   drop_na() |> 
-  filter(mutation_count < 2000) |> 
+  filter(mutation_count !="NA") |> 
   ggplot(aes(x = fct_reorder(cancer_abbrev, mutation_count, median),
              y = mutation_count)) +
   geom_boxplot() +
   coord_flip() +
   labs(
     x = "Cancer Type",
-    y = "Mutation Count"
+    y = "Mutation Count",
+    title = "XXX and XXX cancers have the greatest number of mutations"
   ) +
-  geom_signif(comparisons = list(c("SKCM", "COAD"),c("COAD", "LUAD")),
-map_signif_level = TRUE,
-y_position = c(1750, 1500))
+  geom_signif(comparisons = list(c("LUSC", "UCEC")),
+              map_signif_level = TRUE,
+              y_position = c(1000)
+  ) 
+
+#Figure 6: Among cancer patients with STMN2 cryptic expression, uterine corpus endometrial carcinoma (UCEC) has the greatest number of mutations.
 ```
 
-**Figure 3**: 
-
-```{r ARHGAP32 cryptic coverage vs mutation count, echo = FALSE}
-
+```{r ARHGAP32 cryptic coverage vs mutation count, include = FALSE, warning = FALSE}
 ARHGAP32_cryptic_cBio |> 
+  mutate_at("mutation_count", as.numeric) |> 
   drop_na() |> 
-  filter(mutation_count < 600) |> 
+  filter(mutation_count < 600, cryptic_count > 1) |> 
   ggplot(aes(x = as.factor(cryptic_count),
              y = mutation_count)) +
   geom_boxplot() +
   labs(
     x = "Number of ARHGAP32 cryptic events",
     y = "Mutation Count"
-  ) +
-  geom_signif(comparisons = list(c("10", "16")),
-map_signif_level = TRUE,
-y_position = c(600))
+  ) 
 
 ARHGAP32_cryptic_cBio |> 
   drop_na() |> 
-  filter(mutation_count < 500) |> 
-  ggplot(aes(x = cryptic_count, 
-             y = mutation_count)) +
+  filter(mutation_count < 2500) |> 
+  ggplot(aes(x = cryptic_count, y = mutation_count)) +
   geom_hex() +
   labs(
     x = "Number of ARHGAP32 cryptic events",
     y = "Mutation Count"
   )
+
+#Figure 7: There is no correlation between number of STMN2 cryptic events and number of mutations.
 ```
 
-**Figure 4**:
+## Fraction of each cancer that has cryptic ARHGAP32 events
 
-# Mutational burden
+The burden of cryptic ARHGAP32 expression was examined. This was done by looking at the fraction of each cancer type that exhibits TDP43-dependent cryptic ARHGAP32 events (Figure 6). 
 
-```{r fraction of mutations in each cancer type that is found in cases with ARHGAP32 cryptic, include = FALSE}
-total_mutations_each_cancer <- cBio_clinical |> 
-  drop_na(Mutation.Count) |> 
-  filter(grepl("^\\d+$", Mutation.Count)) |>
-  group_by(cancer_abbrev) |> 
-  summarise(total_mutations = sum(as.numeric(Mutation.Count)))
-
-total_mutations_each_cancer_with_ARHGAP32cryptic <- ARHGAP32_cryptic_cBio |> 
-  drop_na(mutation_count) |> 
-  filter(mutation_count < 2500) |> 
-  group_by(cancer_abbrev) |> 
-  summarise(total_mutations_cryptic = sum(mutation_count))
-
-mutations_each_cancer_general_vs_ARHGAP32cryptic <- total_mutations_each_cancer |> 
-  left_join(total_mutations_each_cancer_with_ARHGAP32cryptic, by=c("cancer_abbrev")) |> 
-  mutate(percent_with_cryptic = (total_mutations_cryptic/total_mutations)*100)
-  #16% of all mutations in LGG cancer are in cases with STMN2 cryptic events
-```
-
-# Fraction of each cancer that has cryptic STMN2 events 
-
-```{r barplot - fraction of cases of each cancer that have cryptic ARHGAP32, echo = FALSE}
-
+```{r barplot - fraction of cases of each cancer that have cryptic ARHGAP32, out.width = "90%", echo = FALSE}
 total_each_cancer <- cBio_clinical |> 
   group_by(cancer_abbrev) |> 
   summarise(total_cancer_abbrev = n())
@@ -246,21 +455,54 @@ total_each_cancer_general_vs_ARHGAP32cryptic |>
     x = "Cancer Type",
     y = "Percentage of cases with cryptic ARHGAP32 events"
     ) +
-  theme(legend.position = "none")
+  theme(legend.position = "none", axis.text.x = element_text(size = 5))
 ```
 
-```{r calculating mutation burden, echo = FALSE}
+**Figure 6**: Fraction of each cancer type that has cryptic ARHGAP32 expression.
+
+The clinical data from cBioPortal provided information on the mutation counts in cancer patients of different cancer types. To investigate the cancer-by-cancer mutational burden in patients with cryptic ARHGAP32, the total mutation count seen in patients with cryptic ARHGAP32 expression was weighted against the total mutation count in cancer patients in general (for each cancer type). The results are displayed in Table 3.
+
+```{r fraction of mutations of each cancer that have cryptic ARHGAP32, out.width = "90%", echo = FALSE, warning = FALSE}
+total_mutations_each_cancer <- cBio_clinical |> 
+  janitor::clean_names() |> 
+  mutate_at("mutation_count", as.numeric) |> 
+  drop_na(mutation_count) |> 
+  filter(grepl("^\\d+$", mutation_count)) |>
+  group_by(cancer_abbrev) |> 
+  summarise(total_mutations = sum(mutation_count))
+
+total_mutations_each_cancer_with_ARHGAP32cryptic <- ARHGAP32_cryptic_cBio |> 
+  janitor::clean_names() |> 
+  mutate_at("mutation_count", as.numeric) |> 
+  drop_na(mutation_count) |> 
+  filter(mutation_count < 2500) |> 
+  group_by(cancer_abbrev) |> 
+  summarise(total_mutations_cryptic = sum(mutation_count))
+
+mutations_each_cancer_general_vs_ARHGAP32cryptic <- total_mutations_each_cancer |> 
+  left_join(total_mutations_each_cancer_with_ARHGAP32cryptic, by=c("cancer_abbrev")) |>   mutate(percent_with_cryptic = (total_mutations_cryptic/total_mutations)*100) |> 
+  #16% of all mutations in LGG cancer are in cases with STMN2 cryptic events
+  drop_na() |> 
+  arrange(-percent_with_cryptic)
+
+kable(mutations_each_cancer_general_vs_ARHGAP32cryptic, caption = "Mutational burden of cryptic ARHGAP32 cases.")
+```
+
+Table 3 shows that 82% of the mutations in ESCA (esophageal carcinoma) are seen in cases with cryptic ARHGAP32. This is the largest proportion out of all cancer subsets. 27.1% of all mutation in BRCA patients are in cases with cryptic ARHGAP32 events. 
+
+Mutational burden was further examined within each cancer type, using boxplots to visualise the mutation counts in non-cryptic cases and cases with cryptic ARHGAP32 expression (Figure 7). Only cancers with cryptic ARHGAP32 expression are plotted. This analysis aimed to determine whether cases with cryptic ARHGAP32 events have a greater mutational burden.
+
+```{r calculating mutation burden for general vs cryptic, fig.width=15, fig.height=18, echo = FALSE, warning = FALSE}
 cBio_clinical |>
   left_join(ARHGAP32_clinical_jir,by = c("case_submitter_id")) |> 
-  rename("arhgap32_cryptic_coverage" = "cryptic_count") |> 
-  rename("arhgap32_annotated_coverage" = "anno_count") |> 
   janitor::clean_names() |> 
-  select(case_submitter_id, study_id, cancer_abbrev, mutation_count, arhgap32_cryptic_coverage, arhgap32_annotated_coverage) |> 
+  rename("cancer_abbrev" = "cancer_abbrev_x") |> 
+  select(case_submitter_id, study_id, cancer_abbrev, mutation_count, cryptic_count, anno_count) |> 
   separate(study_id,into = ('study_start'),remove = FALSE) |> 
   unique() |> 
   mutate(mutation_count = as.numeric(mutation_count)) |> 
   filter(!is.na(mutation_count) & mutation_count != "NA") |> 
-  mutate(arhgap32_cryptic_detected = arhgap32_cryptic_coverage >= 2) |> 
+  mutate(arhgap32_cryptic_detected = cryptic_count >= 2) |> 
   group_by(study_start) |> 
   mutate(n_total_samples = n_distinct(case_submitter_id)) |> 
   mutate(n_detected_arhgap32 = sum(arhgap32_cryptic_detected,na.rm = TRUE)) |> 
@@ -268,29 +510,44 @@ cBio_clinical |>
   filter(!is.na(arhgap32_cryptic_detected)) |> 
   filter(n_detected_arhgap32 > 2) |> 
   ggplot(aes(x = arhgap32_cryptic_detected,
-             y = mutation_count)) + 
+             y = log10(mutation_count))) + 
   geom_boxplot(aes(fill = arhgap32_cryptic_detected)) + 
   labs(x = "Cancer Type",
-       y = "Mutation Count") +
+       y = "Log10 Mutation Count") +
   facet_wrap(~study_start) +
   scale_y_continuous(trans = scales::pseudo_log_trans()) +
-  stat_compare_means(comparisons = list(c("TRUE", "FALSE")), label = "p.format")
+  stat_compare_means(comparisons = list(c("TRUE", "FALSE")), label = "p.format") +
+  theme(legend.position = "bottom") +
+  guides(fill = guide_legend(title = "Cryptic ARHGAP32 detected")) +
+  theme(
+    axis.title.x = element_text(size = 25, face = "bold"),
+    axis.title.y = element_text(size = 25, face = "bold"),
+    axis.text.x = element_text(size = 20),
+    axis.text.y = element_text(size = 25),
+    strip.text = element_text(size = 25, face = "bold"),
+   strip.background = element_rect(fill = "lightgray"),
+    legend.text = element_text(size = 25),
+    legend.title = element_text(size = 25)
+  )
 ```
+
+**Figure 7**: Mutational burden in cancer types with cryptic ARHGAP32 expression.
+
+BRCA (breast invasive carcinoma) and PRAD (prostate adenocarcinoma) cancer patients with cryptic ARHGAP32 expression, on average, have a significantly higher mutation count that non-cryptic BRCA and PRAD patients. There may also be a higher mutational burden in cryptic LUAD and SKCM cases compared to non-cryptic cases, however the statistical significance of this is not apparent. 
 
 # Survival Comparisons
 
 ```{r, include = FALSE}
 survival_ARHGAP32_cryptic <- cBio_clinical |> 
   left_join(ARHGAP32_clinical_jir, by = c("case_submitter_id")) |> 
-  rename("arhgap32_cryptic_coverage" = "cryptic_count") |> 
-  rename("arhgap32_annotated_coverage" = "anno_count") |> 
   janitor::clean_names() |> 
-  select(case_submitter_id, study_id, sample_id, cancer_abbrev, mutation_count, arhgap32_cryptic_coverage, arhgap32_annotated_coverage, months_of_disease_specific_survival, overall_survival_months, disease_specific_survival_status) |> 
+  rename("cancer_abbrev" = "cancer_abbrev_x") |> 
+  select(case_submitter_id, study_id, sample_id, cancer_abbrev, mutation_count, cryptic_count, anno_count, months_of_disease_specific_survival, overall_survival_months, disease_specific_survival_status) |> 
   mutate(months_of_disease_specific_survival = as.numeric(months_of_disease_specific_survival)) |> 
   filter(!is.na(months_of_disease_specific_survival) & months_of_disease_specific_survival != "NA") |> 
   mutate(mutation_count = as.numeric(mutation_count)) |> 
   filter(!is.na(mutation_count) & mutation_count != "NA") |> 
-  mutate(arhgap32_cryptic_detected = arhgap32_cryptic_coverage >= 2) |> 
+  mutate(arhgap32_cryptic_detected = cryptic_count >= 2) |> 
   group_by(cancer_abbrev) |> 
   mutate(n_detected_arhgap32 = sum(arhgap32_cryptic_detected,na.rm = TRUE)) |>
   ungroup() |> 
@@ -299,6 +556,8 @@ survival_ARHGAP32_cryptic <- cBio_clinical |>
   mutate(arhgap32_cryptic_detected = as.logical(arhgap32_cryptic_detected)) |> #changes FALSE and TRUE to 0 and 1 respectively
   distinct()
 ```
+
+Survival analysis was conducted to assess any potential differences in survival in the cryptic ARHGAP32 cases and non-cryptic cases. This was done using the survival data that had previously been pulled back in the clinical data from cBioPortal. This included disease-specific survival (months) after diagnosis and disease-specific survival status (i.e., alive or dead). 
 
 ```{r survival status column in ARHGAP32 survival df, include = FALSE}
 survival_ARHGAP32_cryptic <- survival_ARHGAP32_cryptic |> 
@@ -309,7 +568,7 @@ survival_ARHGAP32_cryptic <- survival_ARHGAP32_cryptic |>
     # 0 = alive or dead tumor free
 ```
 
-```{r survival KM curve for cases with ARHGAP32 cryptic, echo = FALSE}
+```{r survival KM curve for cases with ARHGAP32 cryptic, include = FALSE}
 survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ 1, 
         data = subset(survival_ARHGAP32_cryptic, arhgap32_cryptic_detected==TRUE)) |> 
   ggsurvfit() +
@@ -321,7 +580,7 @@ survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_stat
   add_confidence_interval() 
 ```
 
-```{r survival KM curve for cases with no ARHGAP32 cryptic, echo = FALSE}
+```{r survival KM curve for cases with no ARHGAP32 cryptic, include = FALSE}
 survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ 1, 
         data = subset(survival_ARHGAP32_cryptic, arhgap32_cryptic_detected==FALSE)) |> 
   ggsurvfit() +
@@ -333,7 +592,7 @@ survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_stat
   add_confidence_interval() 
 ```
 
-```{r survival KM curves ARHGAP32 - both cryptic and non, echo = FALSE}
+```{r survival KM curves ARHGAP32 - both cryptic and non, out.width = "90%", echo = FALSE}
 survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ arhgap32_cryptic_detected, 
         data = survival_ARHGAP32_cryptic) |> 
   ggsurvfit() +
@@ -345,14 +604,18 @@ survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_stat
   add_confidence_interval() 
 ```
   
-```{r density plot - months survival in cryptic vs non-cryptic ARHGAP32, echo = FALSE}
+**Figure 8**: Kaplan-Meier survival curves for cancers with cryptic ARHGAP32 events and those without cryptic ARHGAP32 The probabilities shown are Kaplan-Meier survival probabilities.
+  
+There is no significant difference between the overall survival of cancer patients with and without cryptic ARHGAP32 expression as the confidence intervals of both curves largely overlap (Figure 8).
+  
+```{r density plot - months survival in cryptic vs non-cryptic ARHGAP32, include = FALSE}
 survival_ARHGAP32_cryptic |> 
   mutate(arhgap32_cryptic_detected = as.logical(arhgap32_cryptic_detected)) |> 
   ggplot(aes(x = months_of_disease_specific_survival, colour = arhgap32_cryptic_detected)) +
   geom_density() +
   labs(
     x = "Survival months with disease"  
-    )
+    ) 
     # same survival - cryptic vs non-cryptic (all cancers combined)
 ```
 
@@ -370,21 +633,24 @@ ARHGAP32_n_detected_non_cancer_abbrev <- survival_ARHGAP32_cryptic |>
 ```
 
 
-# Comparing Aneuploidy cancer-by-cancer
 
-```{r boxplot aneuploidy score cancer-by-cancer in cryptic vs none, echo = FALSE}
+# Comparing aneuploidy cancer-by-cancer
 
+Aneuploidy - an abnormal number of chromosomes - is associated with various genetic and developmental disorders. It is important to compare the aneuploidy score between patients with and without cryptic ARHGAP32 events in order to explore a potential correlation between cryptic expression and abnormal chromosome number. This can also help unravel potential underlying mechanisms that the cryptic reads are involved in.
+
+Aneuploidy score was previously pulled back in the clinical data from cBioPortal. It was plotted cancer-by-cancer to compare the scores in cryptic cases against non-cryptic cases (Figure 9). 
+
+```{r boxplot aneuploidy score cancer-by-cancer in cryptic vs none, fig.width=15, fig.height=20, echo = FALSE, warning = FALSE}
 aneuploidy_ARHGAP32 <- cBio_clinical |>
   left_join(ARHGAP32_clinical_jir,by = c("case_submitter_id")) |> 
-  rename("arhgap32_cryptic_coverage" = "cryptic_count") |> 
-  rename("arhgap32_annotated_coverage" = "anno_count") |> 
-  janitor::clean_names() |> 
-  select(case_submitter_id, study_id, cancer_abbrev, aneuploidy_score, arhgap32_cryptic_coverage, arhgap32_annotated_coverage) |> 
+ janitor::clean_names() |> 
+  rename("cancer_abbrev" = "cancer_abbrev_x") |> 
+  select(case_submitter_id, study_id, cancer_abbrev, aneuploidy_score, cryptic_count, anno_count) |> 
   separate(study_id,into = ('study_start'),remove = FALSE) |> 
   unique() |> 
   mutate(aneuploidy_score = as.numeric(aneuploidy_score)) |> 
   filter(!is.na(aneuploidy_score) & aneuploidy_score != "NA") |> 
-  mutate(arhgap32_cryptic_detected = arhgap32_cryptic_coverage >= 2) |> 
+  mutate(arhgap32_cryptic_detected = cryptic_count >= 2) |> 
   group_by(study_start) |> 
   mutate(n_total_samples = n_distinct(case_submitter_id)) |> 
   mutate(n_detected_arhgap32 = sum(arhgap32_cryptic_detected,na.rm = TRUE)) |> 
@@ -392,12 +658,12 @@ aneuploidy_ARHGAP32 <- cBio_clinical |>
   filter(!is.na(arhgap32_cryptic_detected)) |> 
   filter(n_detected_arhgap32 > 2) |> 
   group_by(study_start) |> 
-  mutate(wilcox_result = list(broom::tidy(wilcox.test(aneuploidy_score ~ arhgap32_cryptic_detected, exact=FALSE)))) |> 
-  add_significance() |> 
+  mutate(wilcox_result = if (length(unique(arhgap32_cryptic_detected)) < 2) {NA} 
+         else {
+    list(broom::tidy(wilcox.test(aneuploidy_score ~ arhgap32_cryptic_detected, exact = FALSE)))
+  }) |> 
   ungroup() |> 
   unnest(wilcox_result)
- 
-#write.table(aneuploidy_ARHGAP32, file="/Users/nimraaslam/Documents/GitHub/spliced-reads/lcm/aneuploidy_ARHGAP32.txt", sep=',')
   
 aneuploidy_ARHGAP32 |> 
   ggplot(aes(x = arhgap32_cryptic_detected,
@@ -411,13 +677,17 @@ aneuploidy_ARHGAP32 |>
   theme(legend.position = "bottom") +
   guides(fill = guide_legend(title = "Cryptic ARHGAP32 detected")) +
   theme(
-    axis.title.x = element_text(size = 12, face = "bold"),
-    axis.title.y = element_text(size = 12, face = "bold"),
-    axis.text.x = element_text(size = 10),
-    axis.text.y = element_text(size = 10),
-    strip.text = element_text(size = 10, face = "bold"),
+    axis.title.x = element_text(size = 25, face = "bold"),
+    axis.title.y = element_text(size = 25, face = "bold"),
+    axis.text.x = element_text(size = 20),
+    axis.text.y = element_text(size = 25),
+    strip.text = element_text(size = 25, face = "bold"),
    strip.background = element_rect(fill = "lightgray"),
-    legend.text = element_text(size = 10),
-    legend.title = element_text(size = 12)
+    legend.text = element_text(size = 25),
+    legend.title = element_text(size = 25)
   )
 ```
+
+**Figure 9**: Aneuploidy score in cryptic ARHGAP32 versus non-cryptic cases.
+
+There is no significant difference in aneuploidy score in cases with cryptic ARHGAP32 expression and non-cryptic cases for the majority of cancer types, indicating that the cryptic expression does not influence chromosome number. However, aneuploidy score is seemingly higher in non-cryptic HNSC (p = 0.058) and non-cryptic PRAD (p = 0.035) cases. 

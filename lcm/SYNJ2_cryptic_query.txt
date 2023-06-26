@@ -1,0 +1,758 @@
+"chromosome" "start" "end" "strand" "rail_id" "cryptic_count" "gdc_cases.demographic.gender" "gdc_cases.submitter_id" "gdc_cases.project.name" "gdc_cases.project.primary_site" "gdc_cases.diagnoses.tumor_stage" "gdc_cases.samples.sample_type" "cgc_case_primary_site" "junction_coverage" "junction_avg_coverage"
+"1" "chr6" 158017291 158019983 "+" 59761 1 "male" "TCGA-CD-8534" "Stomach Adenocarcinoma" "Stomach" "stage ii" "Primary Tumor" "Stomach" 15164760 53.5897010025479
+"2" "chr6" 158017291 158019983 "+" 59765 2 "female" "TCGA-EM-A4FF" "Thyroid Carcinoma" "Thyroid" "stage i" "Primary Tumor" "Thyroid" 9315882 44.4515159323199
+"3" "chr6" 158017291 158019983 "+" 59791 1 "male" "TCGA-D5-6930" "Colon Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 6084448 34.2001607581489
+"4" "chr6" 158017291 158019983 "+" 59795 1 "male" "TCGA-CQ-6225" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iii" "Primary Tumor" "Head and Neck" 9511158 45.4557350411011
+"5" "chr6" 158017291 158019983 "+" 59800 1 "female" "TCGA-A5-A0GJ" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 1826142 15.9686423337239
+"6" "chr6" 158017291 158019983 "+" 59807 2 "male" "TCGA-BR-6802" "Stomach Adenocarcinoma" "Stomach" "stage iiia" "Primary Tumor" "Stomach" 16299730 61.8883864329297
+"7" "chr6" 158017291 158019983 "+" 59843 1 "male" "TCGA-L5-A4OU" "Esophageal Carcinoma" "Esophagus" "stage iia" "Primary Tumor" "Esophagus" 14130064 46.0379640429816
+"8" "chr6" 158017291 158019983 "+" 59846 1 "female" "TCGA-JW-A5VG" "Cervical Squamous Cell Carcinoma and Endocervical Adenocarcinoma" "Cervix" "not reported" "Primary Tumor" "Cervix" 7008815 38.6881078813438
+"9" "chr6" 158017291 158019983 "+" 59847 1 "male" "TCGA-BP-5199" "Kidney Renal Clear Cell Carcinoma" "Kidney" "stage ii" "Primary Tumor" "Kidney" 10184081 41.799708586439
+"10" "chr6" 158017291 158019983 "+" 59889 1 "male" "TCGA-T9-A92H" "Colon Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 6899537 35.185742188496
+"11" "chr6" 158017291 158019983 "+" 59933 3 "male" "TCGA-BA-5559" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "not reported" "Primary Tumor" "Head and Neck" 13381653 53.0168024278538
+"12" "chr6" 158017291 158019983 "+" 59935 1 "male" "TCGA-LN-A8HZ" "Esophageal Carcinoma" "Esophagus" "stage iia" "Primary Tumor" "Esophagus" 28105818 79.7350790093336
+"13" "chr6" 158017291 158019983 "+" 59945 1 "male" "TCGA-34-5236" "Lung Squamous Cell Carcinoma" "Lung" "stage iib" "Primary Tumor" "Lung" 18579628 69.0505104562702
+"14" "chr6" 158017291 158019983 "+" 59972 1 "male" "TCGA-IN-8462" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Solid Tissue Normal" "Stomach" 29915826 101.068345518183
+"15" "chr6" 158017291 158019983 "+" 59975 1 "female" "TCGA-AO-A0J4" "Breast Invasive Carcinoma" "Breast" "stage ia" "Primary Tumor" "Breast" 15267275 57.6415055159968
+"16" "chr6" 158017291 158019983 "+" 59977 1 "female" "TCGA-CR-7371" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iii" "Primary Tumor" "Head and Neck" 10237883 45.5620466217479
+"17" "chr6" 158017291 158019983 "+" 60007 2 "female" "TCGA-WC-A87W" "Uveal Melanoma" "Eye" "stage iia" "Primary Tumor" "Eye" 7934208 39.1123205016342
+"18" "chr6" 158017291 158019983 "+" 60022 1 "male" "TCGA-JY-A938" "Esophageal Carcinoma" "Esophagus" "stage iib" "Primary Tumor" "Esophagus" 22248145 67.3135712448754
+"19" "chr6" 158017291 158019983 "+" 60024 2 "male" "TCGA-MP-A4T8" "Lung Adenocarcinoma" "Lung" "stage iiia" "Primary Tumor" "Lung" 7156952 35.3607841974723
+"20" "chr6" 158017291 158019983 "+" 60026 1 "female" "TCGA-CD-8524" "Stomach Adenocarcinoma" "Stomach" "stage ii" "Primary Tumor" "Stomach" 22591744 67.8881299601237
+"21" "chr6" 158017291 158019983 "+" 60036 1 "male" "TCGA-BT-A20Q" "Bladder Urothelial Carcinoma" "Bladder" "stage iv" "Primary Tumor" "Bladder" 6854831 35.6498840245057
+"22" "chr6" 158017291 158019983 "+" 60056 1 "female" "TCGA-AA-3516" "Colon Adenocarcinoma" "Colorectal" "stage iii" "Solid Tissue Normal" "Colorectal" 8728264 43.855113679186
+"23" "chr6" 158017291 158019983 "+" 60057 1 "female" "TCGA-AC-A3OD" "Breast Invasive Carcinoma" "Breast" "stage iib" "Primary Tumor" "Breast" 6874747 29.2111095531279
+"24" "chr6" 158017291 158019983 "+" 60070 1 "female" "TCGA-AX-A060" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 5594874 38.4112950287319
+"25" "chr6" 158017291 158019983 "+" 60110 1 "female" "TCGA-D8-A27F" "Breast Invasive Carcinoma" "Breast" "stage iia" "Primary Tumor" "Breast" 13490088 51.9977489631354
+"26" "chr6" 158017291 158019983 "+" 60121 1 "male" "TCGA-85-7698" "Lung Squamous Cell Carcinoma" "Lung" "stage ia" "Primary Tumor" "Lung" 11266102 46.0952829069306
+"27" "chr6" 158017291 158019983 "+" 60122 1 "male" "TCGA-CA-5797" "Colon Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 7941788 39.9733638015472
+"28" "chr6" 158017291 158019983 "+" 60124 2 "female" "TCGA-B6-A0IJ" "Breast Invasive Carcinoma" "Breast" "stage iib" "Primary Tumor" "Breast" 13248519 55.6258460272408
+"29" "chr6" 158017291 158019983 "+" 60129 1 "male" "TCGA-KO-8404" "Kidney Chromophobe" "Kidney" "stage iv" "Primary Tumor" "Kidney" 3382810 23.5358658595979
+"30" "chr6" 158017291 158019983 "+" 60150 1 "female" "TCGA-HT-7860" "Brain Lower Grade Glioma" "Brain" "not reported" "Primary Tumor" "Brain" 8622161 36.6413995036377
+"31" "chr6" 158017291 158019983 "+" 60158 2 "male" "TCGA-BR-8362" "Stomach Adenocarcinoma" "Stomach" "stage iiic" "Primary Tumor" "Stomach" 29784624 83.6310807737341
+"32" "chr6" 158017291 158019983 "+" 60188 1 "female" "TCGA-98-A53H" "Lung Squamous Cell Carcinoma" "Lung" "stage ia" "Primary Tumor" "Lung" 8297561 35.5111079726613
+"33" "chr6" 158017291 158019983 "+" 60195 1 "male" "TCGA-XK-AAJP" "Prostate Adenocarcinoma" "Prostate" "not reported" "Primary Tumor" "Prostate" 8571951 40.4038094430068
+"34" "chr6" 158017291 158019983 "+" 60198 1 "male" "TCGA-CZ-5454" "Kidney Renal Clear Cell Carcinoma" "Kidney" "stage iv" "Solid Tissue Normal" "Kidney" 16036865 59.6947120395462
+"35" "chr6" 158017291 158019983 "+" 60206 1 "female" "TCGA-AG-4022" "Rectum Adenocarcinoma" "Colorectal" "stage ii" "Primary Tumor" "Colorectal" 6509704 31.5848657460869
+"36" "chr6" 158017291 158019983 "+" 60228 2 "male" "TCGA-VQ-A8P2" "Stomach Adenocarcinoma" "Stomach" "stage iiia" "Primary Tumor" "Stomach" 15780482 59.0929693497351
+"37" "chr6" 158017291 158019983 "+" 60235 1 "female" "TCGA-IC-A6RF" "Esophageal Carcinoma" "Esophagus" "stage ia" "Primary Tumor" "Esophagus" 27979406 82.7822467069837
+"38" "chr6" 158017291 158019983 "+" 60250 1 "female" "TCGA-B5-A3FB" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 5210068 28.5240918671813
+"39" "chr6" 158017291 158019983 "+" 60259 6 "male" "TCGA-VQ-AA6A" "Stomach Adenocarcinoma" "Stomach" "stage iiic" "Primary Tumor" "Stomach" 25269432 69.3677755145739
+"40" "chr6" 158017291 158019983 "+" 60274 1 "female" "TCGA-CV-7425" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iii" "Primary Tumor" "Head and Neck" 8630257 47.0662561898737
+"41" "chr6" 158017291 158019983 "+" 60288 1 "female" "TCGA-A2-A25A" "Breast Invasive Carcinoma" "Breast" "stage iia" "Primary Tumor" "Breast" 13758457 52.275361713122
+"42" "chr6" 158017291 158019983 "+" 60327 1 "male" "TCGA-DC-6683" "Rectum Adenocarcinoma" "Colorectal" "stage iiib" "Primary Tumor" "Colorectal" 5407608 29.4453441075094
+"43" "chr6" 158017291 158019983 "+" 60336 1 "male" "TCGA-QK-AA3J" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage i" "Primary Tumor" "Head and Neck" 9098817 40.0633038470175
+"44" "chr6" 158017291 158019983 "+" 60373 1 "male" "TCGA-2H-A9GF" "Esophageal Carcinoma" "Esophagus" "stage iii" "Primary Tumor" "Esophagus" 23632693 68.5719139626452
+"45" "chr6" 158017291 158019983 "+" 60377 1 "female" "TCGA-BH-A1FC" "Breast Invasive Carcinoma" "Breast" "stage iia" "Primary Tumor" "Breast" 12941707 54.8084793711832
+"46" "chr6" 158017291 158019983 "+" 60400 1 "male" "TCGA-D5-5539" "Colon Adenocarcinoma" "Colorectal" "stage iiia" "Primary Tumor" "Colorectal" 7035696 35.4416341334408
+"47" "chr6" 158017291 158019983 "+" 60428 4 "male" "TCGA-VQ-A94T" "Stomach Adenocarcinoma" "Stomach" "stage iiib" "Primary Tumor" "Stomach" 31894584 93.2279415633385
+"48" "chr6" 158017291 158019983 "+" 60447 1 "male" "TCGA-L5-A4OQ" "Esophageal Carcinoma" "Esophagus" "stage iiia" "Primary Tumor" "Esophagus" 30672099 74.9907068741259
+"49" "chr6" 158017291 158019983 "+" 60463 1 "female" "TCGA-BR-8081" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Primary Tumor" "Stomach" 23511134 85.3067374921537
+"50" "chr6" 158017291 158019983 "+" 60464 4 "female" "TCGA-AG-3727" "Rectum Adenocarcinoma" "Colorectal" "stage iii" "Primary Tumor" "Colorectal" 3384704 25.2439140811456
+"51" "chr6" 158017291 158019983 "+" 60477 1 "male" "TCGA-UF-A7JD" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iva" "Primary Tumor" "Head and Neck" 5234560 27.0510110745348
+"52" "chr6" 158017291 158019983 "+" 60481 1 "male" "TCGA-BP-4974" "Kidney Renal Clear Cell Carcinoma" "Kidney" "stage iv" "Primary Tumor" "Kidney" 12477689 43.2908867601803
+"53" "chr6" 158017291 158019983 "+" 60482 1 "female" "TCGA-AF-A56N" "Rectum Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 7197934 34.672463125849
+"54" "chr6" 158017291 158019983 "+" 60508 2 "male" "TCGA-CV-7440" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage ii" "Primary Tumor" "Head and Neck" 9557869 47.0622334925403
+"55" "chr6" 158017291 158019983 "+" 60527 1 "female" "TCGA-D3-A3MV" "Skin Cutaneous Melanoma" "Skin" "stage iiib" "Metastatic" "Skin" 10422711 45.6038355013586
+"56" "chr6" 158017291 158019983 "+" 60550 1 "male" "TCGA-2G-AAFM" "Testicular Germ Cell Tumors" "Testis" "stage iia" "Primary Tumor" "Testis" 5299275 34.9233886911823
+"57" "chr6" 158017291 158019983 "+" 60559 2 "male" "TCGA-HU-A4GH" "Stomach Adenocarcinoma" "Stomach" "stage ia" "Primary Tumor" "Stomach" 26494429 79.1663051143223
+"58" "chr6" 158017291 158019983 "+" 60592 1 "female" "TCGA-IB-7885" "Pancreatic Adenocarcinoma" "Pancreas" "stage iib" "Primary Tumor" "Pancreas" 11139110 51.0256797859865
+"59" "chr6" 158017291 158019983 "+" 60599 1 "male" "TCGA-56-7822" "Lung Squamous Cell Carcinoma" "Lung" "stage iib" "Primary Tumor" "Lung" 9619588 42.5126305927275
+"60" "chr6" 158017291 158019983 "+" 60636 1 "female" "TCGA-A6-2672" "Colon Adenocarcinoma" "Colorectal" "stage iiib" "Primary Tumor" "Colorectal" 3118394 18.861748392599
+"61" "chr6" 158017291 158019983 "+" 60638 2 "female" "TCGA-B6-A0RS" "Breast Invasive Carcinoma" "Breast" "stage iia" "Primary Tumor" "Breast" 10708970 49.6369341725918
+"62" "chr6" 158017291 158019983 "+" 60646 1 "male" "TCGA-CN-4729" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iii" "Primary Tumor" "Head and Neck" 11266208 51.8260597557329
+"63" "chr6" 158017291 158019983 "+" 60653 1 "male" "TCGA-R6-A6Y0" "Esophageal Carcinoma" "Esophagus" "not reported" "Primary Tumor" "Esophagus" 26204691 80.0942956784331
+"64" "chr6" 158017291 158019983 "+" 60702 1 "male" "TCGA-JY-A93E" "Esophageal Carcinoma" "Esophagus" "stage iiia" "Primary Tumor" "Esophagus" 20510943 58.2995366949008
+"65" "chr6" 158017291 158019983 "+" 60707 3 "female" "TCGA-24-1435" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 21398852 62.55254988395
+"66" "chr6" 158017291 158019983 "+" 60713 1 "female" "TCGA-BR-6564" "Stomach Adenocarcinoma" "Stomach" "stage iiia" "Primary Tumor" "Stomach" 14348104 56.717926419025
+"67" "chr6" 158017291 158019983 "+" 60716 1 "female" "TCGA-A5-A0GB" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 4894196 30.6369782407291
+"68" "chr6" 158017291 158019983 "+" 60717 9 "male" "TCGA-L5-A88Y" "Esophageal Carcinoma" "Esophagus" "not reported" "Primary Tumor" "Esophagus" 17733750 59.1450297663715
+"69" "chr6" 158017291 158019983 "+" 60724 1 "male" "TCGA-AG-3594" "Rectum Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 3455811 20.9155343860265
+"70" "chr6" 158017291 158019983 "+" 60745 1 "female" "TCGA-VS-A9UO" "Cervical Squamous Cell Carcinoma and Endocervical Adenocarcinoma" "Cervix" "not reported" "Primary Tumor" "Cervix" 10951019 47.3152457571463
+"71" "chr6" 158017291 158019983 "+" 60757 1 "female" "TCGA-AA-3845" "Colon Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 2617166 17.3511850697782
+"72" "chr6" 158017291 158019983 "+" 60772 1 "female" "TCGA-VS-A9V0" "Cervical Squamous Cell Carcinoma and Endocervical Adenocarcinoma" "Cervix" "not reported" "Primary Tumor" "Cervix" 2938412 18.1103975346687
+"73" "chr6" 158017291 158019983 "+" 60785 1 "male" "TCGA-85-8052" "Lung Squamous Cell Carcinoma" "Lung" "stage iib" "Primary Tumor" "Lung" 4496932 23.8794592126085
+"74" "chr6" 158017291 158019983 "+" 60799 5 "male" "TCGA-L5-A4OF" "Esophageal Carcinoma" "Esophagus" "stage iib" "Primary Tumor" "Esophagus" 36635737 74.6718702547577
+"75" "chr6" 158017291 158019983 "+" 60828 2 "female" "TCGA-BR-4255" "Stomach Adenocarcinoma" "Stomach" "stage iiia" "Primary Tumor" NA 37405393 116.923641740098
+"76" "chr6" 158017291 158019983 "+" 60854 1 "male" "TCGA-BR-4187" "Stomach Adenocarcinoma" "Stomach" "not reported" "Primary Tumor" "Stomach" 19888240 72.7499652495812
+"77" "chr6" 158017291 158019983 "+" 60863 1 "male" "TCGA-A6-5664" "Colon Adenocarcinoma" "Colorectal" "stage iiic" "Primary Tumor" "Colorectal" 7683009 37.4570801745362
+"78" "chr6" 158017291 158019983 "+" 60869 2 "male" "TCGA-MX-A5UG" "Stomach Adenocarcinoma" "Stomach" "stage iiia" "Primary Tumor" "Stomach" 30206001 87.3384444123175
+"79" "chr6" 158017291 158019983 "+" 60916 1 "female" "TCGA-C5-A1MJ" "Cervical Squamous Cell Carcinoma and Endocervical Adenocarcinoma" "Cervix" "not reported" "Primary Tumor" "Cervix" 11406009 48.5360019744597
+"80" "chr6" 158017291 158019983 "+" 60918 8 "male" "TCGA-BR-A4J4" "Stomach Adenocarcinoma" "Stomach" "stage iiib" "Primary Tumor" "Stomach" 22154902 69.4389135449576
+"81" "chr6" 158017291 158019983 "+" 60947 1 "male" "TCGA-R6-A8W8" "Esophageal Carcinoma" "Esophagus" "not reported" "Primary Tumor" "Esophagus" 25879504 74.7601706690701
+"82" "chr6" 158017291 158019983 "+" 60960 1 "female" "TCGA-AC-A62X" "Breast Invasive Carcinoma" "Breast" "stage iia" "Primary Tumor" "Breast" 6550388 37.7877205835694
+"83" "chr6" 158017291 158019983 "+" 61029 1 "female" "TCGA-CQ-7063" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage i" "Primary Tumor" "Head and Neck" 7008156 38.0398410699553
+"84" "chr6" 158017291 158019983 "+" 61047 1 "male" "TCGA-BR-7717" "Stomach Adenocarcinoma" "Stomach" "stage iv" "Primary Tumor" "Stomach" 14733820 60.3306062616187
+"85" "chr6" 158017291 158019983 "+" 61053 2 "male" "TCGA-CV-7434" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iva" "Solid Tissue Normal" "Head and Neck" 9496448 42.6937131348007
+"86" "chr6" 158017291 158019983 "+" 61065 1 "male" "TCGA-AD-6895" "Colon Adenocarcinoma" "Colorectal" "stage iiib" "Primary Tumor" "Colorectal" 7154697 36.7435137633525
+"87" "chr6" 158017291 158019983 "+" 61090 1 "female" "TCGA-A7-A4SE" "Breast Invasive Carcinoma" "Breast" "stage iia" "Primary Tumor" "Breast" 5871035 29.8240084122404
+"88" "chr6" 158017291 158019983 "+" 61154 3 "male" "TCGA-HF-7136" "Stomach Adenocarcinoma" "Stomach" "stage iiia" "Primary Tumor" "Stomach" 42443612 96.0645234301441
+"89" "chr6" 158017291 158019983 "+" 61160 3 "male" "TCGA-VQ-A8PP" "Stomach Adenocarcinoma" "Stomach" "stage iv" "Primary Tumor" "Stomach" 24179501 71.9358246609902
+"90" "chr6" 158017291 158019983 "+" 61163 1 "female" "TCGA-BH-A18T" "Breast Invasive Carcinoma" "Breast" "stage iia" "Primary Tumor" "Breast" 11437732 49.8315325363354
+"91" "chr6" 158017291 158019983 "+" 61172 1 "female" "TCGA-61-1725" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 13441292 54.7531335416251
+"92" "chr6" 158017291 158019983 "+" 61174 1 NA NA NA NA NA NA NA 10784046 49.4370326904652
+"93" "chr6" 158017291 158019983 "+" 61198 1 "female" "TCGA-B6-A3ZX" "Breast Invasive Carcinoma" "Breast" "stage iv" "Primary Tumor" "Breast" 9232391 38.623433290383
+"94" "chr6" 158017291 158019983 "+" 61212 1 "male" "TCGA-AA-3869" "Colon Adenocarcinoma" "Colorectal" "stage iv" "Primary Tumor" "Colorectal" 3827899 24.1488016755724
+"95" "chr6" 158017291 158019983 "+" 61216 1 "female" "TCGA-VQ-AA6D" "Stomach Adenocarcinoma" "Stomach" "stage iiia" "Primary Tumor" "Stomach" 17662786 52.024806557744
+"96" "chr6" 158017291 158019983 "+" 61217 5 "female" "TCGA-D7-A74A" "Stomach Adenocarcinoma" "Stomach" "stage iiia" "Primary Tumor" "Stomach" 18212218 79.0793780367603
+"97" "chr6" 158017291 158019983 "+" 61223 1 "male" "TCGA-BR-8367" "Stomach Adenocarcinoma" "Stomach" "stage iiib" "Primary Tumor" "Stomach" 21541688 66.5437875708169
+"98" "chr6" 158017291 158019983 "+" 61257 1 "male" "TCGA-FF-A7CQ" "Lymphoid Neoplasm Diffuse Large B-cell Lymphoma" "Lymph Nodes" "not reported" "Primary Tumor" "Lymph Nodes" 8805550 43.0810440568507
+"99" "chr6" 158017291 158019983 "+" 61270 4 "female" "TCGA-36-1580" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 22306533 66.0126511853643
+"100" "chr6" 158017291 158019983 "+" 61276 1 "female" "TCGA-E9-A1N3" "Breast Invasive Carcinoma" "Breast" "stage iiia" "Primary Tumor" "Breast" 13172434 53.6758690664895
+"101" "chr6" 158017291 158019983 "+" 61307 1 "male" "TCGA-2G-AAGX" "Testicular Germ Cell Tumors" "Testis" "stage ia" "Primary Tumor" "Testis" 8966505 39.2021204503224
+"102" "chr6" 158017291 158019983 "+" 61324 1 "female" "TCGA-AR-A1AW" "Breast Invasive Carcinoma" "Breast" "stage iia" "Primary Tumor" "Breast" 10384643 44.5622068598549
+"103" "chr6" 158017291 158019983 "+" 61390 1 "male" "TCGA-CV-A6K2" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iva" "Primary Tumor" "Head and Neck" 6322580 35.8632307980283
+"104" "chr6" 158017291 158019983 "+" 61396 2 "male" "TCGA-D6-6516" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage i" "Primary Tumor" "Head and Neck" 10815210 54.8388585220416
+"105" "chr6" 158017291 158019983 "+" 61454 1 "male" "TCGA-D7-6822" "Stomach Adenocarcinoma" "Stomach" "stage ib" "Primary Tumor" "Stomach" 25357703 73.6879051966884
+"106" "chr6" 158017291 158019983 "+" 61487 2 "female" "TCGA-61-1741" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 18284550 51.0426524408117
+"107" "chr6" 158017291 158019983 "+" 61495 1 "female" "TCGA-EW-A1P4" "Breast Invasive Carcinoma" "Breast" "stage iia" "Primary Tumor" "Breast" 10835193 50.5825786151778
+"108" "chr6" 158017291 158019983 "+" 61499 1 "female" "TCGA-AR-A251" "Breast Invasive Carcinoma" "Breast" "stage iiia" "Primary Tumor" "Breast" 17523605 53.0179685467231
+"109" "chr6" 158017291 158019983 "+" 61559 5 "male" "TCGA-IP-7968" "Stomach Adenocarcinoma" "Stomach" "stage iiib" "Solid Tissue Normal" "Stomach" 16424307 73.1236676906638
+"110" "chr6" 158017291 158019983 "+" 61583 4 "female" "TCGA-AO-A124" "Breast Invasive Carcinoma" "Breast" "stage iia" "Primary Tumor" "Breast" 12531763 52.4963157211259
+"111" "chr6" 158017291 158019983 "+" 61593 1 "male" "TCGA-YL-A9WL" "Prostate Adenocarcinoma" "Prostate" "not reported" "Primary Tumor" "Prostate" 10241079 45.8230227480178
+"112" "chr6" 158017291 158019983 "+" 61594 1 "male" "TCGA-VQ-A928" "Stomach Adenocarcinoma" "Stomach" "stage iv" "Primary Tumor" "Stomach" 25636609 71.8041900653998
+"113" "chr6" 158017291 158019983 "+" 61595 1 "male" "TCGA-LA-A446" "Lung Squamous Cell Carcinoma" "Lung" "stage ia" "Primary Tumor" "Lung" 7558360 33.8695381361439
+"114" "chr6" 158017291 158019983 "+" 61605 1 "female" "TCGA-EY-A2OP" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 6613286 34.630335972519
+"115" "chr6" 158017291 158019983 "+" 61623 1 "male" "TCGA-69-8254" "Lung Adenocarcinoma" "Lung" "not reported" "Primary Tumor" "Lung" 14967491 54.4523871024073
+"116" "chr6" 158017291 158019983 "+" 61636 1 "male" "TCGA-GD-A3OQ" "Bladder Urothelial Carcinoma" "Bladder" "stage iv" "Primary Tumor" "Bladder" 10469786 49.5817713414345
+"117" "chr6" 158017291 158019983 "+" 61648 2 "male" "TCGA-CA-6717" "Colon Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 7416626 35.1340675998958
+"118" "chr6" 158017291 158019983 "+" 61652 7 "male" "TCGA-CG-4305" "Stomach Adenocarcinoma" "Stomach" "stage ii" "Primary Tumor" "Stomach" 8568628 34.9839872616666
+"119" "chr6" 158017291 158019983 "+" 61656 1 "female" "TCGA-DU-8162" "Brain Lower Grade Glioma" "Brain" "not reported" "Primary Tumor" "Brain" 8960559 36.4254807985463
+"120" "chr6" 158017291 158019983 "+" 61674 1 "male" "TCGA-VQ-A8PE" "Stomach Adenocarcinoma" "Stomach" "stage iiib" "Primary Tumor" "Stomach" 27658995 71.972778937179
+"121" "chr6" 158017291 158019983 "+" 61678 4 "female" "TCGA-HU-A4GP" "Stomach Adenocarcinoma" "Stomach" "stage iia" "Primary Tumor" "Stomach" 21583359 71.0203189164999
+"122" "chr6" 158017291 158019983 "+" 61683 1 "female" "TCGA-AR-A24K" "Breast Invasive Carcinoma" "Breast" "stage iia" "Primary Tumor" "Breast" 11097781 49.0581211845264
+"123" "chr6" 158017291 158019983 "+" 61694 1 "female" "TCGA-B5-A5OD" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 7227987 41.7380511043742
+"124" "chr6" 158017291 158019983 "+" 61701 1 "male" "TCGA-IN-A7NU" "Stomach Adenocarcinoma" "Stomach" "stage iiib" "Primary Tumor" "Stomach" 4555288 23.8322067594433
+"125" "chr6" 158017291 158019983 "+" 61706 2 "female" "TCGA-25-2398" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 18228610 52.0432308663018
+"126" "chr6" 158017291 158019983 "+" 61718 1 "female" "TCGA-39-5034" "Lung Squamous Cell Carcinoma" "Lung" "stage iib" "Primary Tumor" "Lung" 6869276 35.4042592668948
+"127" "chr6" 158017291 158019983 "+" 61759 1 "male" "TCGA-BT-A20N" "Bladder Urothelial Carcinoma" "Bladder" "stage iii" "Primary Tumor" "Bladder" 5666065 30.5946338513375
+"128" "chr6" 158017291 158019983 "+" 61761 2 "male" "TCGA-BR-7959" "Stomach Adenocarcinoma" "Stomach" "stage iiia" "Primary Tumor" "Stomach" 40433930 101.417983074399
+"129" "chr6" 158017291 158019983 "+" 61781 2 "female" "TCGA-A2-A1G1" "Breast Invasive Carcinoma" "Breast" "stage iib" "Primary Tumor" "Breast" 13736006 57.2708229967104
+"130" "chr6" 158017291 158019983 "+" 61818 1 "male" "TCGA-A6-5662" "Colon Adenocarcinoma" "Colorectal" "stage iva" "Primary Tumor" "Colorectal" 7342915 36.341349342255
+"131" "chr6" 158017291 158019983 "+" 61857 1 "female" "TCGA-EY-A1GR" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 4352293 26.1708628226791
+"132" "chr6" 158017291 158019983 "+" 61881 1 "female" "TCGA-CF-A1HS" "Bladder Urothelial Carcinoma" "Bladder" "stage iii" "Primary Tumor" "Bladder" 5428104 29.8524674010482
+"133" "chr6" 158017291 158019983 "+" 61941 1 "male" "TCGA-CR-5247" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "not reported" "Primary Tumor" "Head and Neck" 8551931 48.4676954989062
+"134" "chr6" 158017291 158019983 "+" 61971 2 "male" "TCGA-AD-6889" "Colon Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 6432884 36.3914713552716
+"135" "chr6" 158017291 158019983 "+" 61974 3 "female" "TCGA-25-1317" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 19636152 55.3647259839456
+"136" "chr6" 158017291 158019983 "+" 61980 1 "female" "TCGA-CG-4474" "Stomach Adenocarcinoma" "Stomach" "stage iv" "Primary Tumor" "Stomach" 10027460 41.4611415245687
+"137" "chr6" 158017291 158019983 "+" 61984 1 "male" "TCGA-BR-4367" "Stomach Adenocarcinoma" "Stomach" "not reported" "Primary Tumor" "Stomach" 9577443 50.4913040040066
+"138" "chr6" 158017291 158019983 "+" 62012 1 "female" "TCGA-D7-6526" "Stomach Adenocarcinoma" "Stomach" "stage iiia" "Primary Tumor" "Stomach" 22326853 69.5854918888595
+"139" "chr6" 158017291 158019983 "+" 62022 1 "female" "TCGA-AR-A1AR" "Breast Invasive Carcinoma" "Breast" "stage iiia" "Primary Tumor" "Breast" 12637781 54.9039056390651
+"140" "chr6" 158017291 158019983 "+" 62031 1 "female" "TCGA-24-2038" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 18377670 68.4711997019374
+"141" "chr6" 158017291 158019983 "+" 62046 1 "male" "TCGA-AA-3544" "Colon Adenocarcinoma" "Colorectal" "stage i" "Primary Tumor" "Colorectal" 2920840 21.6337686000607
+"142" "chr6" 158017291 158019983 "+" 62066 1 "male" "TCGA-37-5819" "Lung Squamous Cell Carcinoma" "Lung" "stage iiia" "Primary Tumor" "Lung" 11129112 47.1205162077025
+"143" "chr6" 158017291 158019983 "+" 62107 1 "female" "TCGA-O2-A52S" "Lung Squamous Cell Carcinoma" "Lung" "stage iii" "Primary Tumor" "Lung" 8023326 33.8751361621279
+"144" "chr6" 158017291 158019983 "+" 62112 1 "male" "TCGA-CV-A6K0" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage i" "Primary Tumor" "Head and Neck" 7116522 34.7435531904506
+"145" "chr6" 158017291 158019983 "+" 62132 3 "male" "TCGA-FP-8211" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Primary Tumor" "Stomach" 18929741 71.6210916217689
+"146" "chr6" 158017291 158019983 "+" 62133 1 "female" "TCGA-D8-A1XW" "Breast Invasive Carcinoma" "Breast" "stage iia" "Primary Tumor" "Breast" 11569280 46.396079547961
+"147" "chr6" 158017291 158019983 "+" 62153 1 "male" "TCGA-BF-AAP8" "Skin Cutaneous Melanoma" "Skin" "stage iic" "Primary Tumor" "Skin" 3872109 25.0969563019328
+"148" "chr6" 158017291 158019983 "+" 62160 1 "female" "TCGA-AA-3516" "Colon Adenocarcinoma" "Colorectal" "stage iii" "Primary Tumor" "Colorectal" 3314953 21.7194514696054
+"149" "chr6" 158017291 158019983 "+" 62180 2 "female" "TCGA-25-2042" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 23165923 61.3387357283569
+"150" "chr6" 158017291 158019983 "+" 62198 1 "male" "TCGA-HZ-7926" "Pancreatic Adenocarcinoma" "Pancreas" "stage iib" "Primary Tumor" "Pancreas" 11187072 46.9954210530738
+"151" "chr6" 158017291 158019983 "+" 62205 1 "female" "TCGA-55-A494" "Lung Adenocarcinoma" "Lung" "stage ib" "Primary Tumor" "Lung" 6550339 31.6239837398374
+"152" "chr6" 158017291 158019983 "+" 62208 2 "male" "TCGA-B0-4813" "Kidney Renal Clear Cell Carcinoma" "Kidney" "stage iii" "Primary Tumor" "Kidney" 3612420 22.791005791725
+"153" "chr6" 158017291 158019983 "+" 62212 2 "male" "TCGA-CV-6959" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iii" "Solid Tissue Normal" "Head and Neck" 11940941 56.5894554760438
+"154" "chr6" 158017291 158019983 "+" 62264 4 "female" "TCGA-VQ-A91N" "Stomach Adenocarcinoma" "Stomach" "stage iv" "Primary Tumor" "Stomach" 25143273 71.7907460811467
+"155" "chr6" 158017291 158019983 "+" 62266 1 "male" "TCGA-DX-A6B7" "Sarcoma" "Soft Tissue" "not reported" "Primary Tumor" "Mesenchymal" 8038822 43.1341324690934
+"156" "chr6" 158017291 158019983 "+" 62305 1 "male" "TCGA-05-4249" "Lung Adenocarcinoma" "Lung" "stage ib" "Primary Tumor" "Lung" 10949018 45.8346122127754
+"157" "chr6" 158017291 158019983 "+" 62306 1 "female" "TCGA-E9-A244" "Breast Invasive Carcinoma" "Breast" "stage iia" "Primary Tumor" "Breast" 9916568 47.4560950981753
+"158" "chr6" 158017291 158019983 "+" 62309 1 "male" "TCGA-D7-A4YY" "Stomach Adenocarcinoma" "Stomach" "stage iiib" "Primary Tumor" "Stomach" 27062030 82.5832331382326
+"159" "chr6" 158017291 158019983 "+" 62327 1 "female" "TCGA-EW-A1OZ" "Breast Invasive Carcinoma" "Breast" "stage iia" "Primary Tumor" "Breast" 11874560 53.3218378417214
+"160" "chr6" 158017291 158019983 "+" 62338 1 "male" "TCGA-A6-2675" "Colon Adenocarcinoma" "Colorectal" "stage iia" "Solid Tissue Normal" "Colorectal" 6350135 32.4423458127273
+"161" "chr6" 158017291 158019983 "+" 62341 1 "female" "TCGA-ET-A3DT" "Thyroid Carcinoma" "Thyroid" "stage i" "Primary Tumor" "Thyroid" 10262357 46.7407712733252
+"162" "chr6" 158017291 158019983 "+" 62344 1 "male" "TCGA-A6-6648" "Colon Adenocarcinoma" "Colorectal" "stage iva" "Primary Tumor" "Colorectal" 11082747 48.887929703525
+"163" "chr6" 158017291 158019983 "+" 62346 1 "male" "TCGA-IN-AB1V" "Stomach Adenocarcinoma" "Stomach" "stage ia" "Primary Tumor" "Stomach" 19436879 62.205576998163
+"164" "chr6" 158017291 158019983 "+" 62376 1 "female" "TCGA-HU-8602" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Primary Tumor" "Stomach" 30867342 86.3932055003093
+"165" "chr6" 158017291 158019983 "+" 62383 1 "male" "TCGA-CW-5591" "Kidney Renal Clear Cell Carcinoma" "Kidney" "stage iv" "Solid Tissue Normal" "Kidney" 10293378 46.2704833656236
+"166" "chr6" 158017291 158019983 "+" 62390 1 "male" "TCGA-O2-A52N" "Lung Squamous Cell Carcinoma" "Lung" "stage i" "Primary Tumor" "Lung" 5773123 27.0403887587822
+"167" "chr6" 158017291 158019983 "+" 62391 2 "male" "TCGA-E7-A7DV" "Bladder Urothelial Carcinoma" "Bladder" "stage iv" "Primary Tumor" "Bladder" 8169776 43.2579131852887
+"168" "chr6" 158017291 158019983 "+" 62410 1 "female" "TCGA-FI-A2F9" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 2667302 16.1036870671907
+"169" "chr6" 158017291 158019983 "+" 62440 1 "male" "TCGA-CR-7377" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iva" "Primary Tumor" "Head and Neck" 11940151 54.3087143006591
+"170" "chr6" 158017291 158019983 "+" 62458 1 "female" "TCGA-AB-2910" "Acute Myeloid Leukemia" "Bone Marrow" "not reported" "Primary Blood Derived Cancer - Peripheral Blood" "Blood" 6182882 26.9010433435724
+"171" "chr6" 158017291 158019983 "+" 62473 4 "male" "TCGA-CD-5798" "Stomach Adenocarcinoma" "Stomach" "stage ii" "Primary Tumor" "Stomach" 18689540 75.9669460454756
+"172" "chr6" 158017291 158019983 "+" 62495 1 "female" "TCGA-CG-5719" "Stomach Adenocarcinoma" "Stomach" "stage iv" "Primary Tumor" "Stomach" 15868264 64.9659740844609
+"173" "chr6" 158017291 158019983 "+" 62509 2 "female" "TCGA-10-0926" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 28333336 94.6002283760592
+"174" "chr6" 158017291 158019983 "+" 62520 3 "male" "TCGA-AA-A01V" "Colon Adenocarcinoma" "Colorectal" "stage i" "Primary Tumor" "Colorectal" 3386326 21.7313174225263
+"175" "chr6" 158017291 158019983 "+" 62525 1 "female" "TCGA-AN-A0FX" "Breast Invasive Carcinoma" "Breast" "stage iia" "Primary Tumor" "Breast" 11755207 48.8629616543697
+"176" "chr6" 158017291 158019983 "+" 62549 7 "male" "TCGA-HU-A4HD" "Stomach Adenocarcinoma" "Stomach" "stage iiia" "Primary Tumor" "Stomach" 32564649 88.2673473702471
+"177" "chr6" 158017291 158019983 "+" 62559 2 "female" "TCGA-CD-5800" "Stomach Adenocarcinoma" "Stomach" "stage ii" "Primary Tumor" "Stomach" 16782281 54.8693384860344
+"178" "chr6" 158017291 158019983 "+" 62590 1 "female" "TCGA-A2-A0YJ" "Breast Invasive Carcinoma" "Breast" "stage iiia" "Primary Tumor" "Breast" 8820408 44.4536685179772
+"179" "chr6" 158017291 158019983 "+" 62651 2 "female" "TCGA-A2-A04Q" "Breast Invasive Carcinoma" "Breast" "stage ia" "Primary Tumor" "Breast" 9888748 48.0631266859462
+"180" "chr6" 158017291 158019983 "+" 62661 1 "female" "TCGA-HU-A4H2" "Stomach Adenocarcinoma" "Stomach" "stage iiib" "Primary Tumor" "Stomach" 24673764 76.6780324689854
+"181" "chr6" 158017291 158019983 "+" 62675 2 "male" "TCGA-TM-A84C" "Brain Lower Grade Glioma" "Brain" "not reported" "Primary Tumor" "Brain" 9441021 41.7531831147867
+"182" "chr6" 158017291 158019983 "+" 62688 1 "female" "TCGA-AJ-A6NU" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 10459152 42.5301903441321
+"183" "chr6" 158017291 158019983 "+" 62706 1 "male" "TCGA-3B-A9HZ" "Sarcoma" "Soft Tissue" "not reported" "Primary Tumor" "Mesenchymal" 9716968 45.1928878057402
+"184" "chr6" 158017291 158019983 "+" 62721 1 "male" "TCGA-CD-8536" "Stomach Adenocarcinoma" "Stomach" "stage ii" "Primary Tumor" "Stomach" 24980533 99.4356925918407
+"185" "chr6" 158017291 158019983 "+" 62783 1 "female" "TCGA-3L-AA1B" "Colon Adenocarcinoma" "Colorectal" "stage i" "Primary Tumor" "Colorectal" 6229644 30.203163028828
+"186" "chr6" 158017291 158019983 "+" 62828 1 "female" "TCGA-BH-A18V" "Breast Invasive Carcinoma" "Breast" "stage iib" "Metastatic" "Breast" 11862412 48.2404047140731
+"187" "chr6" 158017291 158019983 "+" 62843 1 "male" "TCGA-75-5125" "Lung Adenocarcinoma" "Lung" "stage iib" "Primary Tumor" "Lung" 6505766 30.3861505910707
+"188" "chr6" 158017291 158019983 "+" 62851 1 "male" "TCGA-B8-5545" "Kidney Renal Clear Cell Carcinoma" "Kidney" "stage i" "Primary Tumor" "Kidney" 10023496 45.6896919528494
+"189" "chr6" 158017291 158019983 "+" 62853 1 "male" "TCGA-AG-A00Y" "Rectum Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 2800196 17.8827992285389
+"190" "chr6" 158017291 158019983 "+" 62865 3 "female" "TCGA-B7-5816" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Primary Tumor" "Stomach" 24440807 78.0689341259219
+"191" "chr6" 158017291 158019983 "+" 62876 1 "female" "TCGA-FU-A3HZ" "Cervical Squamous Cell Carcinoma and Endocervical Adenocarcinoma" "Cervix" "not reported" "Primary Tumor" "Cervix" 5293594 29.2118379374662
+"192" "chr6" 158017291 158019983 "+" 62890 1 "female" "TCGA-09-2048" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 19055510 63.6407690791956
+"193" "chr6" 158017291 158019983 "+" 62894 1 "female" "TCGA-LL-A8F5" "Breast Invasive Carcinoma" "Breast" "stage iia" "Primary Tumor" "Breast" 7720151 41.992945105633
+"194" "chr6" 158017291 158019983 "+" 62968 2 "female" "TCGA-JY-A6FD" "Esophageal Carcinoma" "Esophagus" "stage iia" "Primary Tumor" "Esophagus" 27686725 80.3004881246211
+"195" "chr6" 158017291 158019983 "+" 62975 1 "female" "TCGA-23-2078" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 26764000 68.573946819577
+"196" "chr6" 158017291 158019983 "+" 62993 2 "male" "TCGA-CD-A489" "Stomach Adenocarcinoma" "Stomach" "stage iia" "Primary Tumor" "Stomach" 14388820 55.4888743203116
+"197" "chr6" 158017291 158019983 "+" 63005 1 "female" "TCGA-CJ-5677" "Kidney Renal Clear Cell Carcinoma" "Kidney" "stage iv" "Primary Tumor" "Kidney" 6314101 34.2762740755217
+"198" "chr6" 158017291 158019983 "+" 63014 4 "female" "TCGA-BR-8366" "Stomach Adenocarcinoma" "Stomach" "stage iia" "Primary Tumor" "Stomach" 21448631 73.4672989710496
+"199" "chr6" 158017291 158019983 "+" 63064 1 "female" "TCGA-B0-5097" "Kidney Renal Clear Cell Carcinoma" "Kidney" "stage iii" "Primary Tumor" "Kidney" 9173717 41.9550206717401
+"200" "chr6" 158017291 158019983 "+" 63068 7 "male" "TCGA-BR-4256" "Stomach Adenocarcinoma" "Stomach" "not reported" "Primary Tumor" "Stomach" 34447929 98.569945947802
+"201" "chr6" 158017291 158019983 "+" 63069 1 "male" "TCGA-BA-A4IH" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "not reported" "Primary Tumor" "Head and Neck" 8310672 36.5954133934547
+"202" "chr6" 158017291 158019983 "+" 63107 1 "male" "TCGA-85-A4QQ" "Lung Squamous Cell Carcinoma" "Lung" "stage ib" "Primary Tumor" "Lung" 7310351 37.4993639264206
+"203" "chr6" 158017291 158019983 "+" 63110 1 "male" "TCGA-S9-A7IX" "Brain Lower Grade Glioma" "Brain" "not reported" "Primary Tumor" "Brain" 8327140 34.3592663654556
+"204" "chr6" 158017291 158019983 "+" 63117 1 "female" "TCGA-25-1626" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 24034324 63.5173339675996
+"205" "chr6" 158017291 158019983 "+" 63146 1 "male" "TCGA-56-5898" "Lung Squamous Cell Carcinoma" "Lung" "stage ia" "Primary Tumor" "Lung" 8087324 37.8203942291954
+"206" "chr6" 158017291 158019983 "+" 63162 1 "male" "TCGA-W4-A7U2" "Testicular Germ Cell Tumors" "Testis" "not reported" "Primary Tumor" "Testis" 10120658 38.1142146986273
+"207" "chr6" 158017291 158019983 "+" 63177 1 "female" "TCGA-BH-A0BV" "Breast Invasive Carcinoma" "Breast" "stage iib" "Primary Tumor" "Breast" 10147524 47.7261029065939
+"208" "chr6" 158017291 158019983 "+" 63179 2 "female" "TCGA-29-1763" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 25750930 68.8345331048733
+"209" "chr6" 158017291 158019983 "+" 63187 6 "female" "TCGA-HJ-7597" "Stomach Adenocarcinoma" "Stomach" "stage ib" "Primary Tumor" "Stomach" 21185074 65.3963247301273
+"210" "chr6" 158017291 158019983 "+" 63190 1 "female" "TCGA-DM-A28E" "Colon Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 6381802 33.5734118946787
+"211" "chr6" 158017291 158019983 "+" 63201 1 "female" "TCGA-HD-8635" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iii" "Solid Tissue Normal" "Head and Neck" 6707075 36.2638684631688
+"212" "chr6" 158017291 158019983 "+" 63240 1 "female" "TCGA-L5-A88Z" "Esophageal Carcinoma" "Esophagus" "stage iia" "Primary Tumor" "Esophagus" 25808797 76.4415184759558
+"213" "chr6" 158017291 158019983 "+" 63244 1 "female" "TCGA-Q1-A73R" "Cervical Squamous Cell Carcinoma and Endocervical Adenocarcinoma" "Cervix" "not reported" "Primary Tumor" "Cervix" 11079552 45.4459958325813
+"214" "chr6" 158017291 158019983 "+" 63245 1 "female" "TCGA-96-A4JL" "Lung Squamous Cell Carcinoma" "Lung" "stage iia" "Primary Tumor" "Lung" 7389873 32.7825402247351
+"215" "chr6" 158017291 158019983 "+" 63260 3 "male" "TCGA-L5-A88T" "Esophageal Carcinoma" "Esophagus" "stage iib" "Primary Tumor" "Esophagus" 32169323 97.4597610261817
+"216" "chr6" 158017291 158019983 "+" 63366 1 "female" "TCGA-D8-A27E" "Breast Invasive Carcinoma" "Breast" "stage ia" "Primary Tumor" "Breast" 12813270 52.9655625689803
+"217" "chr6" 158017291 158019983 "+" 63374 1 "female" "TCGA-EE-A2MP" "Skin Cutaneous Melanoma" "Skin" "stage i" "Metastatic" "Skin" 10455694 48.5415024350386
+"218" "chr6" 158017291 158019983 "+" 63381 2 "female" "TCGA-CG-4477" "Stomach Adenocarcinoma" "Stomach" "stage ib" "Primary Tumor" "Stomach" 8295857 34.1963230899235
+"219" "chr6" 158017291 158019983 "+" 63382 1 "male" "TCGA-CK-5914" "Colon Adenocarcinoma" "Colorectal" "stage iiib" "Primary Tumor" "Colorectal" 6088122 31.9467390106574
+"220" "chr6" 158017291 158019983 "+" 63412 1 "male" "TCGA-IN-8663" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Solid Tissue Normal" "Stomach" 11632573 60.4741884838529
+"221" "chr6" 158017291 158019983 "+" 63413 1 "female" "TCGA-B5-A1MS" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 8268168 34.0270630648427
+"222" "chr6" 158017291 158019983 "+" 63434 2 "female" "TCGA-DS-A0VM" "Cervical Squamous Cell Carcinoma and Endocervical Adenocarcinoma" "Cervix" "not reported" "Primary Tumor" "Cervix" 10236311 49.716895265479
+"223" "chr6" 158017291 158019983 "+" 63439 2 "male" "TCGA-G8-6325" "Lymphoid Neoplasm Diffuse Large B-cell Lymphoma" "Lymph Nodes" "not reported" "Primary Tumor" "Lymph Nodes" 6434538 53.167893706155
+"224" "chr6" 158017291 158019983 "+" 63467 1 "female" "TCGA-D3-A1QB" "Skin Cutaneous Melanoma" "Skin" "stage iii" "Metastatic" "Skin" 12114609 58.2525544918184
+"225" "chr6" 158017291 158019983 "+" 63468 1 "male" "TCGA-FG-5963" "Brain Lower Grade Glioma" "Brain" "not reported" "Primary Tumor" "Brain" 8989553 38.3331826652055
+"226" "chr6" 158017291 158019983 "+" 63470 1 "female" "TCGA-AR-A24Q" "Breast Invasive Carcinoma" "Breast" "stage iib" "Primary Tumor" "Breast" 12646550 51.8479722527427
+"227" "chr6" 158017291 158019983 "+" 63476 2 "female" "TCGA-L5-A4OW" "Esophageal Carcinoma" "Esophagus" "stage iib" "Primary Tumor" "Esophagus" 22770606 61.1785792009113
+"228" "chr6" 158017291 158019983 "+" 63498 3 "male" "TCGA-JY-A6F8" "Esophageal Carcinoma" "Esophagus" "stage i" "Primary Tumor" "Esophagus" 34553047 102.165985127364
+"229" "chr6" 158017291 158019983 "+" 63571 1 "female" "TCGA-AA-3833" "Colon Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 3514246 21.4220593972496
+"230" "chr6" 158017291 158019983 "+" 63586 2 "male" "TCGA-MP-A4SY" "Lung Adenocarcinoma" "Lung" "stage iib" "Primary Tumor" "Lung" 7425742 35.116034483574
+"231" "chr6" 158017291 158019983 "+" 63596 1 "male" "TCGA-DM-A28F" "Colon Adenocarcinoma" "Colorectal" "stage iiib" "Primary Tumor" "Colorectal" 8215183 40.8504206778582
+"232" "chr6" 158017291 158019983 "+" 63599 1 "male" "TCGA-43-3394" "Lung Squamous Cell Carcinoma" "Lung" "stage ib" "Solid Tissue Normal" "Lung" 26144781 92.0840544795596
+"233" "chr6" 158017291 158019983 "+" 63624 1 "male" "TCGA-AA-3841" "Colon Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 2047486 16.9500889937497
+"234" "chr6" 158017291 158019983 "+" 63644 2 "male" "TCGA-BR-8297" "Stomach Adenocarcinoma" "Stomach" "stage iiic" "Primary Tumor" "Stomach" 26176343 86.7205670422433
+"235" "chr6" 158017291 158019983 "+" 63664 2 "male" "TCGA-CG-4437" "Stomach Adenocarcinoma" "Stomach" "stage ii" "Primary Tumor" "Stomach" 16533841 64.8851567988007
+"236" "chr6" 158017291 158019983 "+" 63700 2 "male" "TCGA-BR-7722" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Primary Tumor" "Stomach" 10927572 44.5503290036936
+"237" "chr6" 158017291 158019983 "+" 63702 1 "male" "TCGA-FP-7735" "Stomach Adenocarcinoma" "Stomach" "stage ib" "Solid Tissue Normal" "Stomach" 23146908 78.6892261249133
+"238" "chr6" 158017291 158019983 "+" 63704 1 "female" "TCGA-XF-AAN5" "Bladder Urothelial Carcinoma" "Bladder" "stage iii" "Primary Tumor" "Bladder" 2802031 18.789057942346
+"239" "chr6" 158017291 158019983 "+" 63739 1 "female" "TCGA-CN-A499" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage ii" "Primary Tumor" "Head and Neck" 7840347 38.1666553080458
+"240" "chr6" 158017291 158019983 "+" 63746 1 "female" "TCGA-L1-A7W4" "Pancreatic Adenocarcinoma" "Pancreas" "stage iib" "Primary Tumor" "Pancreas" 7714459 34.7473110046123
+"241" "chr6" 158017291 158019983 "+" 63761 1 "male" "TCGA-HT-7467" "Brain Lower Grade Glioma" "Brain" "not reported" "Primary Tumor" "Brain" 9749346 39.2270978852158
+"242" "chr6" 158017291 158019983 "+" 63764 1 "female" "TCGA-DX-AB2Z" "Sarcoma" "Soft Tissue" "not reported" "Primary Tumor" "Mesenchymal" 12427402 57.2862931292784
+"243" "chr6" 158017291 158019983 "+" 63776 1 "female" "TCGA-BH-A1F6" "Breast Invasive Carcinoma" "Breast" "not reported" "Solid Tissue Normal" "Breast" 10212187 41.3569421045811
+"244" "chr6" 158017291 158019983 "+" 63803 1 "female" "TCGA-HM-A3JJ" "Cervical Squamous Cell Carcinoma and Endocervical Adenocarcinoma" "Cervix" "not reported" "Primary Tumor" "Cervix" 11200913 48.6325933387462
+"245" "chr6" 158017291 158019983 "+" 63816 1 "female" "TCGA-24-2036" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 19355222 49.5586298367439
+"246" "chr6" 158017291 158019983 "+" 63835 1 "male" "TCGA-AB-2885" "Acute Myeloid Leukemia" "Bone Marrow" "not reported" "Primary Blood Derived Cancer - Peripheral Blood" "Blood" 3692704 17.5680752067138
+"247" "chr6" 158017291 158019983 "+" 63837 1 "female" "TCGA-AB-3001" "Acute Myeloid Leukemia" "Bone Marrow" "not reported" "Primary Blood Derived Cancer - Peripheral Blood" "Blood" 3867605 18.3202438527599
+"248" "chr6" 158017291 158019983 "+" 63866 2 "male" "TCGA-R6-A8W5" "Esophageal Carcinoma" "Esophagus" "stage iva" "Primary Tumor" "Esophagus" 35481916 91.3844093429589
+"249" "chr6" 158017291 158019983 "+" 63870 1 "male" "TCGA-VQ-A8PD" "Stomach Adenocarcinoma" "Stomach" "stage iiic" "Primary Tumor" "Stomach" 21755351 62.1302758476912
+"250" "chr6" 158017291 158019983 "+" 63880 2 "male" "TCGA-2H-A9GN" "Esophageal Carcinoma" "Esophagus" "stage iii" "Primary Tumor" "Esophagus" 25923884 67.6231720741448
+"251" "chr6" 158017291 158019983 "+" 63889 1 "male" "TCGA-MB-A8JK" "Sarcoma" "Soft Tissue" "not reported" "Primary Tumor" "Mesenchymal" 7989901 38.3205005227768
+"252" "chr6" 158017291 158019983 "+" 63911 1 "male" "TCGA-2G-AAGK" "Testicular Germ Cell Tumors" "Testis" "is" "Primary Tumor" "Testis" 8448703 35.7344795499725
+"253" "chr6" 158017291 158019983 "+" 63921 1 "female" "TCGA-JY-A93F" "Esophageal Carcinoma" "Esophagus" "stage ib" "Primary Tumor" "Esophagus" 16977571 62.4354447231191
+"254" "chr6" 158017291 158019983 "+" 63973 1 "female" "TCGA-60-2714" "Lung Squamous Cell Carcinoma" "Lung" "stage iib" "Primary Tumor" "Lung" 12518002 51.8002722845001
+"255" "chr6" 158017291 158019983 "+" 63975 1 "female" "TCGA-P6-A5OG" "Adrenocortical Carcinoma" "Adrenal Gland" "stage iv" "Primary Tumor" "Adrenal Gland" 6037831 35.8170951629551
+"256" "chr6" 158017291 158019983 "+" 63982 1 "female" "TCGA-BR-A4IU" "Stomach Adenocarcinoma" "Stomach" "stage iiia" "Primary Tumor" "Stomach" 27208514 87.7897898866834
+"257" "chr6" 158017291 158019983 "+" 63985 1 "female" "TCGA-GF-A6C8" "Skin Cutaneous Melanoma" "Skin" "stage iib" "Metastatic" "Skin" 8133590 43.1730672257756
+"258" "chr6" 158017291 158019983 "+" 64000 2 "male" "TCGA-CN-5370" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iii" "Primary Tumor" "Head and Neck" 14013147 59.9746930250673
+"259" "chr6" 158017291 158019983 "+" 64014 5 "female" "TCGA-R5-A7ZE" "Stomach Adenocarcinoma" "Stomach" "stage iiia" "Primary Tumor" "Stomach" 20341276 76.0962029104785
+"260" "chr6" 158017291 158019983 "+" 64036 3 "female" "TCGA-EQ-8122" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Primary Tumor" "Stomach" 26850134 79.322333630729
+"261" "chr6" 158017291 158019983 "+" 64038 3 "female" "TCGA-VR-A8EY" "Esophageal Carcinoma" "Esophagus" "stage iia" "Primary Tumor" "Esophagus" 24742883 79.8984852056484
+"262" "chr6" 158017291 158019983 "+" 64046 2 "male" "TCGA-VR-A8EQ" "Esophageal Carcinoma" "Esophagus" "stage iii" "Primary Tumor" "Esophagus" 25951303 83.8789327386147
+"263" "chr6" 158017291 158019983 "+" 64073 1 "female" "TCGA-LL-A5YO" "Breast Invasive Carcinoma" "Breast" "stage ia" "Primary Tumor" "Breast" 5995982 33.6580631399317
+"264" "chr6" 158017291 158019983 "+" 64090 2 "female" "TCGA-A2-A0CM" "Breast Invasive Carcinoma" "Breast" "stage iia" "Primary Tumor" "Breast" 7496894 35.5559170587343
+"265" "chr6" 158017291 158019983 "+" 64099 7 "female" "TCGA-24-2019" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 32769457 65.6003158956783
+"266" "chr6" 158017291 158019983 "+" 64129 2 "male" "TCGA-33-4583" "Lung Squamous Cell Carcinoma" "Lung" "stage ia" "Primary Tumor" "Lung" 4050752 26.810724946554
+"267" "chr6" 158017291 158019983 "+" 64138 1 "male" "TCGA-CN-4728" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iva" "Primary Tumor" "Head and Neck" 11100298 50.6211088917467
+"268" "chr6" 158017291 158019983 "+" 64142 1 "male" "TCGA-BR-7958" "Stomach Adenocarcinoma" "Stomach" "stage iiib" "Primary Tumor" "Stomach" 10138585 44.3209080496953
+"269" "chr6" 158017291 158019983 "+" 64150 2 "female" "TCGA-29-1694" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 26309271 68.8318948263457
+"270" "chr6" 158017291 158019983 "+" 64152 1 "male" "TCGA-JY-A93D" "Esophageal Carcinoma" "Esophagus" "stage iiic" "Primary Tumor" "Esophagus" 22592731 65.1325730166372
+"271" "chr6" 158017291 158019983 "+" 64166 1 "male" "TCGA-AA-3713" "Colon Adenocarcinoma" "Colorectal" "stage iv" "Primary Tumor" "Colorectal" 8373642 37.7216568687073
+"272" "chr6" 158017291 158019983 "+" 64170 1 "female" "TCGA-CD-8528" "Stomach Adenocarcinoma" "Stomach" "stage iiia" "Primary Tumor" "Stomach" 24701493 77.2051940014878
+"273" "chr6" 158017291 158019983 "+" 64189 1 "male" "TCGA-BR-8372" "Stomach Adenocarcinoma" "Stomach" "stage iiic" "Primary Tumor" "Stomach" 25718201 79.3191430959453
+"274" "chr6" 158017291 158019983 "+" 64193 1 "female" "TCGA-D7-6519" "Stomach Adenocarcinoma" "Stomach" "not reported" "Primary Tumor" "Stomach" 18923177 59.9884513087777
+"275" "chr6" 158017291 158019983 "+" 64209 1 "male" "TCGA-ZU-A8S4" "Cholangiocarcinoma" "Bile Duct" "stage i" "Primary Tumor" "Bile Duct" 6657639 36.0566224735166
+"276" "chr6" 158017291 158019983 "+" 64222 1 "female" "TCGA-DD-AAE0" "Liver Hepatocellular Carcinoma" "Liver" "stage iiia" "Primary Tumor" "Liver" 2539328 23.7775925839225
+"277" "chr6" 158017291 158019983 "+" 64236 2 "male" "TCGA-D7-6818" "Stomach Adenocarcinoma" "Stomach" "stage iiia" "Primary Tumor" "Stomach" 18831708 64.8789804967288
+"278" "chr6" 158017291 158019983 "+" 64247 3 "female" "TCGA-13-0897" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 18665572 77.7839119545604
+"279" "chr6" 158017291 158019983 "+" 64261 1 "female" "TCGA-EX-A3L1" "Cervical Squamous Cell Carcinoma and Endocervical Adenocarcinoma" "Cervix" "not reported" "Primary Tumor" "Cervix" 9345757 44.841840357746
+"280" "chr6" 158017291 158019983 "+" 64269 3 "male" "TCGA-BR-8381" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Primary Tumor" "Stomach" 13838117 54.7112521250939
+"281" "chr6" 158017291 158019983 "+" 64293 3 "female" "TCGA-IN-AB1X" "Stomach Adenocarcinoma" "Stomach" "stage iia" "Solid Tissue Normal" "Stomach" 27677278 87.8420655071728
+"282" "chr6" 158017291 158019983 "+" 64301 2 "male" "TCGA-EE-A3JE" "Skin Cutaneous Melanoma" "Skin" "stage iiib" "Metastatic" "Skin" 3966668 24.9419502502578
+"283" "chr6" 158017291 158019983 "+" 64304 1 "male" "TCGA-GV-A3QG" "Bladder Urothelial Carcinoma" "Bladder" "stage iv" "Primary Tumor" "Bladder" 10051572 46.0032494725328
+"284" "chr6" 158017291 158019983 "+" 64311 2 "male" "TCGA-EI-6511" "Rectum Adenocarcinoma" "Colorectal" "stage iiib" "Primary Tumor" "Colorectal" 8245845 40.6820514085549
+"285" "chr6" 158017291 158019983 "+" 64344 1 "female" "TCGA-B5-A3FH" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 4735086 26.2495967004274
+"286" "chr6" 158017291 158019983 "+" 64357 1 "female" "TCGA-C5-A3HF" "Cervical Squamous Cell Carcinoma and Endocervical Adenocarcinoma" "Cervix" "not reported" "Primary Tumor" "Cervix" 9317378 41.6789815299417
+"287" "chr6" 158017291 158019983 "+" 64377 1 "male" "TCGA-18-3409" "Lung Squamous Cell Carcinoma" "Lung" "stage ia" "Primary Tumor" "Lung" 7534913 37.6374920703107
+"288" "chr6" 158017291 158019983 "+" 64380 1 "male" "TCGA-CG-4436" "Stomach Adenocarcinoma" "Stomach" "stage ib" "Primary Tumor" "Stomach" 11018623 47.1165232041529
+"289" "chr6" 158017291 158019983 "+" 64382 1 "male" "TCGA-86-8055" "Lung Adenocarcinoma" "Lung" "stage iia" "Primary Tumor" "Lung" 9135930 39.6516134632495
+"290" "chr6" 158017291 158019983 "+" 64406 1 "male" "TCGA-HU-A4HB" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Primary Tumor" "Stomach" 23874516 75.0622235217551
+"291" "chr6" 158017291 158019983 "+" 64408 3 "male" "TCGA-CG-5721" "Stomach Adenocarcinoma" "Stomach" "stage iv" "Solid Tissue Normal" "Stomach" 6652216 40.1512322020292
+"292" "chr6" 158017291 158019983 "+" 64425 1 "female" "TCGA-A5-A0GG" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 3765461 21.5848815413101
+"293" "chr6" 158017291 158019983 "+" 64433 1 "male" "TCGA-FS-A1ZK" "Skin Cutaneous Melanoma" "Skin" "stage ii" "Metastatic" "Skin" 12567297 53.7557884380948
+"294" "chr6" 158017291 158019983 "+" 64469 1 "female" "TCGA-C5-A0TN" "Cervical Squamous Cell Carcinoma and Endocervical Adenocarcinoma" "Cervix" "not reported" "Primary Tumor" "Cervix" 5946087 34.166630274892
+"295" "chr6" 158017291 158019983 "+" 64479 1 "female" "TCGA-FS-A1ZH" "Skin Cutaneous Melanoma" "Skin" "stage iv" "Metastatic" "Skin" 10539175 47.2778350977929
+"296" "chr6" 158017291 158019983 "+" 64493 1 "female" "TCGA-EE-A182" "Skin Cutaneous Melanoma" "Skin" "stage iiic" "Metastatic" "Skin" 13117556 83.5162033794711
+"297" "chr6" 158017291 158019983 "+" 64518 1 "female" "TCGA-E9-A1NH" "Breast Invasive Carcinoma" "Breast" "stage iib" "Primary Tumor" "Breast" 7854223 37.4508179915221
+"298" "chr6" 158017291 158019983 "+" 64519 1 "male" "TCGA-KB-A93G" "Stomach Adenocarcinoma" "Stomach" "stage ib" "Primary Tumor" "Stomach" 27863099 80.2721314403586
+"299" "chr6" 158017291 158019983 "+" 64525 1 "female" "TCGA-BR-A4PE" "Stomach Adenocarcinoma" "Stomach" "stage ib" "Primary Tumor" "Stomach" 37361147 116.445730973738
+"300" "chr6" 158017291 158019983 "+" 64533 1 "male" "TCGA-D7-6527" "Stomach Adenocarcinoma" "Stomach" "stage ii" "Primary Tumor" "Stomach" 24073886 83.4522436952942
+"301" "chr6" 158017291 158019983 "+" 64552 1 "male" "TCGA-FG-A4MU" "Brain Lower Grade Glioma" "Brain" "not reported" "Primary Tumor" "Brain" 6924543 32.7434071468089
+"302" "chr6" 158017291 158019983 "+" 64560 1 "female" "TCGA-CV-7178" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iva" "Solid Tissue Normal" "Head and Neck" 6186849 34.2773111571576
+"303" "chr6" 158017291 158019983 "+" 64562 1 "female" "TCGA-R5-A7ZR" "Stomach Adenocarcinoma" "Stomach" "stage iii" "Primary Tumor" "Stomach" 13730282 56.4456110636059
+"304" "chr6" 158017291 158019983 "+" 64574 1 "male" "TCGA-ZF-AA53" "Bladder Urothelial Carcinoma" "Bladder" "stage ii" "Primary Tumor" "Bladder" 4942867 31.8948146140643
+"305" "chr6" 158017291 158019983 "+" 64587 1 "male" "TCGA-R6-A6L4" "Esophageal Carcinoma" "Esophagus" "not reported" "Primary Tumor" "Esophagus" 14675531 52.7145900084771
+"306" "chr6" 158017291 158019983 "+" 64590 1 "male" "TCGA-BR-A4PF" "Stomach Adenocarcinoma" "Stomach" "stage iiib" "Primary Tumor" "Stomach" 29277607 87.663805183606
+"307" "chr6" 158017291 158019983 "+" 64672 1 "female" "TCGA-AC-A3YI" "Breast Invasive Carcinoma" "Breast" "stage iiic" "Primary Tumor" "Breast" 6227793 31.3059824161904
+"308" "chr6" 158017291 158019983 "+" 64679 2 "male" "TCGA-SI-A71O" "Sarcoma" "Soft Tissue" "not reported" "Primary Tumor" "Mesenchymal" 10021457 48.893980864839
+"309" "chr6" 158017291 158019983 "+" 64703 1 "female" "TCGA-AC-A8OR" "Breast Invasive Carcinoma" "Breast" "stage ia" "Primary Tumor" "Breast" 6058348 31.2774487988972
+"310" "chr6" 158017291 158019983 "+" 64704 1 "female" "TCGA-A6-2680" "Colon Adenocarcinoma" "Colorectal" "stage ii" "Primary Tumor" "Colorectal" 3883553 24.8603079089716
+"311" "chr6" 158017291 158019983 "+" 64710 1 "female" "TCGA-D7-6815" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Primary Tumor" "Stomach" 21097357 66.7399221164584
+"312" "chr6" 158017291 158019983 "+" 64714 1 "female" "TCGA-BR-6458" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Primary Tumor" "Stomach" 27433168 82.7304468978911
+"313" "chr6" 158017291 158019983 "+" 64735 1 "male" "TCGA-IN-A6RL" "Stomach Adenocarcinoma" "Stomach" "not reported" "Primary Tumor" "Stomach" 8077022 33.2731422168577
+"314" "chr6" 158017291 158019983 "+" 64742 1 "male" "TCGA-CZ-5989" "Kidney Renal Clear Cell Carcinoma" "Kidney" "stage ii" "Solid Tissue Normal" "Kidney" 8908433 38.7193548246891
+"315" "chr6" 158017291 158019983 "+" 64789 1 "female" "TCGA-DY-A0XA" "Rectum Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 5127723 26.9402323247713
+"316" "chr6" 158017291 158019983 "+" 64818 1 "female" "TCGA-AJ-A5DW" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 6961504 33.9319071363466
+"317" "chr6" 158017291 158019983 "+" 64830 1 "male" "TCGA-LN-A4A6" "Esophageal Carcinoma" "Esophagus" "stage ii" "Primary Tumor" "Esophagus" 37583307 96.2709360615383
+"318" "chr6" 158017291 158019983 "+" 64850 1 "female" "TCGA-AB-2998" "Acute Myeloid Leukemia" "Bone Marrow" "not reported" "Primary Blood Derived Cancer - Peripheral Blood" "Blood" 4296026 20.199957681909
+"319" "chr6" 158017291 158019983 "+" 64854 1 "female" "TCGA-AA-3814" "Colon Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 3915543 22.7920823777315
+"320" "chr6" 158017291 158019983 "+" 64856 1 "female" "TCGA-02-0055" "Glioblastoma Multiforme" "Brain" "not reported" "Primary Tumor" "Brain" 14463459 52.9723298588475
+"321" "chr6" 158017291 158019983 "+" 64868 1 "female" "TCGA-FB-AAPU" "Pancreatic Adenocarcinoma" "Pancreas" "stage iia" "Primary Tumor" "Pancreas" 8982818 41.4717291240576
+"322" "chr6" 158017291 158019983 "+" 64879 2 "female" "TCGA-BR-4280" "Stomach Adenocarcinoma" "Stomach" "stage iii" "Primary Tumor" "Stomach" 22621045 67.3059093762738
+"323" "chr6" 158017291 158019983 "+" 64908 1 "female" "TCGA-AG-3999" "Rectum Adenocarcinoma" "Colorectal" "stage iiic" "Primary Tumor" "Colorectal" 3694960 22.6416574240317
+"324" "chr6" 158017291 158019983 "+" 64927 1 "male" "TCGA-32-1980" "Glioblastoma Multiforme" "Brain" "not reported" "Primary Tumor" "Brain" 13004340 48.2748968932479
+"325" "chr6" 158017291 158019983 "+" 64951 1 "male" "TCGA-OR-A5J8" "Adrenocortical Carcinoma" "Adrenal Gland" "stage iii" "Primary Tumor" "Adrenal Gland" 7267375 39.8778266142087
+"326" "chr6" 158017291 158019983 "+" 64952 1 "male" "TCGA-J4-AATV" "Prostate Adenocarcinoma" "Prostate" "not reported" "Primary Tumor" "Prostate" 7137583 32.9374714468323
+"327" "chr6" 158017291 158019983 "+" 64960 13 "male" "TCGA-CA-6719" "Colon Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 6956700 34.5240517510906
+"328" "chr6" 158017291 158019983 "+" 64976 6 "male" "TCGA-VQ-A8P5" "Stomach Adenocarcinoma" "Stomach" "stage iia" "Primary Tumor" "Stomach" 13520676 45.9891631547261
+"329" "chr6" 158017291 158019983 "+" 64987 1 "female" "TCGA-D1-A16X" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 4880452 28.1051079758134
+"330" "chr6" 158017291 158019983 "+" 64988 1 "female" "TCGA-55-8204" "Lung Adenocarcinoma" "Lung" "stage ib" "Primary Tumor" "Lung" 6985020 34.0739331499151
+"331" "chr6" 158017291 158019983 "+" 64998 2 "female" "TCGA-BH-A0AV" "Breast Invasive Carcinoma" "Breast" "stage i" "Primary Tumor" "Breast" 12329719 56.3342989121247
+"332" "chr6" 158017291 158019983 "+" 64999 1 "female" "TCGA-H6-8124" "Pancreatic Adenocarcinoma" "Pancreas" "stage iib" "Solid Tissue Normal" "Pancreas" 7972767 36.1916493034277
+"333" "chr6" 158017291 158019983 "+" 65016 7 "male" "TCGA-VQ-A924" "Stomach Adenocarcinoma" "Stomach" "stage ii" "Primary Tumor" "Stomach" 12865522 49.2196411492406
+"334" "chr6" 158017291 158019983 "+" 65020 1 "male" "TCGA-UF-A7JC" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iva" "Primary Tumor" "Head and Neck" 5782196 31.7765931722758
+"335" "chr6" 158017291 158019983 "+" 65021 2 "male" "TCGA-VQ-A91A" "Stomach Adenocarcinoma" "Stomach" "stage iiib" "Primary Tumor" "Stomach" 29531471 85.9302320844536
+"336" "chr6" 158017291 158019983 "+" 65034 1 "male" "TCGA-CV-7089" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iva" "Primary Tumor" "Head and Neck" 10760088 53.9201427168314
+"337" "chr6" 158017291 158019983 "+" 65037 3 "male" "TCGA-FP-7735" "Stomach Adenocarcinoma" "Stomach" "stage ib" "Primary Tumor" "Stomach" 22213296 69.2207849675138
+"338" "chr6" 158017291 158019983 "+" 65045 1 "male" "TCGA-G4-6298" "Colon Adenocarcinoma" "Colorectal" "stage iiib" "Primary Tumor" "Colorectal" 5445992 31.5110514499965
+"339" "chr6" 158017291 158019983 "+" 65069 1 "female" "TCGA-EY-A2ON" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 4658881 25.5787118629179
+"340" "chr6" 158017291 158019983 "+" 65079 1 "female" "TCGA-EB-A44Q" "Skin Cutaneous Melanoma" "Skin" "stage iiic" "Metastatic" "Skin" 8614622 40.631367943439
+"341" "chr6" 158017291 158019983 "+" 65109 1 "female" "TCGA-IB-7644" "Pancreatic Adenocarcinoma" "Pancreas" "stage iv" "Primary Tumor" "Pancreas" 11034409 48.6103737053794
+"342" "chr6" 158017291 158019983 "+" 65113 8 "female" "TCGA-29-1702" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 35252689 85.6458516556935
+"343" "chr6" 158017291 158019983 "+" 65115 1 "female" "TCGA-CN-4742" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iva" "Primary Tumor" "Head and Neck" 13685985 63.2898405959962
+"344" "chr6" 158017291 158019983 "+" 65116 1 "female" "TCGA-09-1662" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 29824953 74.5022219557707
+"345" "chr6" 158017291 158019983 "+" 65117 1 "male" "TCGA-63-A5MG" "Lung Squamous Cell Carcinoma" "Lung" "stage ib" "Primary Tumor" "Lung" 5797542 29.2331220596911
+"346" "chr6" 158017291 158019983 "+" 65181 2 "male" "TCGA-RU-A8FL" "Colon Adenocarcinoma" "Colorectal" "stage iiib" "Primary Tumor" "Colorectal" 5703458 32.8101730406369
+"347" "chr6" 158017291 158019983 "+" 65196 1 "male" "TCGA-52-7812" "Lung Squamous Cell Carcinoma" "Lung" "not reported" "Primary Tumor" "Lung" 8290267 39.6182008468177
+"348" "chr6" 158017291 158019983 "+" 65215 1 "male" "TCGA-44-7671" "Lung Adenocarcinoma" "Lung" "stage ib" "Primary Tumor" "Lung" 12174054 55.5847190641865
+"349" "chr6" 158017291 158019983 "+" 65223 1 "male" "TCGA-AD-A5EK" "Colon Adenocarcinoma" "Colorectal" "stage i" "Primary Tumor" "Colorectal" 7139209 34.4455010831753
+"350" "chr6" 158017291 158019983 "+" 65247 1 "female" "TCGA-AX-A2HD" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 4160222 21.1822852225803
+"351" "chr6" 158017291 158019983 "+" 65268 1 "male" "TCGA-G3-A7M9" "Liver Hepatocellular Carcinoma" "Liver" "stage iiib" "Primary Tumor" "Liver" 8335829 34.897657672744
+"352" "chr6" 158017291 158019983 "+" 65288 1 "male" "TCGA-GU-A766" "Bladder Urothelial Carcinoma" "Bladder" "stage ii" "Primary Tumor" "Bladder" 6956976 36.9323091133986
+"353" "chr6" 158017291 158019983 "+" 65289 1 "female" "TCGA-OR-A5KO" "Adrenocortical Carcinoma" "Adrenal Gland" "stage iv" "Primary Tumor" "Adrenal Gland" 5671617 31.4291881168367
+"354" "chr6" 158017291 158019983 "+" 65301 1 "male" "TCGA-22-0944" "Lung Squamous Cell Carcinoma" "Lung" "stage ib" "Primary Tumor" "Lung" 11679642 49.1766117623282
+"355" "chr6" 158017291 158019983 "+" 65310 2 "male" "TCGA-AB-2933" "Acute Myeloid Leukemia" "Bone Marrow" "not reported" "Primary Blood Derived Cancer - Peripheral Blood" "Blood" 2848057 15.6243697986099
+"356" "chr6" 158017291 158019983 "+" 65334 1 "female" "TCGA-BR-A4IZ" "Stomach Adenocarcinoma" "Stomach" "stage iiib" "Primary Tumor" "Stomach" 44959739 146.179633573391
+"357" "chr6" 158017291 158019983 "+" 65385 4 "male" "TCGA-IN-8663" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Primary Tumor" "Stomach" 22444468 72.4475489262531
+"358" "chr6" 158017291 158019983 "+" 65395 1 "female" "TCGA-B8-4620" "Kidney Renal Clear Cell Carcinoma" "Kidney" "stage iii" "Primary Tumor" "Kidney" 8376765 38.3011366753845
+"359" "chr6" 158017291 158019983 "+" 65430 5 "male" "TCGA-IC-A6RE" "Esophageal Carcinoma" "Esophagus" "stage iib" "Solid Tissue Normal" "Esophagus" 21411555 82.5034967998983
+"360" "chr6" 158017291 158019983 "+" 65434 1 "female" "TCGA-A8-A086" "Breast Invasive Carcinoma" "Breast" "stage iia" "Primary Tumor" "Breast" 11883390 52.487080731076
+"361" "chr6" 158017291 158019983 "+" 65473 6 "male" "TCGA-KH-A6WC" "Esophageal Carcinoma" "Esophagus" "stage ia" "Primary Tumor" "Esophagus" 31221686 105.208538886642
+"362" "chr6" 158017291 158019983 "+" 65488 1 "female" "TCGA-G4-6293" "Colon Adenocarcinoma" "Colorectal" "stage iii" "Primary Tumor" "Colorectal" 6057265 31.9943430011145
+"363" "chr6" 158017291 158019983 "+" 65510 1 "female" "TCGA-C5-A1BK" "Cervical Squamous Cell Carcinoma and Endocervical Adenocarcinoma" "Cervix" "not reported" "Primary Tumor" "Cervix" 6704370 35.9420048999373
+"364" "chr6" 158017291 158019983 "+" 65530 1 "male" "TCGA-JY-A6FB" "Esophageal Carcinoma" "Esophagus" "stage i" "Primary Tumor" "Esophagus" 26979164 81.5639849685434
+"365" "chr6" 158017291 158019983 "+" 65537 1 "male" "TCGA-D7-8573" "Stomach Adenocarcinoma" "Stomach" "stage iia" "Primary Tumor" "Stomach" 20416712 69.8769324494064
+"366" "chr6" 158017291 158019983 "+" 65571 1 "male" "TCGA-VQ-A94R" "Stomach Adenocarcinoma" "Stomach" "not reported" "Primary Tumor" "Stomach" 23387172 63.2882819984088
+"367" "chr6" 158017291 158019983 "+" 65573 1 "female" "TCGA-13-0893" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 18676051 57.1743267279145
+"368" "chr6" 158017291 158019983 "+" 65588 3 "female" "TCGA-30-1718" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 22920342 73.8275129002957
+"369" "chr6" 158017291 158019983 "+" 65618 1 "female" "TCGA-KU-A66S" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iii" "Primary Tumor" "Head and Neck" 6446270 30.0634729645279
+"370" "chr6" 158017291 158019983 "+" 65644 1 "male" "TCGA-VQ-A8PF" "Stomach Adenocarcinoma" "Stomach" "stage iiib" "Primary Tumor" "Stomach" 23500436 68.9805625187125
+"371" "chr6" 158017291 158019983 "+" 65703 1 "male" "TCGA-ZF-A9RF" "Bladder Urothelial Carcinoma" "Bladder" "stage ii" "Primary Tumor" "Bladder" 6950525 35.5638361014746
+"372" "chr6" 158017291 158019983 "+" 65725 2 "female" "TCGA-A2-A04P" "Breast Invasive Carcinoma" "Breast" "stage iiic" "Primary Tumor" "Breast" 5461556 31.0426800502453
+"373" "chr6" 158017291 158019983 "+" 65748 3 "male" "TCGA-BL-A0C8" "Bladder Urothelial Carcinoma" "Bladder" "stage i" "Primary Tumor" "Bladder" 5447287 27.1367075995716
+"374" "chr6" 158017291 158019983 "+" 65755 1 "female" "TCGA-CZ-5982" "Kidney Renal Clear Cell Carcinoma" "Kidney" "stage i" "Primary Tumor" "Kidney" 9378479 42.3736671365575
+"375" "chr6" 158017291 158019983 "+" 65763 1 "female" "TCGA-MP-A4T7" "Lung Adenocarcinoma" "Lung" "stage iv" "Primary Tumor" "Lung" 7077367 35.1492262306806
+"376" "chr6" 158017291 158019983 "+" 65781 1 "female" "TCGA-A7-A6VV" "Breast Invasive Carcinoma" "Breast" "stage iia" "Primary Tumor" "Breast" 10122230 44.9002830046399
+"377" "chr6" 158017291 158019983 "+" 65795 1 "female" "TCGA-RD-A8N9" "Stomach Adenocarcinoma" "Stomach" "stage ii" "Primary Tumor" "Stomach" 17152158 58.5765736844981
+"378" "chr6" 158017291 158019983 "+" 65808 2 "male" "TCGA-BR-A4J1" "Stomach Adenocarcinoma" "Stomach" "stage iiia" "Primary Tumor" "Stomach" 27185033 83.0566807309346
+"379" "chr6" 158017291 158019983 "+" 65811 1 "male" "TCGA-BP-4962" "Kidney Renal Clear Cell Carcinoma" "Kidney" "stage ii" "Primary Tumor" "Kidney" 9876610 44.982624735272
+"380" "chr6" 158017291 158019983 "+" 65841 1 "male" "TCGA-44-7662" "Lung Adenocarcinoma" "Lung" "stage ib" "Primary Tumor" "Lung" 11878329 50.7961709352001
+"381" "chr6" 158017291 158019983 "+" 65859 4 "male" "TCGA-F1-6177" "Stomach Adenocarcinoma" "Stomach" "stage i" "Primary Tumor" "Stomach" 22245969 71.8455509049335
+"382" "chr6" 158017291 158019983 "+" 65864 4 "female" "TCGA-73-4666" "Lung Adenocarcinoma" "Lung" "stage iv" "Primary Tumor" "Lung" 14230489 58.7117242005289
+"383" "chr6" 158017291 158019983 "+" 65878 2 "male" "TCGA-F5-6702" "Rectum Adenocarcinoma" "Colorectal" "stage iva" "Primary Tumor" "Colorectal" 9071257 43.7840015059223
+"384" "chr6" 158017291 158019983 "+" 65897 2 "male" "TCGA-BR-7901" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Primary Tumor" "Stomach" 24682329 75.2131671567656
+"385" "chr6" 158017291 158019983 "+" 65917 4 "male" "TCGA-VR-A8EU" "Esophageal Carcinoma" "Esophagus" "stage iv" "Primary Tumor" "Esophagus" 24378981 79.276598443018
+"386" "chr6" 158017291 158019983 "+" 65921 2 "male" "TCGA-DM-A1D7" "Colon Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 7312459 37.9398924965497
+"387" "chr6" 158017291 158019983 "+" 65933 1 "male" "TCGA-60-2709" "Lung Squamous Cell Carcinoma" "Lung" "stage ib" "Primary Tumor" "Lung" 12347480 49.311810092813
+"388" "chr6" 158017291 158019983 "+" 65947 1 "male" "TCGA-B0-4688" "Kidney Renal Clear Cell Carcinoma" "Kidney" "stage iv" "Primary Tumor" "Kidney" 10092446 45.1895171400938
+"389" "chr6" 158017291 158019983 "+" 65996 1 "male" "TCGA-Z6-A9VB" "Esophageal Carcinoma" "Esophagus" "stage iiia" "Primary Tumor" "Esophagus" 23173612 67.0649186780112
+"390" "chr6" 158017291 158019983 "+" 66053 1 "male" "TCGA-CA-6715" "Colon Adenocarcinoma" "Colorectal" "stage iiib" "Primary Tumor" "Colorectal" 8532717 40.9317621437
+"391" "chr6" 158017291 158019983 "+" 66060 2 "female" "TCGA-EI-6506" "Rectum Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 8728842 40.0231183658497
+"392" "chr6" 158017291 158019983 "+" 66061 6 "male" "TCGA-RD-A8MV" "Stomach Adenocarcinoma" "Stomach" "stage iiib" "Primary Tumor" "Stomach" 15910578 56.0192169565524
+"393" "chr6" 158017291 158019983 "+" 66069 1 "female" "TCGA-29-A5NZ" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 31119269 81.5907128081026
+"394" "chr6" 158017291 158019983 "+" 66086 3 "male" "TCGA-G5-6572" "Rectum Adenocarcinoma" "Colorectal" "not reported" "Recurrent Tumor" "Colorectal" 9771429 51.2043525194936
+"395" "chr6" 158017291 158019983 "+" 66123 2 "female" "TCGA-25-1326" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 21024277 58.0972115142823
+"396" "chr6" 158017291 158019983 "+" 66125 3 "female" "TCGA-D1-A168" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 5331020 35.574996830227
+"397" "chr6" 158017291 158019983 "+" 66157 2 "male" "TCGA-VQ-AA64" "Stomach Adenocarcinoma" "Stomach" "stage iiib" "Primary Tumor" "Stomach" 31193868 83.4942465973421
+"398" "chr6" 158017291 158019983 "+" 66172 1 "male" "TCGA-34-5239" "Lung Squamous Cell Carcinoma" "Lung" "stage iiia" "Primary Tumor" "Lung" 17504720 62.512391972002
+"399" "chr6" 158017291 158019983 "+" 66178 1 "female" "TCGA-44-3918" "Lung Adenocarcinoma" "Lung" "stage ia" "Primary Tumor" "Lung" 10029060 42.7141123107392
+"400" "chr6" 158017291 158019983 "+" 66200 1 "female" "TCGA-A6-2685" "Colon Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 4168477 23.7757136746043
+"401" "chr6" 158017291 158019983 "+" 66213 1 "male" "TCGA-LN-A49L" "Esophageal Carcinoma" "Esophagus" "stage iia" "Primary Tumor" "Esophagus" 33534806 75.4895673647269
+"402" "chr6" 158017291 158019983 "+" 66218 1 "male" "TCGA-XP-A8T8" "Esophageal Carcinoma" "Esophagus" "stage iib" "Primary Tumor" "Esophagus" 21875050 69.8673561294691
+"403" "chr6" 158017291 158019983 "+" 66224 1 "female" "TCGA-B0-5081" "Kidney Renal Clear Cell Carcinoma" "Kidney" "stage iii" "Primary Tumor" "Kidney" 10443717 42.4174068794093
+"404" "chr6" 158017291 158019983 "+" 66242 1 "male" "TCGA-TS-A8AF" "Mesothelioma" "Pleura" "stage iii" "Primary Tumor" "Mesothelium" 8889247 39.8831982842939
+"405" "chr6" 158017291 158019983 "+" 66292 1 "female" "TCGA-OL-A5S0" "Breast Invasive Carcinoma" "Breast" "stage iib" "Primary Tumor" "Breast" 5721115 37.6718773663798
+"406" "chr6" 158017291 158019983 "+" 66298 1 "female" "TCGA-13-1403" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 15862917 49.7814756583221
+"407" "chr6" 158017291 158019983 "+" 66311 1 "female" "TCGA-KN-8429" "Kidney Chromophobe" "Kidney" "stage iii" "Solid Tissue Normal" "Kidney" 9669367 37.2040392303223
+"408" "chr6" 158017291 158019983 "+" 66327 1 "male" "TCGA-LN-A8I0" "Esophageal Carcinoma" "Esophagus" "stage iia" "Primary Tumor" "Esophagus" 20549289 64.9679227566322
+"409" "chr6" 158017291 158019983 "+" 66345 1 "male" "TCGA-56-7730" "Lung Squamous Cell Carcinoma" "Lung" "stage iia" "Primary Tumor" "Lung" 11186833 43.418045130291
+"410" "chr6" 158017291 158019983 "+" 66346 1 "female" "TCGA-23-1023" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 21575027 81.0841282010809
+"411" "chr6" 158017291 158019983 "+" 66354 1 "male" "TCGA-IN-A6RR" "Stomach Adenocarcinoma" "Stomach" "not reported" "Primary Tumor" "Stomach" 10123301 39.8399875639023
+"412" "chr6" 158017291 158019983 "+" 66359 2 "male" "TCGA-DX-A48R" "Sarcoma" "Soft Tissue" "not reported" "Primary Tumor" "Mesenchymal" 11025926 47.7112467924724
+"413" "chr6" 158017291 158019983 "+" 66364 1 "male" "TCGA-TS-A7P8" "Mesothelioma" "Pleura" "stage iii" "Primary Tumor" "Mesothelium" 7517393 34.2959277710865
+"414" "chr6" 158017291 158019983 "+" 66370 1 "female" "TCGA-QL-A97D" "Colon Adenocarcinoma" "Colorectal" "stage i" "Primary Tumor" "Colorectal" 6240650 32.4230033874353
+"415" "chr6" 158017291 158019983 "+" 66376 9 "male" "TCGA-D7-8572" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Primary Tumor" "Stomach" 24761037 70.2953273734325
+"416" "chr6" 158017291 158019983 "+" 66392 1 "female" "TCGA-BR-8078" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Primary Tumor" "Stomach" 23893725 73.3735355985813
+"417" "chr6" 158017291 158019983 "+" 66412 1 "female" "TCGA-EA-A439" "Cervical Squamous Cell Carcinoma and Endocervical Adenocarcinoma" "Cervix" "not reported" "Primary Tumor" "Cervix" 12990794 54.1958273015131
+"418" "chr6" 158017291 158019983 "+" 66413 1 "female" "TCGA-AA-3966" "Colon Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 4409956 24.6466771364858
+"419" "chr6" 158017291 158019983 "+" 66422 1 "male" "TCGA-DM-A28M" "Colon Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 8208003 45.666486775195
+"420" "chr6" 158017291 158019983 "+" 66430 1 "male" "TCGA-2H-A9GH" "Esophageal Carcinoma" "Esophagus" "stage iib" "Primary Tumor" "Esophagus" 18348063 59.3557938664596
+"421" "chr6" 158017291 158019983 "+" 66440 1 "female" "TCGA-EA-A3HS" "Cervical Squamous Cell Carcinoma and Endocervical Adenocarcinoma" "Cervix" "not reported" "Primary Tumor" "Cervix" 10591793 43.9054431046132
+"422" "chr6" 158017291 158019983 "+" 66441 1 "male" "TCGA-B7-5818" "Stomach Adenocarcinoma" "Stomach" "stage ib" "Primary Tumor" "Stomach" 12410545 54.2181957186544
+"423" "chr6" 158017291 158019983 "+" 66448 1 "male" "TCGA-66-2773" "Lung Squamous Cell Carcinoma" "Lung" "stage ib" "Primary Tumor" "Lung" 8884251 40.0718557742616
+"424" "chr6" 158017291 158019983 "+" 66457 1 "female" "TCGA-AA-3949" "Colon Adenocarcinoma" "Colorectal" "stage iiib" "Primary Tumor" "Colorectal" 2221653 17.2324022866362
+"425" "chr6" 158017291 158019983 "+" 66483 2 "male" "TCGA-IG-A3Y9" "Esophageal Carcinoma" "Esophagus" "stage iiia" "Primary Tumor" "Esophagus" 32955824 98.4511222041984
+"426" "chr6" 158017291 158019983 "+" 66496 2 "female" "TCGA-E2-A14N" "Breast Invasive Carcinoma" "Breast" "stage iib" "Primary Tumor" "Breast" 5905715 35.5198929419902
+"427" "chr6" 158017291 158019983 "+" 66505 2 "male" "TCGA-BR-A4J9" "Stomach Adenocarcinoma" "Stomach" "stage iia" "Primary Tumor" "Stomach" 23696023 84.6501184228858
+"428" "chr6" 158017291 158019983 "+" 66517 1 "female" "TCGA-30-1855" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 32011175 73.1214351467971
+"429" "chr6" 158017291 158019983 "+" 66525 6 "female" "TCGA-BR-8368" "Stomach Adenocarcinoma" "Stomach" "stage ib" "Primary Tumor" "Stomach" 23610550 75.2621042934421
+"430" "chr6" 158017291 158019983 "+" 66529 1 "female" "TCGA-BR-4201" "Stomach Adenocarcinoma" "Stomach" "not reported" "Primary Tumor" "Stomach" 9457721 41.1482564336836
+"431" "chr6" 158017291 158019983 "+" 66535 1 NA "TCGA-06-0680" "Glioblastoma Multiforme" "Brain" NA "Solid Tissue Normal" "Brain" 7551739 32.3762974332152
+"432" "chr6" 158017291 158019983 "+" 66538 2 "male" "TCGA-DC-6160" "Rectum Adenocarcinoma" "Colorectal" "stage i" "Primary Tumor" "Colorectal" 5380714 28.9192411050199
+"433" "chr6" 158017291 158019983 "+" 66564 2 "female" "TCGA-62-A46U" "Lung Adenocarcinoma" "Lung" "stage iib" "Primary Tumor" "Lung" 7585717 35.961491419361
+"434" "chr6" 158017291 158019983 "+" 66569 2 "female" "TCGA-LN-A9FP" "Esophageal Carcinoma" "Esophagus" "stage iia" "Primary Tumor" "Esophagus" 23508188 72.4246983868781
+"435" "chr6" 158017291 158019983 "+" 66580 1 "female" "TCGA-AP-A0LP" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 2663259 18.1435744066272
+"436" "chr6" 158017291 158019983 "+" 66592 6 "female" "TCGA-BR-A4QL" "Stomach Adenocarcinoma" "Stomach" "stage iiib" "Primary Tumor" "Stomach" 14249204 62.527772658259
+"437" "chr6" 158017291 158019983 "+" 66616 3 "male" "TCGA-BR-4267" "Stomach Adenocarcinoma" "Stomach" "stage ib" "Primary Tumor" "Stomach" 34530913 89.5673825642622
+"438" "chr6" 158017291 158019983 "+" 66625 1 "female" "TCGA-55-7914" "Lung Adenocarcinoma" "Lung" "stage iia" "Primary Tumor" "Lung" 5697725 28.9161502819182
+"439" "chr6" 158017291 158019983 "+" 66632 2 "male" "TCGA-HF-7132" "Stomach Adenocarcinoma" "Stomach" "stage ii" "Primary Tumor" "Stomach" 31198990 79.5164377521607
+"440" "chr6" 158017291 158019983 "+" 66645 1 "female" "TCGA-JV-A5VE" "Sarcoma" "Soft Tissue" "not reported" "Primary Tumor" "Mesenchymal" 7178758 37.4519796117467
+"441" "chr6" 158017291 158019983 "+" 66647 1 "female" "TCGA-24-1105" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 26846132 67.1855388881381
+"442" "chr6" 158017291 158019983 "+" 66655 1 "male" "TCGA-NH-A50U" "Colon Adenocarcinoma" "Colorectal" "stage iva" "Primary Tumor" "Colorectal" 9086864 41.1940141531459
+"443" "chr6" 158017291 158019983 "+" 66658 4 "male" "TCGA-L5-A4ON" "Esophageal Carcinoma" "Esophagus" "stage iib" "Primary Tumor" "Esophagus" 30302723 75.7713934932474
+"444" "chr6" 158017291 158019983 "+" 66671 1 "male" "TCGA-LN-A49Y" "Esophageal Carcinoma" "Esophagus" "stage iia" "Primary Tumor" "Esophagus" 11324866 37.9828949177782
+"445" "chr6" 158017291 158019983 "+" 66678 1 "male" "TCGA-E1-A7YO" "Brain Lower Grade Glioma" "Brain" "not reported" "Primary Tumor" "Brain" 6182582 26.9257455926416
+"446" "chr6" 158017291 158019983 "+" 66687 1 "male" "TCGA-AA-3526" "Colon Adenocarcinoma" "Colorectal" "stage i" "Primary Tumor" "Colorectal" 7269414 36.6871599729492
+"447" "chr6" 158017291 158019983 "+" 66694 1 "female" "TCGA-A6-2683" "Colon Adenocarcinoma" "Colorectal" "stage iv" "Primary Tumor" "Colorectal" 3411062 25.2351613881676
+"448" "chr6" 158017291 158019983 "+" 66698 2 "female" "TCGA-EX-A69M" "Cervical Squamous Cell Carcinoma and Endocervical Adenocarcinoma" "Cervix" "not reported" "Primary Tumor" "Cervix" 7012494 36.2402790697674
+"449" "chr6" 158017291 158019983 "+" 66734 1 "female" "TCGA-90-7766" "Lung Squamous Cell Carcinoma" "Lung" "stage ia" "Primary Tumor" "Lung" 10147930 41.7656694365218
+"450" "chr6" 158017291 158019983 "+" 66738 3 "female" "TCGA-Q1-A5R1" "Cervical Squamous Cell Carcinoma and Endocervical Adenocarcinoma" "Cervix" "not reported" "Primary Tumor" "Cervix" 4967277 27.8094984827957
+"451" "chr6" 158017291 158019983 "+" 66751 1 "male" "TCGA-AZ-6606" "Colon Adenocarcinoma" "Colorectal" "stage iv" "Primary Tumor" "Colorectal" 7592023 38.6462796960025
+"452" "chr6" 158017291 158019983 "+" 66762 1 "female" "TCGA-24-1418" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 18248599 54.6910512576911
+"453" "chr6" 158017291 158019983 "+" 66765 1 "male" "TCGA-BP-5008" "Kidney Renal Clear Cell Carcinoma" "Kidney" "stage i" "Primary Tumor" "Kidney" 11709174 44.7772984879425
+"454" "chr6" 158017291 158019983 "+" 66767 1 "female" "TCGA-23-1027" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 41542422 131.417614121667
+"455" "chr6" 158017291 158019983 "+" 66769 1 "female" "TCGA-FE-A233" "Thyroid Carcinoma" "Thyroid" "stage i" "Primary Tumor" "Thyroid" 20203096 77.9954985735188
+"456" "chr6" 158017291 158019983 "+" 66795 2 "female" "TCGA-BR-6456" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Primary Tumor" "Stomach" 27914462 84.7078698056066
+"457" "chr6" 158017291 158019983 "+" 66817 1 "male" "TCGA-GU-AATP" "Bladder Urothelial Carcinoma" "Bladder" "stage iv" "Primary Tumor" "Bladder" 3826062 24.8556950841611
+"458" "chr6" 158017291 158019983 "+" 66831 1 "female" "TCGA-BR-7716" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Primary Tumor" "Stomach" 33892763 86.9830282716708
+"459" "chr6" 158017291 158019983 "+" 66845 2 "female" "TCGA-FU-A3EO" "Cervical Squamous Cell Carcinoma and Endocervical Adenocarcinoma" "Cervix" "not reported" "Primary Tumor" "Cervix" 5033169 61.1251730587064
+"460" "chr6" 158017291 158019983 "+" 66849 1 "female" "TCGA-44-7667" "Lung Adenocarcinoma" "Lung" "stage iib" "Primary Tumor" "Lung" 9708164 46.0762038557556
+"461" "chr6" 158017291 158019983 "+" 66861 4 "female" "TCGA-D7-5577" "Stomach Adenocarcinoma" "Stomach" "stage iiia" "Primary Tumor" "Stomach" 15438863 67.1199466131059
+"462" "chr6" 158017291 158019983 "+" 66863 1 "female" "TCGA-77-7142" "Lung Squamous Cell Carcinoma" "Lung" "stage ib" "Primary Tumor" "Lung" 8234705 35.8417119328667
+"463" "chr6" 158017291 158019983 "+" 66866 1 "male" "TCGA-L5-A4OX" "Esophageal Carcinoma" "Esophagus" "stage iib" "Primary Tumor" "Esophagus" 26282352 69.1700910868575
+"464" "chr6" 158017291 158019983 "+" 66867 1 "female" "TCGA-C5-A1MQ" "Cervical Squamous Cell Carcinoma and Endocervical Adenocarcinoma" "Cervix" "not reported" "Primary Tumor" "Cervix" 5406224 38.809378185525
+"465" "chr6" 158017291 158019983 "+" 66868 1 "male" "TCGA-4Z-AA82" "Bladder Urothelial Carcinoma" "Bladder" "stage iv" "Primary Tumor" "Bladder" 6793237 32.1005037235852
+"466" "chr6" 158017291 158019983 "+" 66893 1 "female" "TCGA-UF-A71D" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iva" "Primary Tumor" "Head and Neck" 4185346 23.869887076537
+"467" "chr6" 158017291 158019983 "+" 66914 1 "female" "TCGA-JU-AAVI" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 4234772 31.6221269732224
+"468" "chr6" 158017291 158019983 "+" 66921 1 "female" "TCGA-AC-A2BK" "Breast Invasive Carcinoma" "Breast" "stage iiia" "Primary Tumor" "Breast" 9510212 44.0854989291774
+"469" "chr6" 158017291 158019983 "+" 66936 1 "female" "TCGA-A6-4107" "Colon Adenocarcinoma" "Colorectal" "stage iiib" "Primary Tumor" "Colorectal" 3795217 23.2514443253178
+"470" "chr6" 158017291 158019983 "+" 66957 2 "male" "TCGA-CG-5717" "Stomach Adenocarcinoma" "Stomach" "stage ii" "Primary Tumor" "Stomach" 20870386 74.2575661616629
+"471" "chr6" 158017291 158019983 "+" 66959 1 "male" "TCGA-BR-8380" "Stomach Adenocarcinoma" "Stomach" "stage iiic" "Primary Tumor" "Stomach" 27943203 80.1693950974317
+"472" "chr6" 158017291 158019983 "+" 66989 3 "male" "TCGA-V5-AASX" "Esophageal Carcinoma" "Esophagus" "not reported" "Primary Tumor" "Esophagus" 27806092 79.8364916391033
+"473" "chr6" 158017291 158019983 "+" 67030 1 "female" "TCGA-E9-A3QA" "Breast Invasive Carcinoma" "Breast" "stage iia" "Primary Tumor" "Breast" 10244027 43.7795769922775
+"474" "chr6" 158017291 158019983 "+" 67039 2 "female" "TCGA-95-7043" "Lung Adenocarcinoma" "Lung" "stage ia" "Primary Tumor" "Lung" 3573748 21.9374854210404
+"475" "chr6" 158017291 158019983 "+" 67050 1 "female" "TCGA-XX-A89A" "Breast Invasive Carcinoma" "Breast" "stage iib" "Primary Tumor" "Breast" 7611288 35.7364309056079
+"476" "chr6" 158017291 158019983 "+" 67055 1 "male" "TCGA-BR-7715" "Stomach Adenocarcinoma" "Stomach" "stage iia" "Primary Tumor" "Stomach" 18118446 60.5650076715571
+"477" "chr6" 158017291 158019983 "+" 67071 1 "male" "TCGA-CG-5720" "Stomach Adenocarcinoma" "Stomach" "stage ib" "Primary Tumor" "Stomach" 21709541 75.0577068020108
+"478" "chr6" 158017291 158019983 "+" 67081 1 "male" "TCGA-IG-A625" "Esophageal Carcinoma" "Esophagus" "stage iiib" "Primary Tumor" "Esophagus" 23520261 66.0177083801141
+"479" "chr6" 158017291 158019983 "+" 67094 1 "male" "TCGA-F1-6875" "Stomach Adenocarcinoma" "Stomach" "stage ia" "Primary Tumor" "Stomach" 23083883 65.0897455779973
+"480" "chr6" 158017291 158019983 "+" 67115 1 "male" "TCGA-CR-7372" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage i" "Primary Tumor" "Head and Neck" 9856182 48.4126294900951
+"481" "chr6" 158017291 158019983 "+" 67124 1 "female" "TCGA-BH-A204" "Breast Invasive Carcinoma" "Breast" "stage iib" "Primary Tumor" "Breast" 14918729 59.7513977891701
+"482" "chr6" 158017291 158019983 "+" 67128 2 "female" "TCGA-AO-A0J7" "Breast Invasive Carcinoma" "Breast" "stage iib" "Primary Tumor" "Breast" 9382779 45.6952039116756
+"483" "chr6" 158017291 158019983 "+" 67129 1 "female" "TCGA-X6-A7WD" "Sarcoma" "Soft Tissue" "not reported" "Primary Tumor" "Mesenchymal" 8902873 41.1689741597766
+"484" "chr6" 158017291 158019983 "+" 67155 2 "male" "TCGA-VQ-A922" "Stomach Adenocarcinoma" "Stomach" "stage iv" "Primary Tumor" "Stomach" 18235755 52.7991053332561
+"485" "chr6" 158017291 158019983 "+" 67167 1 "male" "TCGA-50-5932" "Lung Adenocarcinoma" "Lung" "stage iib" "Primary Tumor" "Lung" 7857265 39.2335558673584
+"486" "chr6" 158017291 158019983 "+" 67176 1 "female" "TCGA-CL-5917" "Rectum Adenocarcinoma" "Colorectal" "stage iiic" "Primary Tumor" "Colorectal" 5718327 28.9559002248283
+"487" "chr6" 158017291 158019983 "+" 67179 1 "male" "TCGA-HQ-A2OE" "Bladder Urothelial Carcinoma" "Bladder" "not reported" "Primary Tumor" "Bladder" 12923179 50.489648651922
+"488" "chr6" 158017291 158019983 "+" 67181 1 "female" "TCGA-BR-8588" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Primary Tumor" "Stomach" 15548835 59.7170811329813
+"489" "chr6" 158017291 158019983 "+" 67192 1 "female" "TCGA-24-2267" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 14911276 45.2277603710118
+"490" "chr6" 158017291 158019983 "+" 67199 4 "female" "TCGA-MX-A5UJ" "Stomach Adenocarcinoma" "Stomach" "stage iiia" "Primary Tumor" "Stomach" 22133727 76.5091930382482
+"491" "chr6" 158017291 158019983 "+" 67248 1 "male" "TCGA-KQ-A41Q" "Bladder Urothelial Carcinoma" "Bladder" "stage iii" "Primary Tumor" "Bladder" 4442825 24.1608885988525
+"492" "chr6" 158017291 158019983 "+" 67250 2 "male" "TCGA-A6-6140" "Colon Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 6420598 32.5936879724249
+"493" "chr6" 158017291 158019983 "+" 67257 1 "male" "TCGA-AB-2920" "Acute Myeloid Leukemia" "Bone Marrow" "not reported" "Primary Blood Derived Cancer - Peripheral Blood" "Blood" 5121526 23.2777590924379
+"494" "chr6" 158017291 158019983 "+" 67272 2 "female" "TCGA-13-2060" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 18187191 67.409899925871
+"495" "chr6" 158017291 158019983 "+" 67273 1 "female" "TCGA-CN-5369" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iva" "Primary Tumor" "Head and Neck" 11842746 54.7580661568196
+"496" "chr6" 158017291 158019983 "+" 67279 1 "male" "TCGA-D7-6525" "Stomach Adenocarcinoma" "Stomach" "stage iiia" "Primary Tumor" "Stomach" 23260763 71.7211999185994
+"497" "chr6" 158017291 158019983 "+" 67292 2 "female" "TCGA-AA-A02J" "Colon Adenocarcinoma" "Colorectal" "stage iv" "Primary Tumor" "Colorectal" 4262921 25.4012918372333
+"498" "chr6" 158017291 158019983 "+" 67337 2 "male" "TCGA-CD-A486" "Stomach Adenocarcinoma" "Stomach" "stage iia" "Primary Tumor" "Stomach" 22988354 71.6659361351244
+"499" "chr6" 158017291 158019983 "+" 67350 1 "male" "TCGA-BR-A4J2" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Primary Tumor" "Stomach" 27719683 89.5772596542252
+"500" "chr6" 158017291 158019983 "+" 67367 3 "male" "TCGA-BR-6565" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Primary Tumor" "Stomach" 21574195 64.451758709901
+"501" "chr6" 158017291 158019983 "+" 67370 1 "female" "TCGA-D1-A15X" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 4278379 26.0620914833608
+"502" "chr6" 158017291 158019983 "+" 67384 1 "male" "TCGA-VQ-A8PK" "Stomach Adenocarcinoma" "Stomach" "stage iiib" "Primary Tumor" "Stomach" 19478269 60.8027076465888
+"503" "chr6" 158017291 158019983 "+" 67399 1 "female" "TCGA-24-1842" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 26020130 75.0149337208028
+"504" "chr6" 158017291 158019983 "+" 67420 1 "male" "TCGA-T3-A92N" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iva" "Primary Tumor" "Head and Neck" 6313862 34.8454822402261
+"505" "chr6" 158017291 158019983 "+" 67425 2 "male" "TCGA-G4-6322" "Colon Adenocarcinoma" "Colorectal" "stage iiib" "Primary Tumor" "Colorectal" 8453139 42.595168629348
+"506" "chr6" 158017291 158019983 "+" 67427 2 "female" "TCGA-C8-A1HG" "Breast Invasive Carcinoma" "Breast" "stage iia" "Primary Tumor" "Breast" 4210883 26.0098025893166
+"507" "chr6" 158017291 158019983 "+" 67464 1 "female" "TCGA-CR-5249" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage ii" "Primary Tumor" "Head and Neck" 10302213 47.6877033813965
+"508" "chr6" 158017291 158019983 "+" 67498 2 "male" "TCGA-06-0132" "Glioblastoma Multiforme" "Brain" "not reported" "Primary Tumor" "Brain" 11519753 46.4624198889234
+"509" "chr6" 158017291 158019983 "+" 67499 1 "female" "TCGA-D1-A3DH" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 6083639 33.958353335194
+"510" "chr6" 158017291 158019983 "+" 67500 2 "female" "TCGA-CV-A45T" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "not reported" "Primary Tumor" "Head and Neck" 7739959 43.9131660766158
+"511" "chr6" 158017291 158019983 "+" 67526 2 "male" "TCGA-IN-AB1V" "Stomach Adenocarcinoma" "Stomach" "stage ia" "Solid Tissue Normal" "Stomach" 26351555 83.7181865836418
+"512" "chr6" 158017291 158019983 "+" 67528 1 "female" "TCGA-DJ-A2Q7" "Thyroid Carcinoma" "Thyroid" "stage iii" "Primary Tumor" "Thyroid" 13111131 57.2233613533401
+"513" "chr6" 158017291 158019983 "+" 67549 1 "female" "TCGA-AA-3529" "Colon Adenocarcinoma" "Colorectal" "stage iiic" "Primary Tumor" "Colorectal" 3407003 21.0109093824389
+"514" "chr6" 158017291 158019983 "+" 67550 1 "male" "TCGA-BR-7197" "Stomach Adenocarcinoma" "Stomach" "stage ii" "Primary Tumor" "Stomach" 16513659 54.6308816085908
+"515" "chr6" 158017291 158019983 "+" 67554 1 "male" "TCGA-44-2662" "Lung Adenocarcinoma" "Lung" "stage ib" "Primary Tumor" "Lung" 9490867 43.4945877328054
+"516" "chr6" 158017291 158019983 "+" 67560 2 "male" "TCGA-FP-7998" "Stomach Adenocarcinoma" "Stomach" "stage iiic" "Primary Tumor" "Stomach" 27136816 78.5372415549536
+"517" "chr6" 158017291 158019983 "+" 67577 1 "male" "TCGA-QG-A5Z1" "Colon Adenocarcinoma" "Colorectal" "stage iiib" "Primary Tumor" "Colorectal" 8965586 39.5534742136145
+"518" "chr6" 158017291 158019983 "+" 67578 1 "male" "TCGA-IN-7806" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Primary Tumor" "Stomach" 20702104 58.7340384484441
+"519" "chr6" 158017291 158019983 "+" 67587 2 "male" "TCGA-BR-6454" "Stomach Adenocarcinoma" "Stomach" "stage iia" "Solid Tissue Normal" "Stomach" 15670121 59.3857619282222
+"520" "chr6" 158017291 158019983 "+" 67594 2 "male" "TCGA-92-8063" "Lung Squamous Cell Carcinoma" "Lung" "stage iiia" "Primary Tumor" "Lung" 5221306 26.1240331021785
+"521" "chr6" 158017291 158019983 "+" 67603 1 "male" "TCGA-43-6771" "Lung Squamous Cell Carcinoma" "Lung" "stage ib" "Primary Tumor" "Lung" 19150451 82.1297963314792
+"522" "chr6" 158017291 158019983 "+" 67677 3 "female" "TCGA-D8-A1JL" "Breast Invasive Carcinoma" "Breast" "stage iia" "Primary Tumor" "Breast" 15564760 59.2539182804868
+"523" "chr6" 158017291 158019983 "+" 67687 2 "female" "TCGA-AG-3726" "Rectum Adenocarcinoma" "Colorectal" "stage i" "Primary Tumor" "Colorectal" 4340169 29.7706174075878
+"524" "chr6" 158017291 158019983 "+" 67694 1 "male" "TCGA-PK-A5HB" "Adrenocortical Carcinoma" "Adrenal Gland" "not reported" "Primary Tumor" "Adrenal Gland" 8426656 43.0225562374276
+"525" "chr6" 158017291 158019983 "+" 67755 1 "male" "TCGA-CM-5860" "Colon Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 5446177 30.9577315075345
+"526" "chr6" 158017291 158019983 "+" 67762 1 "male" "TCGA-BR-8678" "Stomach Adenocarcinoma" "Stomach" "stage ib" "Primary Tumor" "Stomach" 24854300 64.1913164303922
+"527" "chr6" 158017291 158019983 "+" 67778 2 "female" "TCGA-AY-4071" "Colon Adenocarcinoma" "Colorectal" "stage i" "Primary Tumor" "Colorectal" 3626687 21.8700408251874
+"528" "chr6" 158017291 158019983 "+" 67786 1 "male" "TCGA-MT-A67D" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage ii" "Primary Tumor" "Head and Neck" 7737516 38.8014622918265
+"529" "chr6" 158017291 158019983 "+" 67789 1 "female" "TCGA-Y8-A897" "Kidney Renal Papillary Cell Carcinoma" "Kidney" "stage i" "Primary Tumor" "Kidney" 6572798 32.8684272376771
+"530" "chr6" 158017291 158019983 "+" 67791 2 "male" "TCGA-ZR-A9CJ" "Esophageal Carcinoma" "Esophagus" "stage iiic" "Primary Tumor" "Esophagus" 22740242 68.4063123253386
+"531" "chr6" 158017291 158019983 "+" 67811 1 "male" "TCGA-BR-7196" "Stomach Adenocarcinoma" "Stomach" "stage iv" "Primary Tumor" "Stomach" 24596623 70.8148656780015
+"532" "chr6" 158017291 158019983 "+" 67833 2 "male" "TCGA-EQ-A4SO" "Stomach Adenocarcinoma" "Stomach" "stage iiib" "Primary Tumor" "Stomach" 32088896 103.191011235955
+"533" "chr6" 158017291 158019983 "+" 67845 1 "male" "TCGA-CD-5801" "Stomach Adenocarcinoma" "Stomach" "stage iiia" "Primary Tumor" "Stomach" 12023970 55.8501091550931
+"534" "chr6" 158017291 158019983 "+" 67848 1 "male" "TCGA-85-6561" "Lung Squamous Cell Carcinoma" "Lung" "stage ib" "Primary Tumor" "Lung" 17533173 67.8454850093643
+"535" "chr6" 158017291 158019983 "+" 67850 1 "female" "TCGA-BG-A0MC" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 2507524 18.1872012649322
+"536" "chr6" 158017291 158019983 "+" 67859 4 "male" "TCGA-V5-A7RB" "Esophageal Carcinoma" "Esophagus" "not reported" "Primary Tumor" "Esophagus" 25656119 68.7831608579089
+"537" "chr6" 158017291 158019983 "+" 67866 1 "male" "TCGA-BA-4074" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iva" "Primary Tumor" "Head and Neck" 12145243 54.2983735402994
+"538" "chr6" 158017291 158019983 "+" 67879 2 "female" "TCGA-A6-2681" "Colon Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 4990313 29.8878407838628
+"539" "chr6" 158017291 158019983 "+" 67932 1 "male" "TCGA-V4-A9EE" "Uveal Melanoma" "Eye" "stage iib" "Primary Tumor" "Eye" 9418992 45.0893841911765
+"540" "chr6" 158017291 158019983 "+" 67968 1 "female" "TCGA-D5-6534" "Colon Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 10538814 47.0854827251891
+"541" "chr6" 158017291 158019983 "+" 67979 1 "male" "TCGA-68-8251" "Lung Squamous Cell Carcinoma" "Lung" "stage ib" "Primary Tumor" "Lung" 8234921 37.1059388095345
+"542" "chr6" 158017291 158019983 "+" 67984 1 "male" "TCGA-F7-A50I" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iva" "Primary Tumor" "Head and Neck" 5170270 28.6094433900143
+"543" "chr6" 158017291 158019983 "+" 67988 2 "male" "TCGA-AG-3902" "Rectum Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 9838225 42.312398393215
+"544" "chr6" 158017291 158019983 "+" 68005 1 "female" "TCGA-A2-A0EY" "Breast Invasive Carcinoma" "Breast" "stage iib" "Primary Tumor" "Breast" 10269555 43.6031937432862
+"545" "chr6" 158017291 158019983 "+" 68017 1 "male" "TCGA-D5-6541" "Colon Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 9243750 41.4454746809903
+"546" "chr6" 158017291 158019983 "+" 68053 1 "female" "TCGA-AA-3819" "Colon Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 4022205 22.6572463441563
+"547" "chr6" 158017291 158019983 "+" 68070 2 "female" "TCGA-13-1501" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 16657555 65.6145074250601
+"548" "chr6" 158017291 158019983 "+" 68074 1 "female" "TCGA-AR-A1AY" "Breast Invasive Carcinoma" "Breast" "stage i" "Primary Tumor" "Breast" 10068647 44.2220226278526
+"549" "chr6" 158017291 158019983 "+" 68085 3 "male" "TCGA-SY-A9G5" "Bladder Urothelial Carcinoma" "Bladder" "stage iii" "Primary Tumor" "Bladder" 5584073 31.4604524071101
+"550" "chr6" 158017291 158019983 "+" 68103 1 "female" "TCGA-04-1357" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 12248722 45.4719065668284
+"551" "chr6" 158017291 158019983 "+" 68111 1 "female" "TCGA-CM-6680" "Colon Adenocarcinoma" "Colorectal" "stage iiib" "Primary Tumor" "Colorectal" 6237334 31.0492769494985
+"552" "chr6" 158017291 158019983 "+" 68115 2 "female" "TCGA-GI-A2C9" "Breast Invasive Carcinoma" "Breast" "stage iib" "Primary Tumor" "Breast" 10085864 43.3882713287676
+"553" "chr6" 158017291 158019983 "+" 68144 4 "male" "TCGA-IN-7808" "Stomach Adenocarcinoma" "Stomach" "not reported" "Primary Tumor" "Stomach" 15300796 56.3951583773782
+"554" "chr6" 158017291 158019983 "+" 68169 1 "female" "TCGA-DM-A1D8" "Colon Adenocarcinoma" "Colorectal" "not reported" "Primary Tumor" "Colorectal" 7952406 38.7017943439476
+"555" "chr6" 158017291 158019983 "+" 68176 1 "male" "TCGA-VQ-A8PH" "Stomach Adenocarcinoma" "Stomach" "stage iiib" "Primary Tumor" "Stomach" 14589481 50.0517379789219
+"556" "chr6" 158017291 158019983 "+" 68209 1 "male" "TCGA-63-7023" "Lung Squamous Cell Carcinoma" "Lung" "stage iia" "Primary Tumor" "Lung" 7383671 33.2068278510843
+"557" "chr6" 158017291 158019983 "+" 68246 1 "male" "TCGA-HU-8608" "Stomach Adenocarcinoma" "Stomach" "stage iiib" "Primary Tumor" "Stomach" 23885745 74.8443311535099
+"558" "chr6" 158017291 158019983 "+" 68255 1 "male" "TCGA-BA-A6DJ" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iva" "Primary Tumor" "Head and Neck" 8887676 45.0535867267538
+"559" "chr6" 158017291 158019983 "+" 68269 1 "male" "TCGA-BR-8286" "Stomach Adenocarcinoma" "Stomach" "stage ii" "Primary Tumor" "Stomach" 15917274 61.0856612158589
+"560" "chr6" 158017291 158019983 "+" 68274 1 "male" "TCGA-SI-A71O" "Sarcoma" "Soft Tissue" "not reported" "Metastatic" "Mesenchymal" 8014773 38.4272570360071
+"561" "chr6" 158017291 158019983 "+" 68287 1 "female" "TCGA-A5-A2K2" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 5954184 32.4604288307738
+"562" "chr6" 158017291 158019983 "+" 68307 3 "female" "TCGA-D7-A6EY" "Stomach Adenocarcinoma" "Stomach" "stage iiib" "Primary Tumor" "Stomach" 17811389 62.5435031462442
+"563" "chr6" 158017291 158019983 "+" 68313 2 "male" "TCGA-L5-A8NL" "Esophageal Carcinoma" "Esophagus" "stage iii" "Primary Tumor" "Esophagus" 26750805 76.8962033103179
+"564" "chr6" 158017291 158019983 "+" 68337 2 "male" "TCGA-HU-A4G3" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Primary Tumor" "Stomach" 20864316 75.0709392360611
+"565" "chr6" 158017291 158019983 "+" 68368 1 "male" "TCGA-2H-A9GM" "Esophageal Carcinoma" "Esophagus" "stage iib" "Primary Tumor" "Esophagus" 20314717 58.1275791521811
+"566" "chr6" 158017291 158019983 "+" 68374 1 "female" "TCGA-28-2509" "Glioblastoma Multiforme" "Brain" "not reported" "Primary Tumor" "Brain" 14380810 52.276175693311
+"567" "chr6" 158017291 158019983 "+" 68380 1 "female" "TCGA-AY-A54L" "Colon Adenocarcinoma" "Colorectal" "stage i" "Primary Tumor" "Colorectal" 6194030 31.6375439904792
+"568" "chr6" 158017291 158019983 "+" 68392 1 "male" "TCGA-AZ-6600" "Colon Adenocarcinoma" "Colorectal" "stage iv" "Primary Tumor" "Colorectal" 7635765 36.897735619298
+"569" "chr6" 158017291 158019983 "+" 68411 1 "female" "TCGA-VG-A8LO" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 21986187 62.7393425922491
+"570" "chr6" 158017291 158019983 "+" 68413 1 "male" "TCGA-HU-A4H8" "Stomach Adenocarcinoma" "Stomach" "stage ib" "Primary Tumor" "Stomach" 25396407 75.5339638634843
+"571" "chr6" 158017291 158019983 "+" 68419 2 "female" "TCGA-CG-4440" "Stomach Adenocarcinoma" "Stomach" "stage iv" "Primary Tumor" "Stomach" 10555107 43.7298059833203
+"572" "chr6" 158017291 158019983 "+" 68427 1 "female" "TCGA-HU-A4H4" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Primary Tumor" "Stomach" 25488471 79.650476244047
+"573" "chr6" 158017291 158019983 "+" 68438 1 "female" "TCGA-XF-AAMQ" "Bladder Urothelial Carcinoma" "Bladder" "stage ii" "Primary Tumor" "Bladder" 13011622 55.440322800559
+"574" "chr6" 158017291 158019983 "+" 68439 4 "female" "TCGA-A7-A425" "Breast Invasive Carcinoma" "Breast" "stage iiic" "Primary Tumor" "Breast" 8443390 40.2987304314624
+"575" "chr6" 158017291 158019983 "+" 68449 3 "female" "TCGA-HU-A4G9" "Stomach Adenocarcinoma" "Stomach" "stage ia" "Primary Tumor" "Stomach" 16057265 60.7697999099273
+"576" "chr6" 158017291 158019983 "+" 68453 2 "female" "TCGA-E9-A1N4" "Breast Invasive Carcinoma" "Breast" "stage iiia" "Solid Tissue Normal" "Breast" 10347623 39.7988561450473
+"577" "chr6" 158017291 158019983 "+" 68460 1 "female" "TCGA-EI-6510" "Rectum Adenocarcinoma" "Colorectal" "not reported" "Primary Tumor" "Colorectal" 7289610 36.9601326376953
+"578" "chr6" 158017291 158019983 "+" 68463 1 "male" "TCGA-CZ-5458" "Kidney Renal Clear Cell Carcinoma" "Kidney" "stage iii" "Solid Tissue Normal" "Kidney" 15250726 55.3507108144696
+"579" "chr6" 158017291 158019983 "+" 68479 1 "female" "TCGA-B5-A11R" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 6413813 31.9713923962295
+"580" "chr6" 158017291 158019983 "+" 68488 1 "female" "TCGA-BR-8364" "Stomach Adenocarcinoma" "Stomach" "stage iiic" "Primary Tumor" "Stomach" 29024601 85.8637255162988
+"581" "chr6" 158017291 158019983 "+" 68513 10 "male" "TCGA-VQ-A91K" "Stomach Adenocarcinoma" "Stomach" "stage iiia" "Primary Tumor" "Stomach" 30342873 87.7199961839344
+"582" "chr6" 158017291 158019983 "+" 68515 1 "female" "TCGA-E2-A10A" "Breast Invasive Carcinoma" "Breast" "stage iib" "Primary Tumor" "Breast" 9847081 44.7730945333352
+"583" "chr6" 158017291 158019983 "+" 68520 18 "female" "TCGA-HU-8604" "Stomach Adenocarcinoma" "Stomach" "stage iia" "Primary Tumor" "Stomach" 15438671 63.6459881849026
+"584" "chr6" 158017291 158019983 "+" 68523 1 "male" "TCGA-DK-A1A6" "Bladder Urothelial Carcinoma" "Bladder" "stage iv" "Primary Tumor" "Bladder" 8499985 42.5394867226521
+"585" "chr6" 158017291 158019983 "+" 68533 1 "female" "TCGA-24-1470" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 20734831 49.9959756950305
+"586" "chr6" 158017291 158019983 "+" 68548 1 "female" "TCGA-13-0911" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 13267145 58.3484110160174
+"587" "chr6" 158017291 158019983 "+" 68551 2 "female" "TCGA-61-2094" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 34272395 72.5370861473795
+"588" "chr6" 158017291 158019983 "+" 68580 1 "female" "TCGA-AB-2927" "Acute Myeloid Leukemia" "Bone Marrow" "not reported" "Primary Blood Derived Cancer - Peripheral Blood" "Blood" 3837366 17.0751466177792
+"589" "chr6" 158017291 158019983 "+" 68596 1 "female" "TCGA-A2-A25B" "Breast Invasive Carcinoma" "Breast" "stage iib" "Primary Tumor" "Breast" 10219801 44.6620823773626
+"590" "chr6" 158017291 158019983 "+" 68615 2 "male" "TCGA-BR-7851" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Solid Tissue Normal" "Stomach" 21072998 74.9198219529711
+"591" "chr6" 158017291 158019983 "+" 68631 1 "male" "TCGA-21-5786" "Lung Squamous Cell Carcinoma" "Lung" "stage ib" "Primary Tumor" "Lung" 12803078 54.3675894195532
+"592" "chr6" 158017291 158019983 "+" 68632 2 "male" "TCGA-R5-A805" "Stomach Adenocarcinoma" "Stomach" "stage iiib" "Primary Tumor" "Stomach" 19056059 66.9815815281005
+"593" "chr6" 158017291 158019983 "+" 68633 1 "female" "TCGA-CM-6161" "Colon Adenocarcinoma" "Colorectal" "stage i" "Primary Tumor" "Colorectal" 6730552 33.1660482420479
+"594" "chr6" 158017291 158019983 "+" 68634 1 "female" "TCGA-HU-A4GT" "Stomach Adenocarcinoma" "Stomach" "stage iia" "Primary Tumor" "Stomach" 19831321 76.9025461849881
+"595" "chr6" 158017291 158019983 "+" 68648 1 "male" "TCGA-P3-A6T7" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iva" "Primary Tumor" "Head and Neck" 8600607 46.1646189272314
+"596" "chr6" 158017291 158019983 "+" 68674 1 "male" "TCGA-EJ-A8FU" "Prostate Adenocarcinoma" "Prostate" "not reported" "Primary Tumor" "Prostate" 5536620 27.3262195723847
+"597" "chr6" 158017291 158019983 "+" 68675 1 "male" "TCGA-B9-A8YH" "Kidney Renal Papillary Cell Carcinoma" "Kidney" "stage i" "Primary Tumor" "Kidney" 9015206 38.5202659397192
+"598" "chr6" 158017291 158019983 "+" 68676 4 "male" "TCGA-HU-A4GN" "Stomach Adenocarcinoma" "Stomach" "stage iia" "Primary Tumor" "Stomach" 34082022 102.768747851573
+"599" "chr6" 158017291 158019983 "+" 68694 1 "female" "TCGA-06-2569" "Glioblastoma Multiforme" "Brain" "not reported" "Primary Tumor" "Brain" 13992683 49.660827285149
+"600" "chr6" 158017291 158019983 "+" 68700 2 "male" "TCGA-JY-A6FA" "Esophageal Carcinoma" "Esophagus" "stage iib" "Primary Tumor" "Esophagus" 29876631 83.1210956083854
+"601" "chr6" 158017291 158019983 "+" 68748 1 "male" "TCGA-BA-5153" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "not reported" "Primary Tumor" "Head and Neck" 7590157 36.3528935634199
+"602" "chr6" 158017291 158019983 "+" 68756 2 "male" "TCGA-CR-6493" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iva" "Primary Tumor" "Head and Neck" 9453249 48.3863899268055
+"603" "chr6" 158017291 158019983 "+" 68793 1 "female" "TCGA-A8-A09W" "Breast Invasive Carcinoma" "Breast" "stage iiib" "Primary Tumor" "Breast" 8220731 43.1102201991704
+"604" "chr6" 158017291 158019983 "+" 68798 5 "female" "TCGA-BR-A4PD" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Primary Tumor" "Stomach" 29106115 86.0308079285414
+"605" "chr6" 158017291 158019983 "+" 68805 4 "male" "TCGA-HU-8243" "Stomach Adenocarcinoma" "Stomach" "stage iiic" "Primary Tumor" "Stomach" 16979143 56.6626831702002
+"606" "chr6" 158017291 158019983 "+" 68811 1 "female" "TCGA-91-6836" "Lung Adenocarcinoma" "Lung" "stage ib" "Primary Tumor" "Lung" 6936378 33.891373708255
+"607" "chr6" 158017291 158019983 "+" 68830 1 "female" "TCGA-B6-A0X1" "Breast Invasive Carcinoma" "Breast" "not reported" "Primary Tumor" "Breast" 6243535 31.0251638582595
+"608" "chr6" 158017291 158019983 "+" 68856 3 "male" "TCGA-VQ-A923" "Stomach Adenocarcinoma" "Stomach" "stage iiia" "Primary Tumor" "Stomach" 19510791 57.5814725621093
+"609" "chr6" 158017291 158019983 "+" 68868 1 "female" "TCGA-IN-A6RN" "Stomach Adenocarcinoma" "Stomach" "stage iia" "Primary Tumor" "Stomach" 4365384 22.2588530433053
+"610" "chr6" 158017291 158019983 "+" 68893 1 "male" "TCGA-FP-A8CX" "Stomach Adenocarcinoma" "Stomach" "stage iiic" "Primary Tumor" "Stomach" 19359404 65.4850269423707
+"611" "chr6" 158017291 158019983 "+" 68902 1 "female" "TCGA-D6-6827" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage i" "Primary Tumor" "Head and Neck" 9348160 39.4755266902863
+"612" "chr6" 158017291 158019983 "+" 68929 1 "female" "TCGA-L5-A4OJ" "Esophageal Carcinoma" "Esophagus" "stage i" "Primary Tumor" "Esophagus" 25453858 78.6161272986713
+"613" "chr6" 158017291 158019983 "+" 68930 1 "male" "TCGA-CR-7382" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iva" "Primary Tumor" "Head and Neck" 12720419 55.4839594701282
+"614" "chr6" 158017291 158019983 "+" 68995 1 "male" "TCGA-BP-5194" "Kidney Renal Clear Cell Carcinoma" "Kidney" "stage i" "Primary Tumor" "Kidney" 12844883 54.2023926069711
+"615" "chr6" 158017291 158019983 "+" 68996 1 "male" "TCGA-W4-A7U4" "Testicular Germ Cell Tumors" "Testis" "not reported" "Primary Tumor" "Testis" 8515093 38.1374141189749
+"616" "chr6" 158017291 158019983 "+" 69013 1 "male" "TCGA-06-0744" "Glioblastoma Multiforme" "Brain" "not reported" "Primary Tumor" "Brain" 11399723 43.6403146772835
+"617" "chr6" 158017291 158019983 "+" 69015 2 "female" "TCGA-BH-A0HB" "Breast Invasive Carcinoma" "Breast" "stage ia" "Primary Tumor" "Breast" 6844870 39.9712108382726
+"618" "chr6" 158017291 158019983 "+" 69030 1 "female" "TCGA-BG-A18A" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 4800051 27.0277707393706
+"619" "chr6" 158017291 158019983 "+" 69037 1 "female" "TCGA-A8-A07W" "Breast Invasive Carcinoma" "Breast" "stage iv" "Primary Tumor" "Breast" 12174831 52.4960481892385
+"620" "chr6" 158017291 158019983 "+" 69052 1 "female" "TCGA-N8-A4PO" "Uterine Carcinosarcoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 7833554 38.1389712505173
+"621" "chr6" 158017291 158019983 "+" 69066 1 "female" "TCGA-N5-A4RV" "Uterine Carcinosarcoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 5726366 36.0659171783971
+"622" "chr6" 158017291 158019983 "+" 69076 1 "male" "TCGA-L5-A8NE" "Esophageal Carcinoma" "Esophagus" "stage iib" "Primary Tumor" "Esophagus" 25870837 76.8908138214717
+"623" "chr6" 158017291 158019983 "+" 69077 1 "male" "TCGA-HZ-A8P1" "Pancreatic Adenocarcinoma" "Pancreas" "stage ib" "Primary Tumor" "Pancreas" 5011968 27.0379353502223
+"624" "chr6" 158017291 158019983 "+" 69084 1 "female" "TCGA-A6-2683" "Colon Adenocarcinoma" "Colorectal" "stage iv" "Solid Tissue Normal" "Colorectal" 9150909 44.6172512652488
+"625" "chr6" 158017291 158019983 "+" 69104 1 "female" "TCGA-24-0979" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 21014574 60.4969225543087
+"626" "chr6" 158017291 158019983 "+" 69111 2 "female" "TCGA-25-2409" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 21937940 63.4754479721538
+"627" "chr6" 158017291 158019983 "+" 69116 1 "female" "TCGA-13-0890" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 34003242 97.9516856165903
+"628" "chr6" 158017291 158019983 "+" 69150 1 "male" "TCGA-22-5482" "Lung Squamous Cell Carcinoma" "Lung" "stage ib" "Primary Tumor" "Lung" 13801929 55.7516288914651
+"629" "chr6" 158017291 158019983 "+" 69187 2 "male" "TCGA-AZ-4315" "Colon Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 7309922 39.9098170462052
+"630" "chr6" 158017291 158019983 "+" 69197 11 "female" "TCGA-BR-8361" "Stomach Adenocarcinoma" "Stomach" "stage iiic" "Primary Tumor" "Stomach" 21337227 66.8312932627557
+"631" "chr6" 158017291 158019983 "+" 69232 1 "female" "TCGA-DU-A6S2" "Brain Lower Grade Glioma" "Brain" "not reported" "Primary Tumor" "Brain" 6324081 26.5933340902497
+"632" "chr6" 158017291 158019983 "+" 69257 1 "female" "TCGA-EM-A3SU" "Thyroid Carcinoma" "Thyroid" "stage i" "Primary Tumor" "Thyroid" 6589757 43.5090949906574
+"633" "chr6" 158017291 158019983 "+" 69265 4 "female" "TCGA-HU-A4H3" "Stomach Adenocarcinoma" "Stomach" "stage iiic" "Primary Tumor" "Stomach" 20863144 75.2543654300503
+"634" "chr6" 158017291 158019983 "+" 69274 1 "male" "TCGA-DM-A28A" "Colon Adenocarcinoma" "Colorectal" "stage iiic" "Primary Tumor" "Colorectal" 7382310 35.159047287933
+"635" "chr6" 158017291 158019983 "+" 69275 1 "female" "TCGA-SW-A7EA" "Stomach Adenocarcinoma" "Stomach" "stage ib" "Primary Tumor" "Stomach" 11211224 56.9458996825397
+"636" "chr6" 158017291 158019983 "+" 69347 1 "female" "TCGA-OL-A66J" "Breast Invasive Carcinoma" "Breast" "stage i" "Primary Tumor" "Breast" 5657653 30.8822168001266
+"637" "chr6" 158017291 158019983 "+" 69374 1 "male" "TCGA-44-7669" "Lung Adenocarcinoma" "Lung" "stage iia" "Primary Tumor" "Lung" 9731849 37.9610592750932
+"638" "chr6" 158017291 158019983 "+" 69376 2 "female" "TCGA-24-1422" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 30097684 70.1548280025547
+"639" "chr6" 158017291 158019983 "+" 69389 1 "male" "TCGA-G5-6572" "Rectum Adenocarcinoma" "Colorectal" "not reported" "Primary Tumor" "Colorectal" 7585858 36.7368130484474
+"640" "chr6" 158017291 158019983 "+" 69405 4 "male" "TCGA-VQ-A8DV" "Stomach Adenocarcinoma" "Stomach" "stage ib" "Primary Tumor" "Stomach" 18728369 89.850167914028
+"641" "chr6" 158017291 158019983 "+" 69413 1 "male" "TCGA-VQ-A91D" "Stomach Adenocarcinoma" "Stomach" "stage iiic" "Primary Tumor" "Stomach" 30077996 86.5474143388235
+"642" "chr6" 158017291 158019983 "+" 69433 1 "female" "TCGA-DX-A6Z0" "Sarcoma" "Soft Tissue" "not reported" "Primary Tumor" "Mesenchymal" 10006185 50.8498620279603
+"643" "chr6" 158017291 158019983 "+" 69441 1 "female" "TCGA-B6-A409" "Breast Invasive Carcinoma" "Breast" "stage iiia" "Primary Tumor" "Breast" 8663394 46.4490279550061
+"644" "chr6" 158017291 158019983 "+" 69457 2 "female" "TCGA-G4-6586" "Colon Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 6642792 36.7626595238359
+"645" "chr6" 158017291 158019983 "+" 69467 1 "female" "TCGA-AX-A1C5" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 4321603 24.6844362955093
+"646" "chr6" 158017291 158019983 "+" 69477 2 "male" "TCGA-L5-A4OI" "Esophageal Carcinoma" "Esophagus" "stage iiic" "Primary Tumor" "Esophagus" 17914637 57.6949785189336
+"647" "chr6" 158017291 158019983 "+" 69494 1 "female" "TCGA-YY-A8LH" "Pancreatic Adenocarcinoma" "Pancreas" "stage iib" "Primary Tumor" "Pancreas" 6800731 33.3326683854019
+"648" "chr6" 158017291 158019983 "+" 69497 1 "female" "TCGA-EL-A3GR" "Thyroid Carcinoma" "Thyroid" "stage i" "Primary Tumor" "Thyroid" 8256251 37.9676300843853
+"649" "chr6" 158017291 158019983 "+" 69502 2 "female" "TCGA-44-A47G" "Lung Adenocarcinoma" "Lung" "stage ia" "Primary Tumor" "Lung" 5753631 29.3801433867459
+"650" "chr6" 158017291 158019983 "+" 69521 3 "male" "TCGA-VQ-A8DT" "Stomach Adenocarcinoma" "Stomach" "stage iiib" "Primary Tumor" "Stomach" 20666776 73.6355558089239
+"651" "chr6" 158017291 158019983 "+" 69544 4 "male" "TCGA-BR-8680" "Stomach Adenocarcinoma" "Stomach" "stage iv" "Primary Tumor" "Stomach" 16566788 62.6552047562138
+"652" "chr6" 158017291 158019983 "+" 69550 1 "male" "TCGA-55-7227" "Lung Adenocarcinoma" "Lung" "stage iiia" "Primary Tumor" "Lung" 3978633 22.4454354669465
+"653" "chr6" 158017291 158019983 "+" 69556 4 "female" "TCGA-VQ-A8PU" "Stomach Adenocarcinoma" "Stomach" "stage iiia" "Primary Tumor" "Stomach" 13507978 53.1172332435461
+"654" "chr6" 158017291 158019983 "+" 69559 1 "female" "TCGA-09-2051" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 32345618 75.6953755209881
+"655" "chr6" 158017291 158019983 "+" 69561 4 "female" "TCGA-13-1482" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 31709506 83.9375448348885
+"656" "chr6" 158017291 158019983 "+" 69579 1 "female" "TCGA-CZ-5465" "Kidney Renal Clear Cell Carcinoma" "Kidney" "stage iii" "Primary Tumor" "Kidney" 13632768 52.9973292903376
+"657" "chr6" 158017291 158019983 "+" 69632 2 "female" "TCGA-29-1705" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 23924670 69.0638080447095
+"658" "chr6" 158017291 158019983 "+" 69654 2 "male" "TCGA-CG-4442" "Stomach Adenocarcinoma" "Stomach" "stage ib" "Primary Tumor" "Stomach" 7830467 35.4377500407306
+"659" "chr6" 158017291 158019983 "+" 69662 1 "female" "TCGA-CW-5580" "Kidney Renal Clear Cell Carcinoma" "Kidney" "stage iv" "Primary Tumor" "Kidney" 12884774 50.4010405053883
+"660" "chr6" 158017291 158019983 "+" 69684 1 "female" "TCGA-CN-4731" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iva" "Primary Tumor" "Head and Neck" 9815696 47.7113123447609
+"661" "chr6" 158017291 158019983 "+" 69690 2 "male" "TCGA-CN-4726" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iva" "Primary Tumor" "Head and Neck" 8732152 51.6432584601919
+"662" "chr6" 158017291 158019983 "+" 69719 1 "female" "TCGA-GM-A2DH" "Breast Invasive Carcinoma" "Breast" "stage i" "Primary Tumor" "Breast" 12043751 44.7578329685195
+"663" "chr6" 158017291 158019983 "+" 69721 1 "female" "TCGA-AX-A0J0" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 4145586 23.4416529542486
+"664" "chr6" 158017291 158019983 "+" 69731 1 "female" "TCGA-CK-4950" "Colon Adenocarcinoma" "Colorectal" "stage iiib" "Primary Tumor" "Colorectal" 10211934 48.6115903118931
+"665" "chr6" 158017291 158019983 "+" 69760 2 "female" "TCGA-BR-8284" "Stomach Adenocarcinoma" "Stomach" "stage iiic" "Primary Tumor" "Stomach" 23787669 77.897603243268
+"666" "chr6" 158017291 158019983 "+" 69762 1 "male" "TCGA-HQ-A5ND" "Bladder Urothelial Carcinoma" "Bladder" "stage iv" "Primary Tumor" "Bladder" 6745277 36.249728608433
+"667" "chr6" 158017291 158019983 "+" 69783 1 "female" "TCGA-CV-7242" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage ii" "Solid Tissue Normal" "Head and Neck" 11177817 54.7916090703215
+"668" "chr6" 158017291 158019983 "+" 69793 2 "female" "TCGA-59-2354" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 35359610 82.681399519713
+"669" "chr6" 158017291 158019983 "+" 69834 1 "male" "TCGA-CV-7415" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iva" "Primary Tumor" "Head and Neck" 9838282 47.2367531544681
+"670" "chr6" 158017291 158019983 "+" 69902 1 "male" "TCGA-VR-AA7D" "Esophageal Carcinoma" "Esophagus" "stage iiic" "Primary Tumor" "Esophagus" 36436739 95.0579007646532
+"671" "chr6" 158017291 158019983 "+" 69934 1 "female" "TCGA-BR-4257" "Stomach Adenocarcinoma" "Stomach" "not reported" "Primary Tumor" "Stomach" 22262263 72.2160649813639
+"672" "chr6" 158017291 158019983 "+" 69952 1 "male" "TCGA-AA-A01R" "Colon Adenocarcinoma" "Colorectal" "stage iii" "Primary Tumor" "Colorectal" 3340892 22.721591991077
+"673" "chr6" 158017291 158019983 "+" 69957 1 "female" "TCGA-51-4079" "Lung Squamous Cell Carcinoma" "Lung" "stage ib" "Primary Tumor" "Lung" 10293345 50.5718560079395
+"674" "chr6" 158017291 158019983 "+" 69962 3 "male" "TCGA-EE-A2MD" "Skin Cutaneous Melanoma" "Skin" "stage ii" "Metastatic" "Skin" 11984984 53.6248092815564
+"675" "chr6" 158017291 158019983 "+" 69965 2 "male" "TCGA-IQ-A6SH" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iii" "Primary Tumor" "Head and Neck" 7102921 41.7939347223612
+"676" "chr6" 158017291 158019983 "+" 69970 1 "female" "TCGA-AA-3811" "Colon Adenocarcinoma" "Colorectal" "stage iii" "Primary Tumor" "Colorectal" 3282830 19.2813889427284
+"677" "chr6" 158017291 158019983 "+" 69998 1 "male" "TCGA-L5-A8NJ" "Esophageal Carcinoma" "Esophagus" "stage iii" "Primary Tumor" "Esophagus" 17126871 59.4974310339437
+"678" "chr6" 158017291 158019983 "+" 70036 1 "female" "TCGA-BR-8486" "Stomach Adenocarcinoma" "Stomach" "stage ia" "Primary Tumor" "Stomach" 24870011 72.4855539007237
+"679" "chr6" 158017291 158019983 "+" 70064 2 "male" "TCGA-VQ-A91S" "Stomach Adenocarcinoma" "Stomach" "stage iiib" "Primary Tumor" "Stomach" 26069098 75.9914590456868
+"680" "chr6" 158017291 158019983 "+" 70078 1 "female" "TCGA-HU-A4G8" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Primary Tumor" "Stomach" 14691245 51.3803854776152
+"681" "chr6" 158017291 158019983 "+" 70089 1 "male" "TCGA-LN-A7HV" "Esophageal Carcinoma" "Esophagus" "stage iia" "Primary Tumor" "Esophagus" 19601439 65.0480158493121
+"682" "chr6" 158017291 158019983 "+" 70094 2 "female" "TCGA-CG-5718" "Stomach Adenocarcinoma" "Stomach" "stage ii" "Primary Tumor" "Stomach" 21629686 71.22572593339
+"683" "chr6" 158017291 158019983 "+" 70095 1 "female" "TCGA-E9-A1RC" "Breast Invasive Carcinoma" "Breast" "stage iiic" "Primary Tumor" "Breast" 15077023 57.069511368841
+"684" "chr6" 158017291 158019983 "+" 70126 2 "female" "TCGA-XF-A9T6" "Bladder Urothelial Carcinoma" "Bladder" "stage iii" "Primary Tumor" "Bladder" 5793986 33.6632619861024
+"685" "chr6" 158017291 158019983 "+" 70130 1 "male" "TCGA-NH-A6GA" "Colon Adenocarcinoma" "Colorectal" "stage iiic" "Primary Tumor" "Colorectal" 8155322 36.0610825414653
+"686" "chr6" 158017291 158019983 "+" 70147 1 "female" "TCGA-C8-A8HP" "Breast Invasive Carcinoma" "Breast" "stage iiia" "Primary Tumor" "Breast" 5317199 28.7431699010757
+"687" "chr6" 158017291 158019983 "+" 70149 1 "female" "TCGA-BH-A1FJ" "Breast Invasive Carcinoma" "Breast" "stage iiia" "Primary Tumor" "Breast" 11580904 48.7114513449284
+"688" "chr6" 158017291 158019983 "+" 70163 1 "female" "TCGA-NJ-A4YF" "Lung Adenocarcinoma" "Lung" "stage ia" "Primary Tumor" "Lung" 4723305 26.2830743034573
+"689" "chr6" 158017291 158019983 "+" 70177 1 "female" "TCGA-OR-A5K4" "Adrenocortical Carcinoma" "Adrenal Gland" "stage iii" "Primary Tumor" "Adrenal Gland" 5008931 29.3326481731991
+"690" "chr6" 158017291 158019983 "+" 70189 1 "male" "TCGA-CG-5716" "Stomach Adenocarcinoma" "Stomach" "stage iv" "Primary Tumor" "Stomach" 15798425 59.3163113590797
+"691" "chr6" 158017291 158019983 "+" 70195 1 "male" "TCGA-L5-A8NI" "Esophageal Carcinoma" "Esophagus" "stage iii" "Primary Tumor" "Esophagus" 26438547 75.258100510952
+"692" "chr6" 158017291 158019983 "+" 70214 1 "female" "TCGA-D1-A169" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 5456679 34.0850708976201
+"693" "chr6" 158017291 158019983 "+" 70221 1 "female" "TCGA-24-2289" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 23090472 59.5840094135133
+"694" "chr6" 158017291 158019983 "+" 70227 3 "female" "TCGA-JX-A3Q8" "Cervical Squamous Cell Carcinoma and Endocervical Adenocarcinoma" "Cervix" "not reported" "Primary Tumor" "Cervix" 8033412 47.0579979263442
+"695" "chr6" 158017291 158019983 "+" 70230 4 "male" "TCGA-F1-A448" "Stomach Adenocarcinoma" "Stomach" "stage iiib" "Primary Tumor" "Stomach" 21303331 70.5613920612629
+"696" "chr6" 158017291 158019983 "+" 70238 1 "male" "TCGA-GL-7773" "Kidney Renal Papillary Cell Carcinoma" "Kidney" "stage i" "Primary Tumor" "Kidney" 6471604 32.3473453760259
+"697" "chr6" 158017291 158019983 "+" 70244 1 "female" "TCGA-AF-A56L" "Rectum Adenocarcinoma" "Colorectal" "stage iiic" "Primary Tumor" "Colorectal" 8389151 40.0387111862012
+"698" "chr6" 158017291 158019983 "+" 70302 1 "female" "TCGA-A6-6142" "Colon Adenocarcinoma" "Colorectal" "stage iva" "Primary Tumor" "Colorectal" 5972546 31.8687056789623
+"699" "chr6" 158017291 158019983 "+" 70316 1 "female" "TCGA-BH-A1EW" "Breast Invasive Carcinoma" "Breast" "stage iia" "Solid Tissue Normal" "Breast" 13699433 49.3513202925177
+"700" "chr6" 158017291 158019983 "+" 70323 1 "male" "TCGA-K4-A5RH" "Bladder Urothelial Carcinoma" "Bladder" "stage iii" "Primary Tumor" "Bladder" 13621147 59.2020436458782
+"701" "chr6" 158017291 158019983 "+" 70325 3 "female" "TCGA-D5-6533" "Colon Adenocarcinoma" "Colorectal" "not reported" "Primary Tumor" "Colorectal" 6454447 34.1333562495042
+"702" "chr6" 158017291 158019983 "+" 70329 1 "male" "TCGA-CM-6163" "Colon Adenocarcinoma" "Colorectal" "stage i" "Primary Tumor" "Colorectal" 7295007 35.0414877366919
+"703" "chr6" 158017291 158019983 "+" 70359 1 "male" "TCGA-BR-A452" "Stomach Adenocarcinoma" "Stomach" "stage iiia" "Primary Tumor" "Stomach" 31986110 91.8948324058459
+"704" "chr6" 158017291 158019983 "+" 70400 1 "female" "TCGA-D8-A27M" "Breast Invasive Carcinoma" "Breast" "stage ia" "Primary Tumor" "Breast" 12940723 49.5522662960027
+"705" "chr6" 158017291 158019983 "+" 70426 1 "female" "TCGA-OL-A5D8" "Breast Invasive Carcinoma" "Breast" "stage iib" "Primary Tumor" "Breast" 7026677 33.3133121885771
+"706" "chr6" 158017291 158019983 "+" 70439 1 "female" "TCGA-BJ-A0Z3" "Thyroid Carcinoma" "Thyroid" "stage i" "Primary Tumor" "Thyroid" 12736561 54.4453369127058
+"707" "chr6" 158017291 158019983 "+" 70453 1 "female" "TCGA-A8-A09D" "Breast Invasive Carcinoma" "Breast" "stage iib" "Primary Tumor" "Breast" 9316405 44.3589749694081
+"708" "chr6" 158017291 158019983 "+" 70470 7 "male" "TCGA-L7-A6VZ" "Esophageal Carcinoma" "Esophagus" "stage iiic" "Primary Tumor" "Esophagus" 30046995 81.8913339129439
+"709" "chr6" 158017291 158019983 "+" 70489 1 "male" "TCGA-XF-A9T4" "Bladder Urothelial Carcinoma" "Bladder" "stage iv" "Primary Tumor" "Bladder" 12729325 57.4946928635953
+"710" "chr6" 158017291 158019983 "+" 70490 2 NA "TCGA-2G-AALR" "Testicular Germ Cell Tumors" "Testis" NA "Primary Tumor" "Testis" 7811276 33.6674065677354
+"711" "chr6" 158017291 158019983 "+" 70500 1 "male" "TCGA-AA-3488" "Colon Adenocarcinoma" "Colorectal" "stage iv" "Primary Tumor" "Colorectal" 2962541 21.4516773712374
+"712" "chr6" 158017291 158019983 "+" 70501 1 NA "TCGA-06-AABW" "Glioblastoma Multiforme" "Brain" NA "Solid Tissue Normal" "Brain" 5851491 28.98973479913
+"713" "chr6" 158017291 158019983 "+" 70511 2 "female" "TCGA-DF-A2KR" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 6393358 35.8319863696995
+"714" "chr6" 158017291 158019983 "+" 70517 2 "male" "TCGA-CN-5364" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iva" "Primary Tumor" "Head and Neck" 12300879 56.1863563696159
+"715" "chr6" 158017291 158019983 "+" 70537 1 "female" "TCGA-24-1550" "Ovarian Serous Cystadenocarcinoma" "Ovary" "not reported" "Primary Tumor" "Ovary" 28422785 69.9009751238887
+"716" "chr6" 158017291 158019983 "+" 70553 2 "male" "TCGA-BR-6455" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Primary Tumor" "Stomach" 25009603 73.6380079439624
+"717" "chr6" 158017291 158019983 "+" 70571 1 "male" "TCGA-68-8250" "Lung Squamous Cell Carcinoma" "Lung" "stage ia" "Primary Tumor" "Lung" 7876533 34.7485926801722
+"718" "chr6" 158017291 158019983 "+" 70592 1 "female" "TCGA-AK-3465" "Kidney Renal Clear Cell Carcinoma" "Kidney" "stage i" "Primary Tumor" "Kidney" 8091078 35.8965306122449
+"719" "chr6" 158017291 158019983 "+" 70594 1 "male" "TCGA-CM-4744" "Colon Adenocarcinoma" "Colorectal" "stage i" "Primary Tumor" "Colorectal" 8905048 49.1166659312536
+"720" "chr6" 158017291 158019983 "+" 70596 1 "female" "TCGA-VQ-A91E" "Stomach Adenocarcinoma" "Stomach" "stage iiib" "Primary Tumor" "Stomach" 26207872 72.9646255700389
+"721" "chr6" 158017291 158019983 "+" 70635 1 "male" "TCGA-CV-6933" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iii" "Primary Tumor" "Head and Neck" 11959330 52.3519420769477
+"722" "chr6" 158017291 158019983 "+" 70642 2 "female" "TCGA-AN-A0AR" "Breast Invasive Carcinoma" "Breast" "stage iia" "Primary Tumor" "Breast" 8366740 37.0314602365272
+"723" "chr6" 158017291 158019983 "+" 70643 1 "female" "TCGA-D1-A1O0" "Uterine Corpus Endometrial Carcinoma" "Uterus" "not reported" "Primary Tumor" "Uterus" 3526249 20.2527625895975
+"724" "chr6" 158017291 158019983 "+" 70668 1 "female" "TCGA-ER-A3ET" "Skin Cutaneous Melanoma" "Skin" "stage iiia" "Metastatic" "Skin" 6403824 33.5338437208718
+"725" "chr6" 158017291 158019983 "+" 70690 2 "male" "TCGA-BA-5151" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iva" "Primary Tumor" "Head and Neck" 17486671 73.8859894114615
+"726" "chr6" 158017291 158019983 "+" 70699 1 "male" "TCGA-CC-A1HT" "Liver Hepatocellular Carcinoma" "Liver" "stage iiia" "Primary Tumor" "Liver" 12106784 50.6276146428362
+"727" "chr6" 158017291 158019983 "+" 70733 1 "male" "TCGA-AB-2891" "Acute Myeloid Leukemia" "Bone Marrow" "not reported" "Primary Blood Derived Cancer - Peripheral Blood" "Blood" 4029669 19.2024331433582
+"728" "chr6" 158017291 158019983 "+" 70736 1 "male" "TCGA-KK-A6DY" "Prostate Adenocarcinoma" "Prostate" "not reported" "Primary Tumor" "Prostate" 7078212 32.4212715280322
+"729" "chr6" 158017291 158019983 "+" 70737 1 "male" "TCGA-55-6978" "Lung Adenocarcinoma" "Lung" "stage iia" "Primary Tumor" "Lung" 8473057 38.6533990857914
+"730" "chr6" 158017291 158019983 "+" 70751 7 "male" "TCGA-D7-A4YX" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Primary Tumor" "Stomach" 24759637 84.4848498290487
+"731" "chr6" 158017291 158019983 "+" 70758 1 "female" "TCGA-GN-A26A" "Skin Cutaneous Melanoma" "Skin" "stage iiia" "Metastatic" "Skin" 6181776 32.4361354370537
+"732" "chr6" 158017291 158019983 "+" 70759 1 "male" "TCGA-HU-A4GF" "Stomach Adenocarcinoma" "Stomach" "stage iia" "Primary Tumor" "Stomach" 22282806 69.3701621338912
+"733" "chr6" 158017291 158019983 "+" 70766 2 "male" "TCGA-L5-A43C" "Esophageal Carcinoma" "Esophagus" "not reported" "Solid Tissue Normal" "Esophagus" 21337595 94.5731539757114
+"734" "chr6" 158017291 158019983 "+" 70791 2 "female" "TCGA-F4-6854" "Colon Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 9382154 43.2720253853462
+"735" "chr6" 158017291 158019983 "+" 70799 2 "male" "TCGA-BR-A4J5" "Stomach Adenocarcinoma" "Stomach" "stage iiia" "Primary Tumor" "Stomach" 19907038 70.2592248806192
+"736" "chr6" 158017291 158019983 "+" 70802 2 "female" "TCGA-DC-4745" "Rectum Adenocarcinoma" "Colorectal" "stage iiib" "Primary Tumor" "Colorectal" 6914482 36.6004404027144
+"737" "chr6" 158017291 158019983 "+" 70807 1 "female" "TCGA-L5-A4OM" "Esophageal Carcinoma" "Esophagus" "stage ia" "Primary Tumor" "Esophagus" 24967860 64.329927187843
+"738" "chr6" 158017291 158019983 "+" 70811 3 "male" "TCGA-L5-A88V" "Esophageal Carcinoma" "Esophagus" "stage iii" "Primary Tumor" "Esophagus" 32252854 96.3948641774584
+"739" "chr6" 158017291 158019983 "+" 70812 1 "male" "TCGA-CD-A4MJ" "Stomach Adenocarcinoma" "Stomach" "stage ib" "Primary Tumor" "Stomach" 31111501 95.5445438436474
+"740" "chr6" 158017291 158019983 "+" 70857 1 "male" "TCGA-VQ-A8PO" "Stomach Adenocarcinoma" "Stomach" "stage iib" "Primary Tumor" "Stomach" 20596382 69.2410786024292
+"741" "chr6" 158017291 158019983 "+" 70858 1 "male" "TCGA-CV-5976" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage iva" "Primary Tumor" "Head and Neck" 10786190 52.2637367962012
+"742" "chr6" 158017291 158019983 "+" 70879 1 "male" "TCGA-TQ-A7RH" "Brain Lower Grade Glioma" "Brain" "not reported" "Primary Tumor" "Brain" 6727361 27.5071186745609
+"743" "chr6" 158017291 158019983 "+" 70889 1 "female" "TCGA-AY-4070" "Colon Adenocarcinoma" "Colorectal" "stage iiic" "Primary Tumor" "Colorectal" 3426618 19.6314918044996
+"744" "chr6" 158017291 158019983 "+" 70910 2 "female" "TCGA-BR-6564" "Stomach Adenocarcinoma" "Stomach" "stage iiia" "Solid Tissue Normal" "Stomach" 21898774 68.3026131110931
+"745" "chr6" 158017291 158019983 "+" 70957 2 "male" "TCGA-FP-8210" "Stomach Adenocarcinoma" "Stomach" "stage iiia" "Primary Tumor" "Stomach" 20317779 79.3650841393103
+"746" "chr6" 158017291 158019983 "+" 70961 4 "male" "TCGA-CV-7406" "Head and Neck Squamous Cell Carcinoma" "Head and Neck" "stage ii" "Solid Tissue Normal" "Head and Neck" 10326862 52.9533786624824
+"747" "chr6" 158017291 158019983 "+" 70970 1 "male" "TCGA-2H-A9GL" "Esophageal Carcinoma" "Esophagus" "stage iii" "Primary Tumor" "Esophagus" 19407832 53.4855826335704
+"748" "chr6" 158017291 158019983 "+" 70972 2 "female" "TCGA-L5-A893" "Esophageal Carcinoma" "Esophagus" "stage i" "Primary Tumor" "Esophagus" 24373489 72.3781566256474
+"749" "chr6" 158017291 158019983 "+" 71001 1 "female" "TCGA-D7-A6F0" "Stomach Adenocarcinoma" "Stomach" "stage ib" "Primary Tumor" "Stomach" 27146782 75.6947369888605
+"750" "chr6" 158017291 158019983 "+" 71003 1 "female" "TCGA-ET-A3DP" "Thyroid Carcinoma" "Thyroid" "stage i" "Primary Tumor" "Thyroid" 12019431 49.0831431033286
+"751" "chr6" 158017291 158019983 "+" 71015 2 "male" "TCGA-MX-A666" "Stomach Adenocarcinoma" "Stomach" "stage iia" "Primary Tumor" "Stomach" 20912800 57.7355563101677
+"752" "chr6" 158017291 158019983 "+" 71036 1 "male" "TCGA-ZF-AA54" "Bladder Urothelial Carcinoma" "Bladder" "stage iii" "Primary Tumor" "Bladder" 6742784 35.743811028297
+"753" "chr6" 158017291 158019983 "+" 71042 7 "female" "TCGA-CG-4460" "Stomach Adenocarcinoma" "Stomach" "stage iv" "Primary Tumor" "Stomach" 9323547 36.1969849909542
+"754" "chr6" 158017291 158019983 "+" 71049 1 "male" "TCGA-BF-AAP1" "Skin Cutaneous Melanoma" "Skin" "stage iic" "Primary Tumor" "Skin" 9494723 42.8518307901305
+"755" "chr6" 158017291 158019983 "+" 71057 1 "female" "TCGA-E2-A1IO" "Breast Invasive Carcinoma" "Breast" "stage i" "Primary Tumor" "Breast" 11111749 46.5977623175278
+"756" "chr6" 158017291 158019983 "+" 71079 1 "female" "TCGA-CK-5913" "Colon Adenocarcinoma" "Colorectal" "stage iia" "Primary Tumor" "Colorectal" 6555197 34.165495710548
+"757" "chr6" 158017291 158019983 "+" 71082 1 "female" "TCGA-AR-A0TP" "Breast Invasive Carcinoma" "Breast" "stage iia" "Primary Tumor" "Breast" 10050195 43.4678214610095

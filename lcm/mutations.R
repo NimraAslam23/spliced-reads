@@ -119,6 +119,3 @@ combined_mutation_data <- combine_mutation_data('/Users/nimraaslam/Documents/Git
          "variant_allele" = "var") |> 
   select(colnames(mutation_clinical_data))
   
-
-
-  
