@@ -71,9 +71,32 @@ count_query <- function(gene_name, snapcount_coords, strand_code) {
     filter(start == str_split(str_split(snapcount_coords,'-',simplify = TRUE)[[1]],":",simplify = TRUE)[[2]])
   return(gene_df)
 }
+
+# query cryptic + anno and join into one df -------------------------------
+
+combine_two_junctions <- function(gene_name, snapcount_coords_cryptic, 
+                                  snapcount_coords_annotated, strand_code) {
+  
+  cryptic_query <- count_query(gene_name, snapcount_coords_cryptic, strand_code) |> 
+    rename("cryptic_count" = "count") |> 
+    select(gdc_cases.submitter_id, cryptic_count)
+  anno_query <- count_query(gene_name, snapcount_coords_annotated, strand_code) |> 
+    rename("anno_count" = "count")
+  
+  query <- anno_query |> 
+    left_join(cryptic_query, by = "gdc_cases.submitter_id") |> 
+    mutate(jir = cryptic_count/(anno_count + cryptic_count)) |> 
+    relocate(cryptic_count, .after = anno_count) |> 
+    relocate(jir, .after = cryptic_count) |> 
+    mutate(gene_name = gene_name) |> 
+    mutate(coords_cryptic = snapcount_coords_cryptic)
+  
+  return(query)
+
+}
 ```
 
-AL provided the specific genomic coordinates of TDP43-dependent STMN2 cryptic and annotated reads. A function was created to query junctions in the TCGA database for reads with the specified coordinates: 
+AL provided the specific genomic coordinates of TDP43-dependent ARHGAP32 cryptic and annotated reads. A function was created to query junctions in the TCGA database for reads with the specified coordinates: 
 
 ```{r ARHGAP32 cryptic and annotated reads, include = FALSE}
 gene_name = "ARHGAP32" 
@@ -81,8 +104,6 @@ snapcount_coords_cryptic = "chr11:128992047-128998318"
 snapcount_coords_annotated = "chr11:128988126-128998318"
 strand_code = "-"
 ```
-
-
 
 * Gene name = `r gene_name`
 
@@ -92,42 +113,17 @@ strand_code = "-"
 
 * Strand code = `r strand_code`
 
+```{r querying for cryptic and annotated ARHGAP32 reads, join cryptic and anno df, add jir column, include = FALSE}
+ARHGAP32_query <- combine_two_junctions("ARHGAP32", "chr11:128992047-128998318", "chr11:128988126-128998318", "-")
 
-
-```{r querying for cryptic and annotated ARHGAP32 reads, include = FALSE}
-
-#ARHGAP32_cryptic_query <- count_query(gene_name = "ARHGAP32", snapcount_coords = "chr11:128992047-128998318", strand_code = "-")
-#ARHGAP32_anno_query <- count_query(gene_name = "ARHGAP32", snapcount_coords = "chr11:128988126-128998318", strand_code = "-")
-
-#write.table(ARHGAP32_cryptic_query, file = "ARHGAP32_cryptic_query.txt")
-#write.table(ARHGAP32_anno_query, file = "ARHGAP32_anno_query.txt")
-
-ARHGAP32_cryptic_query <- read.table("ARHGAP32_cryptic_query.txt", sep="", header = T)
-ARHGAP32_anno_query <- read.table("ARHGAP32_anno_query.txt", sep="", header = T)
-
-```
-
-The resulting data included genomic information, sample-related clinical data and junction coverage information for cryptic and annotated reads, separately, and were read in as tables.
-
-```{r join cryptic and anno df, add jir column, include = FALSE}
-ARHGAP32_cryptic_query <- ARHGAP32_cryptic_query |> rename("cryptic_count" = "count")
-ARHGAP32_anno_query <- ARHGAP32_anno_query |> rename("anno_count" = "count")
-
-ARHGAP32_query <- ARHGAP32_cryptic_query |> 
-  select(gdc_cases.submitter_id, cryptic_count) |> 
-  left_join(ARHGAP32_anno_query, by = "gdc_cases.submitter_id")
-
-ARHGAP32_query <- ARHGAP32_query |> 
-  relocate(cryptic_count, .after = anno_count)
-
-ARHGAP32_query <- ARHGAP32_query |> 
-  mutate(jir = cryptic_count/(anno_count + cryptic_count)) |> 
-  relocate(jir, .after = cryptic_count)
+write.table(ARHGAP32_query, file="ARHGAP32_query.txt", sep=",")
 
 #write_clip(ARHGAP32_query$gdc_cases.submitter_id)
 ```
 
-The ARHGAP32 cryptic and annotated query tables were joined into a single dataframe (**ARHGAP32_query**) and a "jir" (junction inclusion ratio) column was added to reflect the fraction of cryptic reads for each case:
+The resulting data included genomic information, sample-related clinical data and junction coverage information for cryptic and annotated reads, separately, and were read in as tables.
+
+The ARHGAP32 cryptic and annotated query tables were joined into a single dataframe (**ARHGAP32_query**) and a "jir" (junction inclusion ratio) column was added to reflect the fraction of cryptic reads for each case.
 
 ```{r Import clinical data from TCGA, include = FALSE}
 ARHGAP32_clinical_orig <- read.csv("ARHGAP32_clinical.tsv", sep = "\t", header = TRUE, na.strings = "", fill = TRUE)
@@ -142,9 +138,9 @@ ARHGAP32_clinical <- ARHGAP32_clinical|>
 head(ARHGAP32_clinical)
 ```
 
-A case set was made on TCGA containing all cancer patients with these TDP43-dependent STMN2 events and their clinical data downloaded and joined with the existing dataframe to make the **ARHGAP32_clinical_jir** dataframe. 
+A case set was made on TCGA containing all cancer patients with these TDP43-dependent ARHGAP32 events and their clinical data downloaded and joined with the existing dataframe to make the **ARHGAP32_clinical_jir** dataframe. 
 
-In order to investigate cryptic STMN2 expression in these patients, a new dataframe (**ARHGAP32_clinical_jir_cryptic**) was made by filtering for patients with cryptic counts greater than 2. This is an arbitrary cut-off used for all cryptic events investigated. 
+In order to investigate cryptic ARHGAP32 expression in these patients, a new dataframe (**ARHGAP32_clinical_jir_cryptic**) was made by filtering for patients with cryptic counts greater than 2. This is an arbitrary cut-off used for all cryptic events investigated. 
 
 ```{r join query table with clinical table, include = FALSE}
 ARHGAP32_clinical_jir <- ARHGAP32_query |> 
@@ -181,7 +177,7 @@ ARHGAP32_clinical_jir |>
 # BRCA = breast cancer; HNSC = head and neck cancer
 ```
 
-**Figure 1**: ARHGAP32 is expressed in mostly breast and head/neck cancer patients.
+**Figure 1**: ARHGAP32 is expressed in mostly breast cancer patients. BRCA = breast invasive carcinoma.
 
 # Cancers with cryptic ARHGAP32 events
 
@@ -223,7 +219,7 @@ ARHGAP32_clinical_jir_cryptic |>
         legend.position = "none") 
 ```
 
-**Figure 2**: (a) Cryptic ARHGAP32 events are found mostly in breast cancers. (b) Cryptic ARHGAP32 events are found most abundantly in cancers of the breast.
+**Figure 2**: (a) Cryptic ARHGAP32 events are found mostly in breast cancers. BRCA = breast invasive carcinoma. (b) Cryptic ARHGAP32 events are found most abundantly in cancers of the breast.
 
 ## Junction coverage
 
@@ -257,11 +253,11 @@ ARHGAP32_clinical_jir_cryptic <- ARHGAP32_clinical_jir_cryptic |>
 
 ARHGAP32_clinical_jir_cryptic |> 
   drop_na() |> 
-  ggplot(aes(x = rpm,
+  ggplot(aes(x = log10(rpm),
              y = fct_reorder(gdc_cases_project_primary_site, rpm, median))) +
   geom_boxplot(aes(fill = gdc_cases_project_primary_site)) +
   labs(
-    x = "reads per million",
+    x = "Log10 Reads per Million",
     y = "Primary Site of Cancer",
     title = "(b)"
   ) +
@@ -275,7 +271,7 @@ ARHGAP32_clinical_jir_cryptic |>
 
 **Figure 3**: (a) Liver, stomach, esophageal and ovarian cancers are the most deeply sequenced. (b) Cancers with the greatest cryptic coverage. 
 
-The breast is not very deeply sequenced so the high cryptic count is likely significant in these cancers. There is only one patient with cancer of the adrenal gland who has TDP43-dependent cryptic ARHGAp32 events, hence the single data value for adrenal gland. There is an extreme data value for colorectal cancer, which indicates that it is one patient with a larger number of ARHGAP32 cryptic reads that is influencing the overall cryptic coverage for this cancer subset.
+The breast is not very deeply sequenced so the high cryptic count is likely significant in these cancers. There is only one patient with cancer of the adrenal gland who has TDP43-dependent cryptic ARHGAP32 events, hence the single data value for adrenal gland. There is an extreme data value for colorectal cancer, which indicates that it is one patient with a larger number of ARHGAP32 cryptic reads that is influencing the overall cryptic coverage for this cancer subset.
 
 
 
@@ -321,7 +317,7 @@ ARHGAP32_events_different_cancers |>
 
 **Figure 4**: High proportion of cryptic ARHGAP32 events are in BRCA cancer. 
 
-The majority of the cryptic ARHGAP32 events are expressed in BRCA (19.9% of cryptic cases), consistent with previous results. 
+The majority of the cryptic ARHGAP32 events are expressed in BRCA (20.7% of cryptic cases), consistent with previous results. 
 
 ## Where are the cancers with cryptic ARHGAP32 events located?
 
@@ -458,7 +454,9 @@ total_each_cancer_general_vs_ARHGAP32cryptic |>
   theme(legend.position = "none", axis.text.x = element_text(size = 5))
 ```
 
-**Figure 6**: Fraction of each cancer type that has cryptic ARHGAP32 expression.
+**Figure 6**: Fraction of each cancer type that has cryptic ARHGAP32 expression. 
+
+ESCA (esophageal carcinoma) cancer has the highest proportion of patients with cryptic ARHGAP32 events. 
 
 The clinical data from cBioPortal provided information on the mutation counts in cancer patients of different cancer types. To investigate the cancer-by-cancer mutational burden in patients with cryptic ARHGAP32, the total mutation count seen in patients with cryptic ARHGAP32 expression was weighted against the total mutation count in cancer patients in general (for each cancer type). The results are displayed in Table 3.
 
@@ -488,7 +486,7 @@ mutations_each_cancer_general_vs_ARHGAP32cryptic <- total_mutations_each_cancer 
 kable(mutations_each_cancer_general_vs_ARHGAP32cryptic, caption = "Mutational burden of cryptic ARHGAP32 cases.")
 ```
 
-Table 3 shows that 82% of the mutations in ESCA (esophageal carcinoma) are seen in cases with cryptic ARHGAP32. This is the largest proportion out of all cancer subsets. 27.1% of all mutation in BRCA patients are in cases with cryptic ARHGAP32 events. 
+Table 3 shows that 82.1% of the mutations in ESCA (esophageal carcinoma) are seen in cases with cryptic ARHGAP32. This is the largest proportion out of all cancer subsets. 26.9% of all mutation in BRCA patients are in cases with cryptic ARHGAP32 events. 
 
 Mutational burden was further examined within each cancer type, using boxplots to visualise the mutation counts in non-cryptic cases and cases with cryptic ARHGAP32 expression (Figure 7). Only cancers with cryptic ARHGAP32 expression are plotted. This analysis aimed to determine whether cases with cryptic ARHGAP32 events have a greater mutational burden.
 
@@ -533,7 +531,7 @@ cBio_clinical |>
 
 **Figure 7**: Mutational burden in cancer types with cryptic ARHGAP32 expression.
 
-BRCA (breast invasive carcinoma) and PRAD (prostate adenocarcinoma) cancer patients with cryptic ARHGAP32 expression, on average, have a significantly higher mutation count that non-cryptic BRCA and PRAD patients. There may also be a higher mutational burden in cryptic LUAD and SKCM cases compared to non-cryptic cases, however the statistical significance of this is not apparent. 
+BRCA (breast invasive carcinoma, p = 0.02) and PRAD (prostate adenocarcinoma, p = 0.035) cancer patients with cryptic ARHGAP32 expression, on average, have a significantly higher mutation count that non-cryptic BRCA and PRAD patients. There may also be a higher mutational burden in cryptic LUAD and SKCM cases compared to non-cryptic cases, however the statistical significance of this is not apparent. 
 
 # Survival Comparisons
 
@@ -690,4 +688,4 @@ aneuploidy_ARHGAP32 |>
 
 **Figure 9**: Aneuploidy score in cryptic ARHGAP32 versus non-cryptic cases.
 
-There is no significant difference in aneuploidy score in cases with cryptic ARHGAP32 expression and non-cryptic cases for the majority of cancer types, indicating that the cryptic expression does not influence chromosome number. However, aneuploidy score is seemingly higher in non-cryptic HNSC (p = 0.058) and non-cryptic PRAD (p = 0.035) cases. 
+There is no significant difference in aneuploidy score in cases with cryptic ARHGAP32 expression and non-cryptic cases for the majority of cancer types, indicating that the cryptic expression does not influence chromosome number. However, aneuploidy score is seemingly higher in cryptic BRCA (p = 0.057) but also in non-cryptic PRAD (p = 0.078) cases. 

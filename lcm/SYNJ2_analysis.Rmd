@@ -24,12 +24,9 @@ library(survival)
 library(survminer)
 ```
 
-# Querying for cryptic and annotated SYNJ2 reads
+# Introduction
 
-gene_name = "SYNJ2" 
-snapcount_coords_cryptic = "chr6:158017291-158019983"
-snapcount_coords_annotated = "chr6:158017291-158028755"
-strand_code = "+"
+TDP43-dependent cryptic SYNJ2 events have been detected in cancer patients. These patients have been sequenced and their cryptic reads and clinical data stored in the TCGA database. We wanted to know if these SYNJ2 cryptic events are expressed more in particular subset(s) of cancers and if these cancers with TDP43-dependent cryptic splicing show enrichment of mutations in particular genes and pathways. 
 
 ```{r functions, include = FALSE}
 count_query <- function(gene_name, snapcount_coords, strand_code) {
@@ -74,41 +71,62 @@ count_query <- function(gene_name, snapcount_coords, strand_code) {
     filter(start == str_split(str_split(snapcount_coords,'-',simplify = TRUE)[[1]],":",simplify = TRUE)[[2]])
   return(gene_df)
 }
+
+# query cryptic + anno and join into one df -------------------------------
+
+combine_two_junctions <- function(gene_name, snapcount_coords_cryptic, 
+                                  snapcount_coords_annotated, strand_code) {
+  
+  cryptic_query <- count_query(gene_name, snapcount_coords_cryptic, strand_code) |> 
+    rename("cryptic_count" = "count") |> 
+    select(gdc_cases.submitter_id, cryptic_count)
+  anno_query <- count_query(gene_name, snapcount_coords_annotated, strand_code) |> 
+    rename("anno_count" = "count")
+  
+  query <- anno_query |> 
+    left_join(cryptic_query, by = "gdc_cases.submitter_id") |> 
+    mutate(jir = cryptic_count/(anno_count + cryptic_count)) |> 
+    relocate(cryptic_count, .after = anno_count) |> 
+    relocate(jir, .after = cryptic_count) |> 
+    mutate(gene_name = gene_name) |> 
+    mutate(coords_cryptic = snapcount_coords_cryptic)
+  
+  return(query)
+
+}
 ```
 
-```{r querying for cryptic and annotated SYNJ2 reads, include=FALSE}
-#SYNJ2_cryptic_query <- count_query(gene_name = "SYNJ2", snapcount_coords = "chr6:158017291-158019983", strand_code = "+")
-#SYNJ2_anno_query <- count_query(gene_name = "SYNJ2", snapcount_coords = "chr6:158017291-158028755", strand_code = "+")
+AL provided the specific genomic coordinates of TDP43-dependent SYNJ2 cryptic and annotated reads. A function was created to query junctions in the TCGA database for reads with the specified coordinates: 
 
-#write.table(SYNJ2_cryptic_query, file = "SYNJ2_cryptic_query.txt")
-#write.table(SYNJ2_anno_query, file = "SYNJ2_anno_query.txt")
-
-SYNJ2_cryptic_query <- read.table("SYNJ2_cryptic_query.txt", sep="", header = T)
-SYNJ2_anno_query <- read.table("SYNJ2_anno_query.txt", sep="", header = T)
+```{r SYNJ2 cryptic and annotated reads, include = FALSE}
+gene_name = "SYNJ2" 
+snapcount_coords_cryptic = "chr6:158017291-158019983"
+snapcount_coords_annotated = "chr6:158017291-158028755"
+strand_code = "+"
 ```
 
-```{r join cryptic and anno df, add jir column, include=FALSE}
+* Gene name = `r gene_name`
 
-#SYNJ2_cryptic_query <- SYNJ2_cryptic_query |> rename("cryptic_count" = "count")
-#SYNJ2_anno_query <- SYNJ2_anno_query |> rename("anno_count" = "count")
+* Snapcount coordinates (cryptic) = `r snapcount_coords_cryptic`
 
-SYNJ2_query <- SYNJ2_cryptic_query |> 
-  select(gdc_cases.submitter_id, cryptic_count) |> 
-  left_join(SYNJ2_anno_query, by = "gdc_cases.submitter_id")
+* Snapcount coordinates (annotated) = `r snapcount_coords_annotated`
 
-SYNJ2_query <- SYNJ2_query |> 
-  relocate(cryptic_count, .after = anno_count)
+* Strand code = `r strand_code`
 
-SYNJ2_query <- SYNJ2_query |> 
-  mutate(jir = anno_count/(anno_count + cryptic_count)) |> 
-  relocate(jir, .after = cryptic_count)
+```{r querying for cryptic and annotated SYNJ2 reads, join cryptic and anno df, add jir column, include=FALSE}
+SYNJ2_query <- combine_two_junctions("SYNJ2", "chr6:158017291-158019983", "chr6:158017291-158028755", "+")
 
+write.table(SYNJ2_query, file="SYNJ2_query.txt", sep=",")
+            
 #write_clip(SYNJ2_query$gdc_cases.submitter_id)
 ```
 
-```{r clinical data from TCGA (case set), include=FALSE}
-SYNJ2_clinical_orig <- read.csv("SYNJ2_clinical.tsv", sep = "\t", header = TRUE,
-                                   na.strings = "", fill = TRUE)
+The resulting data included genomic information, sample-related clinical data and junction coverage information for cryptic and annotated reads, separately, and were read in as tables.
+
+The SYNJ2 cryptic and annotated query tables were joined into a single dataframe (**SYNJ2_query**) and a "jir" (junction inclusion ratio) column was added to reflect the fraction of cryptic reads for each case.
+
+```{r Import clinical data from TCGA, include=FALSE}
+SYNJ2_clinical_orig <- read.csv("SYNJ2_clinical.tsv", sep = "\t", header = TRUE, na.strings = "", fill = TRUE)
 
 SYNJ2_clinical <- SYNJ2_clinical_orig
 
@@ -116,79 +134,223 @@ SYNJ2_clinical <- SYNJ2_clinical|>
   select(case_submitter_id, project_id, age_at_index, ethnicity, gender, race, ajcc_pathologic_stage) |> 
   separate(project_id, into = c("project", "cancer_type")) |> 
   select(-project)
+
+head(SYNJ2_clinical)
 ```
 
-```{r bar plot - cancer types with SYNJ2 events, echo = FALSE}
+A case set was made on TCGA containing all cancer patients with these TDP43-dependent SYNJ2 events and their clinical data downloaded and joined with the existing dataframe to make the **SYNJ2_clinical_jir** dataframe. 
 
-SYNJ2_clinical |> 
-  ggplot(aes(x = fct_rev(fct_infreq(cancer_type)))) +
-  geom_bar() +
+In order to investigate cryptic SYNJ2 expression in these patients, a new dataframe (**SYNJ2_clinical_jir_cryptic**) was made by filtering for patients with cryptic counts greater than 2. This is an arbitrary cut-off used for all cryptic events investigated. 
+
+```{r join query table with clinical table, include = FALSE}
+SYNJ2_clinical_jir <- SYNJ2_query |> 
+  rename("case_submitter_id" = "gdc_cases.submitter_id") |> 
+  left_join(SYNJ2_clinical, by=c("case_submitter_id")) |> 
+  janitor::clean_names() 
+
+SYNJ2_clinical_jir <- SYNJ2_clinical_jir |> 
+  select(-c(gdc_cases_diagnoses_tumor_stage, age_at_index, gdc_cases_demographic_gender,ajcc_pathologic_stage, ethnicity, race, gender)) |> rename("cancer_abbrev" = "cancer_type") 
+
+  # filter for cryptic coverage
+SYNJ2_clinical_jir_cryptic <- SYNJ2_clinical_jir |> filter(cryptic_count > 2) 
+
+head(SYNJ2_clinical_jir_cryptic)
+```
+
+# Cancers with SYNJ2 expression (in general)
+
+To visualise the SYNJ2 reads data, a bar chart was plotted to compare the expression of SYNJ2 across the different cancer types. This was plotted using all data (**SYNJ2_clinical_jir**) rather than the cryptic filtered dataframe, and it compares the absolute read counts.
+
+```{r bar plot - cancer types with general SYNJ2 expression, out.width = "90%", echo = FALSE}
+SYNJ2_clinical_jir |> 
+  distinct() |> 
+  drop_na() |> 
+  ggplot(aes(x = fct_rev(fct_infreq(cancer_abbrev)))) +
+  geom_bar(aes(fill = cancer_abbrev)) +
   coord_flip() +
   labs(
     x = "Cancer Type",
     y = "Number of Cases",
     title = ""
   ) +
-  theme(plot.title = element_text(size=10))
+  theme(legend.position = "none", plot.title = element_text(size=10))
+
 ```
 
-```{r join query table with clinical table, include = FALSE}
+**Figure 1**: SYNJ2 is expressed mostly in stomach cancer patients.
 
-SYNJ2_clinical_jir <- SYNJ2_query |> rename("case_submitter_id" = "gdc_cases.submitter_id") |> 
-  left_join(SYNJ2_clinical, by=c("case_submitter_id")) |> 
-  select(-gdc_cases.diagnoses.tumor_stage, -age_at_index, -gdc_cases.demographic.gender, 
-         -ajcc_pathologic_stage, -ethnicity, -race, -cancer_type, -gender) |> 
-  rename("cancer_type" = "gdc_cases.project.name") |> 
-  rename("gdc_primary_site" = "gdc_cases.project.primary_site") |> 
-  rename("sample_type" = "gdc_cases.samples.sample_type") |> 
-  rename("cgc_primary_site" = "cgc_case_primary_site")
+# Cancers with cryptic SYNJ2 events
 
-SYNJ2_clinical_jir_cryptic <- SYNJ2_clinical_jir |> 
-  filter(cryptic_count > 2) 
-```
+The same bar chart was then plotted using the cryptic filtered dataframe (**SYNJ2_clinical_jir_cryptic**) to compare the expression of only the cryptic SYNJ2 events across the different cancer types. Again, this plot compares the absolute read counts of the cryptic events.
 
-```{r primary sites of cancers with cryptic SYNJ2 events, echo = FALSE}
+```{r bar plot - cancer types with SYNJ2 events, primary sites with cryptic, out.width="50%", echo = FALSE}
+SYNJ2_clinical_jir_cryptic |> 
+  drop_na() |> 
+  ggplot(aes(x = fct_rev(fct_infreq(cancer_abbrev)))) +
+  geom_bar(aes(fill = cancer_abbrev)) +
+  coord_flip() +
+  labs(
+    x = "Cancer Type",
+    y = "Number of Cases",
+    title = "(a)"
+  ) +
+  theme(plot.title = element_text(size=15),
+        axis.title.x = element_text(size = 15, face = "bold"),
+        axis.title.y = element_text(size = 15, face = "bold"),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        legend.position = "none") 
 
 SYNJ2_clinical_jir_cryptic |> 
   drop_na() |> 
-  ggplot(aes(x = fct_rev(fct_infreq(gdc_primary_site)))) +
-  geom_bar() +
+  ggplot(aes(x = fct_rev(fct_infreq(gdc_cases_project_primary_site)))) +
+  geom_bar(aes(fill = gdc_cases_project_primary_site)) +
   coord_flip() +
   labs(
     x = "Primary Site of Cancer",
     y = "Number of Cases",
-    title = ""
+    title = "(b)"
   ) +
-  theme(plot.title = element_text(size=10))
+  theme(plot.title = element_text(size=15),
+        axis.title.x = element_text(size = 15, face = "bold"),
+        axis.title.y = element_text(size = 15, face = "bold"),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        legend.position = "none") 
 ```
 
-```{r cryptic SYNJ2 expression in different cancer sites, echo = FALSE}
+**Figure 2**: (a) Cryptic SYNJ2 events are found mostly in stomach cancers. STAD = stomach adenocarcinoma. (b) Cryptic SYNJ2 events are found most abundantly in cancers of the stomach.
+
+## Junction coverage
+
+Overall SYNJ2 junction coverage was visualised in the different primary sites of cancers to see if the high cryptic read counts in breast cancers were due to higher overall SYNJ2 coverage in those cancers (Figure 3a). Cryptic SYNJ2 junction coverage was also investigated by calculating 'reads per million' as the fraction of cryptic reads of the overall junction coverage (Figure 3b). 
+
+```{r boxplot - SYNJ2 junction coverage, out.width = "50%", echo = FALSE, warning = FALSE} 
+#overall SYNJ2 junction coverage in different cancer sites
+SYNJ2_clinical_jir_cryptic |> 
+  drop_na() |> 
+  ggplot(aes(x = junction_avg_coverage, 
+             y = fct_reorder(gdc_cases_project_primary_site, junction_avg_coverage, median))) +
+  geom_boxplot(aes(fill = gdc_cases_project_primary_site)) +
+  labs(
+    x = "Junction Average Coverage",
+    y = "Primary Site of Cancer",
+    title = "(a)"
+  ) + 
+  theme(plot.title = element_text(size=15),
+        axis.title.x = element_text(size = 15, face = "bold"),
+        axis.title.y = element_text(size = 15, face = "bold"),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        legend.position = "none") 
+
+
+
+
+#adding reads per million (rpm) column for cryptic coverage
+SYNJ2_clinical_jir_cryptic <- SYNJ2_clinical_jir_cryptic |> 
+  mutate(rpm = (cryptic_count/junction_coverage)*1000000)
 
 SYNJ2_clinical_jir_cryptic |> 
   drop_na() |> 
-  ggplot(aes(x = cryptic_count,
-             y = fct_reorder(gdc_primary_site, cryptic_count, median))) +
-  geom_boxplot() +
+  ggplot(aes(x = log10(rpm),
+             y = fct_reorder(gdc_cases_project_primary_site, rpm, median))) +
+  geom_boxplot(aes(fill = gdc_cases_project_primary_site)) +
+  labs(
+    x = "Log10 Reads per Million",
+    y = "Primary Site of Cancer",
+    title = "(b)"
+  ) +
+    theme(plot.title = element_text(size=15),
+        axis.title.x = element_text(size = 15, face = "bold"),
+        axis.title.y = element_text(size = 15, face = "bold"),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        legend.position = "none")
+```
+
+**Figure 3**: (a) Esophageal, stomach and ovarian cancers are the most deeply sequenced. (b) Colorectal cancers have the greatest cryptic coverage.
+
+Indeed, the stomach is deeply sequenced (Figure 3a) so it could be that the higher overall coverage resulted in a greater cryptic count for stomach cancers. However, the cryptic coverage of stomach cancers is quite low (Figure 3b), suggesting that the cases with high cryptic SYNJ2 expression are significant.
+
+
+
+```{r boxplot - cryptic SYNJ2 expression in different cancer sites, include = FALSE}
+SYNJ2_clinical_jir_cryptic |> 
+  drop_na() |> 
+  ggplot(aes(x = cryptic_count, 
+             y = fct_reorder(gdc_cases_project_primary_site, cryptic_count, median))) +
+  geom_boxplot(aes(fill = gdc_cases_project_primary_site)) +
   labs(
     x = "SYNJ2 Cryptic Coverage",
-    y = "Primary Site of Cancer"
+    y = "Primary Site of Cancer",
   ) +
-  theme(plot.title = element_text(size=10))
+  theme(plot.title = element_text(size=10),
+        legend.position = "none")
+
+
 ```
 
-```{r which cancers have the most cryptic SYNJ2 events?, echo = FALSE}
+## Which cancers have the most cryptic SYNJ2 events?
 
+To investigate where we are seeing most of the cryptic SYNJ2 events, the number of cases of each cancer type (with cryptic SYNJ2) was weighted against the total number of cases with cryptic SYNJ2.
+
+```{r which cancers have the most cryptic SYNJ2 events?, out.width = "90%", echo = FALSE}
 SYNJ2_events_different_cancers <- SYNJ2_clinical_jir_cryptic |> 
-  drop_na() |> 
-  janitor::tabyl(cancer_type) |> arrange(-percent)
+  drop_na(cancer_abbrev) |> 
+  janitor::tabyl(cancer_abbrev) |> arrange(desc(percent))
+
+kable(SYNJ2_events_different_cancers, 
+      caption = "STAD cancer has high cryptic SYNJ2 expression")
+
+SYNJ2_events_different_cancers |> 
+  mutate(percentage = percent*100) |> 
+  ggplot(aes(x = reorder(cancer_abbrev, percentage), y = percentage)) + 
+  geom_bar(aes(fill = cancer_abbrev), stat = "identity") +
+  coord_flip() +
+  labs(
+    x = "Cancer Type",
+    y = "Percentage of Cases"
+  ) +
+  theme(legend.position = "none")
 ```
 
-```{r where are the cancers with cryptic SYNJ2 events located?, echo = FALSE}
+**Figure 4**: High proportion of cryptic SYNJ2 events are in STAD cancers. 
 
+The majority of cryptic SYNJ2 events are expressed in STAD patients (57.5% of cryptic cases), consistent with previous results. It is important to note that the high coverage is influenced by patients exhibiting extreme values of cryptic coverage (Figure 3b).
+
+
+
+## Where are the cancers with cryptic ARHGAP32 events located?
+
+A similar calculation was done to see where these cryptic events are occurring (i.e., where these cancers are located in the body). The number of cases of each primary cancer site (with cryptic SYNJ2) was weighted against the total number of cases with cryptic SYNJ2.
+
+```{r where are the cancers with cryptic SYNJ2 events located?, out.width = "90%", echo = FALSE}
 SYNJ2_events_primary_sites <- SYNJ2_clinical_jir_cryptic |> 
   drop_na() |> 
-  janitor::tabyl(gdc_primary_site) |> arrange(-percent)
+  janitor::tabyl(gdc_cases_project_primary_site) |> arrange(-percent)
+
+kable(SYNJ2_events_primary_sites, caption = "Cancers with cryptic SYNJ2 events are found primarily in the stomach.")
+
+SYNJ2_events_primary_sites |> 
+  mutate(percentage = percent*100) |> 
+  ggplot(aes(x = reorder(gdc_cases_project_primary_site, percentage), 
+             y = percentage)) +
+  geom_bar(aes(fill = gdc_cases_project_primary_site), stat = "identity") +
+  coord_flip() +
+  labs(
+    x = "Primary Sites of Cancer",
+    y = "Percentage of Cases"
+  ) +
+  theme(legend.position = "none", plot.title = element_text(size=8))
+
 ```
+
+**Figure 5**: Cancers with cryptic SYNJ2 events are found primarily in the stomach.
+
+Consistent with all previous results so far, most of the cryptic SYNJ2 events seen in cancer patients are in cancers of the stomach (57.5% of all cases).
+
+# Mutational Burden
 
 ```{r data import - cBioPortal Clinical Data, include = FALSE}
 
@@ -198,8 +360,7 @@ cBio_clinical <- cBio_all_clinical_orig
 
 cBio_clinical <- cBio_clinical |> 
   select(Study.ID, Patient.ID, Sample.ID, Aneuploidy.Score, Cancer.Type, TCGA.PanCanAtlas.Cancer.Type.Acronym, Cancer.Type.Detailed,
-         Months.of.disease.specific.survival, Mutation.Count, Overall.Survival..Months.,
-         Disease.specific.Survival.status)
+         Months.of.disease.specific.survival, Mutation.Count, Overall.Survival..Months., Disease.specific.Survival.status)
 
 cBio_clinical <- cBio_clinical |> 
   rename("case_submitter_id" = "Patient.ID") |> 
@@ -207,97 +368,71 @@ cBio_clinical <- cBio_clinical |>
   rename("cancer_abbrev" = "TCGA.PanCanAtlas.Cancer.Type.Acronym")
 ```
 
-```{r cBioPortal clinical data, join with SYNJ2 table, include = FALSE}
+All of the available clinical data for cancer patients on cBioPortal was downloaded and read in as a dataframe (**cBio_clinical**); this was **not** limited to only the patient with cryptic SYNJ2 expression. The resulting dataframe contains information on individual cancer patients: cancer type, survival, mutation count and aneuploidy score.
 
+```{r join cBioPortal clinical data with SYNJ2 table, include = FALSE}
 SYNJ2_cryptic_cBio <- SYNJ2_clinical_jir_cryptic |> 
-  left_join(cBio_clinical, by = "case_submitter_id") |> 
-  select(-cgc_primary_site, -Cancer.Type, -Overall.Survival..Months.) |>
-  rename("disease_survival_months" = "Months.of.disease.specific.survival") |> 
-  relocate(case_submitter_id, .after = Sample.ID) |> 
-  relocate(cancer_type, .after = case_submitter_id) |> 
-  relocate(gdc_primary_site, .after = cancer_abbrev) |> 
-  relocate(sample_type, .after = gdc_primary_site) |> 
-  janitor::clean_names()
+  left_join(cBio_clinical, by = "case_submitter_id") |>
+  janitor::clean_names() |> 
+   select(-c(cgc_case_primary_site, cancer_abbrev_y, cancer_type)) |> 
+  rename("cancer_abbrev" = "cancer_abbrev_x")
 ```
 
-```{r boxplot - n mutations for each cancer type, echo = FALSE}
+The **cBio_clinical** dataframe was joined to the existing dataframe containing the patients exhibiting cryptic SYNJ2 expression (**SYNJ2_clinical_jir_cryptic**). This join added the clinical data to only the relevant patients of interest (i.e., those with cryptic SYNJ2) to produce the **SYNJ2_cryptic_cBio** dataframe.
 
-SYNJ2_cryptic_cBio <- SYNJ2_cryptic_cBio |> 
-  mutate_at("mutation_count", as.numeric)
-
+```{r boxplot - n mutations for each cancer type, include = FALSE}
 SYNJ2_cryptic_cBio |> 
+  mutate_at("mutation_count", as.numeric) |> 
   drop_na() |> 
-  filter(mutation_count < 500) |> 
+  filter(mutation_count !="NA") |> 
   ggplot(aes(x = fct_reorder(cancer_abbrev, mutation_count, median),
              y = mutation_count)) +
   geom_boxplot() +
   coord_flip() +
   labs(
     x = "Cancer Type",
-    y = "Mutation Count"
+    y = "Mutation Count",
+    title = ""
   ) +
   geom_signif(comparisons = list(c("ESCA", "HNSC")),
 map_signif_level = TRUE,
-y_position = c(450))
+y_position = c(450)
+)
+
+
 ```
 
-```{r cryptic coverage vs mutation count, echo = FALSE}
-
+```{r SYNJ2 cryptic coverage vs mutation count, include = FALSE}
 SYNJ2_cryptic_cBio |> 
+  mutate_at("mutation_count", as.numeric) |> 
   drop_na() |> 
-  filter(mutation_count < 300) |> 
+  filter(mutation_count < 300, cryptic_count > 1) |> 
   ggplot(aes(x = as.factor(cryptic_count),
              y = mutation_count)) +
   geom_boxplot() +
   labs(
     x = "Number of SYNJ2 cryptic events",
     y = "Mutation Count"
-  ) + 
-  geom_signif(comparisons = list(c("8", "9"), c("7","9")),
-map_signif_level = TRUE,
-y_position = c(230,210))
+  ) 
 
 SYNJ2_cryptic_cBio |> 
   drop_na() |> 
   filter(mutation_count < 500) |> 
-  ggplot(aes(x = cryptic_count, 
-             y = mutation_count)) +
+  ggplot(aes(x = cryptic_count, y = mutation_count)) +
   geom_hex() +
   labs(
     x = "Number of SYNJ2 cryptic events",
     y = "Mutation Count"
   )
-```
 
-# Mutational burden
-
-```{r fraction of mutations in each cancer type that is found in cases with ARHGAP32 cryptic, echo = FALSE}
-total_mutations_each_cancer <- cBio_clinical |> 
-  drop_na(Mutation.Count) |> 
-  filter(grepl("^\\d+$", Mutation.Count)) |>
-  group_by(cancer_abbrev) |> 
-  summarise(total_mutations = sum(as.numeric(Mutation.Count)))
-
-total_mutations_each_cancer_with_SYNJ2cryptic <- SYNJ2_cryptic_cBio |> 
-  drop_na(mutation_count) |> 
-  filter(mutation_count < 2500) |> 
-  group_by(cancer_abbrev) |> 
-  summarise(total_mutations_cryptic = sum(mutation_count))
-
-mutations_each_cancer_general_vs_SYNJ2cryptic <- total_mutations_each_cancer |> 
-  left_join(total_mutations_each_cancer_with_SYNJ2cryptic, by=c("cancer_abbrev")) |> 
-  mutate(percent_with_cryptic = (total_mutations_cryptic/total_mutations)*100) |> 
-#16% of all mutations in LGG cancer are in cases with STMN2 cryptic events
-  drop_na() |> 
-  arrange(-percent_with_cryptic)
-
-kable(mutations_each_cancer_general_vs_SYNJ2cryptic, caption = "")
 
 ```
 
-# Fraction of each cancer that has cryptic STMN2 events 
+## Fraction of each cancer that has cryptic SYNJ2 events
 
-```{r barplot - fraction of cases of each cancer that have cryptic ARHGAP32, echo = FALSE}
+The burden of cryptic SYNJ2 expression was examined. This was done by looking at the fraction of each cancer type that exhibits TDP43-dependent cryptic SYNJ2 events (Figure 6). 
+
+```{r barplot - fraction of cases of each cancer that have cryptic SYNJ2, out.width = "90%", echo = FALSE}
 total_each_cancer <- cBio_clinical |> 
   group_by(cancer_abbrev) |> 
   summarise(total_cancer_abbrev = n())
@@ -317,22 +452,57 @@ total_each_cancer_general_vs_SYNJ2cryptic |>
   labs(
     x = "Cancer Type",
     y = "Percentage of cases with cryptic SYNJ2 events"
-  ) +
-  theme(legend.position = "none")
+    ) +
+  theme(legend.position = "none", axis.text.x = element_text(size = 5))
 ```
 
-```{r calculating mutation burden, fig.width=15, fig.height=20, echo = FALSE, warning = FALSE}
+**Figure 6**: Fraction of each cancer type that has cryptic SYNJ2 expression.
+
+
+
+The clinical data from cBioPortal provided information on the mutation counts in cancer patients of different cancer types. To investigate the cancer-by-cancer mutational burden in patients with cryptic SYNJ2, the total mutation count seen in patients with cryptic SYNJ2 expression was weighted against the total mutation count in cancer patients in general (for each cancer type). The results are displayed in Table 3.
+
+```{r fraction of mutations of each cancer that have cryptic SYNJ2, out.width = "90%", echo = FALSE, warning = FALSE}
+total_mutations_each_cancer <- cBio_clinical |> 
+  janitor::clean_names() |> 
+  mutate_at("mutation_count", as.numeric) |> 
+  drop_na(mutation_count) |> 
+  filter(grepl("^\\d+$", mutation_count)) |>
+  group_by(cancer_abbrev) |> 
+  summarise(total_mutations = sum(mutation_count))
+
+total_mutations_each_cancer_with_SYNJ2cryptic <- SYNJ2_cryptic_cBio |> 
+  janitor::clean_names() |> 
+  mutate_at("mutation_count", as.numeric) |> 
+  drop_na(mutation_count) |> 
+  filter(mutation_count < 2500) |> 
+  group_by(cancer_abbrev) |> 
+  summarise(total_mutations_cryptic = sum(mutation_count))
+
+mutations_each_cancer_general_vs_SYNJ2cryptic <- total_mutations_each_cancer |> 
+  left_join(total_mutations_each_cancer_with_SYNJ2cryptic, by=c("cancer_abbrev")) |>   mutate(percent_with_cryptic = (total_mutations_cryptic/total_mutations)*100) |> 
+  #16% of all mutations in LGG cancer are in cases with STMN2 cryptic events
+  drop_na() |> 
+  arrange(-percent_with_cryptic)
+
+kable(mutations_each_cancer_general_vs_SYNJ2cryptic, caption = "Mutational burden of cryptic SYNJ2 cases.")
+```
+
+Table 3 shows that 32.6% of the mutations in STAD cancer patients are seen in cases with cryptic SYNJ2. This is the largest proportion out of all cancer subsets. Additionally, 20.5% of the mutations in ESCA cancer patients are seen in cases with cryptic SYNJ2.
+
+Mutational burden was further examined within each cancer type, using boxplots to visualise the mutation counts in non-cryptic cases and cases with cryptic SYNJ2 expression (Figure 7). Only cancers with cryptic SYNJ2 expression are plotted. This analysis aimed to determine whether cases with cryptic ARHGAP32 events have a greater mutational burden.
+
+```{r calculating mutation burden for general vs cryptic, fig.width=15, fig.height=18, echo = FALSE, warning = FALSE}
 cBio_clinical |>
   left_join(SYNJ2_clinical_jir,by = c("case_submitter_id")) |> 
-  rename("synj2_cryptic_coverage" = "cryptic_count") |> 
-  rename("synj2_annotated_coverage" = "anno_count") |> 
   janitor::clean_names() |> 
-  select(case_submitter_id, study_id, cancer_abbrev, mutation_count, synj2_cryptic_coverage, synj2_annotated_coverage) |> 
+  rename("cancer_abbrev" = "cancer_abbrev_x") |> 
+  select(case_submitter_id, study_id, cancer_abbrev, mutation_count, cryptic_count, anno_count) |> 
   separate(study_id,into = ('study_start'),remove = FALSE) |> 
   unique() |> 
   mutate(mutation_count = as.numeric(mutation_count)) |> 
   filter(!is.na(mutation_count) & mutation_count != "NA") |> 
-  mutate(synj2_cryptic_detected = synj2_cryptic_coverage >= 2) |> 
+  mutate(synj2_cryptic_detected = cryptic_count >= 2) |> 
   group_by(study_start) |> 
   mutate(n_total_samples = n_distinct(case_submitter_id)) |> 
   mutate(n_detected_synj2 = sum(synj2_cryptic_detected,na.rm = TRUE)) |> 
@@ -340,10 +510,10 @@ cBio_clinical |>
   filter(!is.na(synj2_cryptic_detected)) |> 
   filter(n_detected_synj2 > 2) |> 
   ggplot(aes(x = synj2_cryptic_detected,
-             y = mutation_count)) + 
+             y = log10(mutation_count))) + 
   geom_boxplot(aes(fill = synj2_cryptic_detected)) + 
   labs(x = "Cancer Type",
-       y = "Mutation Count") +
+       y = "Log10 Mutation Count") +
   facet_wrap(~study_start) +
   scale_y_continuous(trans = scales::pseudo_log_trans()) +
   stat_compare_means(comparisons = list(c("TRUE", "FALSE")), label = "p.format") +
@@ -361,21 +531,24 @@ cBio_clinical |>
   )
 ```
 
+**Figure 7**: Mutational burden in cancer types with cryptic SYNJ2 expression.
+
+There may be a higher mutational burden in cryptic STAD (p = 0.054) and cryptic ESCA (p = 0.081) cases compared to non-cryptic cases, however the statistical significance of this is not apparent.
+
 
 # Survival Comparisons
 
 ```{r, include = FALSE}
 survival_SYNJ2_cryptic <- cBio_clinical |>
   left_join(SYNJ2_clinical_jir,by = c("case_submitter_id")) |> 
-  rename("synj2_cryptic_coverage" = "cryptic_count") |> 
-  rename("synj2_annotated_coverage" = "anno_count") |> 
   janitor::clean_names() |> 
-  select(case_submitter_id, study_id, sample_id, cancer_abbrev, mutation_count, synj2_cryptic_coverage, synj2_annotated_coverage, months_of_disease_specific_survival, overall_survival_months, disease_specific_survival_status) |> 
+  rename("cancer_abbrev" = "cancer_abbrev_x") |> 
+  select(case_submitter_id, study_id, sample_id, cancer_abbrev, mutation_count, cryptic_count, anno_count, months_of_disease_specific_survival, overall_survival_months, disease_specific_survival_status) |> 
   mutate(months_of_disease_specific_survival = as.numeric(months_of_disease_specific_survival)) |> 
   filter(!is.na(months_of_disease_specific_survival) & months_of_disease_specific_survival != "NA") |> 
   mutate(mutation_count = as.numeric(mutation_count)) |> 
   filter(!is.na(mutation_count) & mutation_count != "NA") |> 
-  mutate(synj2_cryptic_detected = synj2_cryptic_coverage >= 2) |> 
+  mutate(synj2_cryptic_detected = cryptic_count >= 2) |> 
   group_by(cancer_abbrev) |> 
   mutate(n_detected_synj2 = sum(synj2_cryptic_detected,na.rm = TRUE)) |>
   ungroup() |> 
@@ -384,6 +557,8 @@ survival_SYNJ2_cryptic <- cBio_clinical |>
   mutate(synj2_cryptic_detected = as.logical(synj2_cryptic_detected)) |> #changes FALSE and TRUE to 0 and 1 respectively
   distinct()
 ```
+
+Survival analysis was conducted to assess any potential differences in survival in the cryptic SYNJ2 cases and non-cryptic cases. This was done using the survival data that had previously been pulled back in the clinical data from cBioPortal. This included disease-specific survival (months) after diagnosis and disease-specific survival status (i.e., alive or dead). 
 
 ```{r survival status column in SYNJ2 survival df, include = FALSE}
 survival_SYNJ2_cryptic <- survival_SYNJ2_cryptic |> 
@@ -394,7 +569,7 @@ survival_SYNJ2_cryptic <- survival_SYNJ2_cryptic |>
     # 0 = alive or dead tumor free
 ```
 
-```{r survival KM curve for cases with SYNJ2 cryptic, echo = FALSE}
+```{r survival KM curve for cases with SYNJ2 cryptic, include = FALSE}
 survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ 1, 
         data = subset(survival_SYNJ2_cryptic, synj2_cryptic_detected==TRUE)) |> 
   ggsurvfit() +
@@ -406,7 +581,7 @@ survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_stat
   add_confidence_interval() 
 ```
 
-```{r survival KM curve for cases with no SYNJ2 cryptic, echo = FALSE}
+```{r survival KM curve for cases with no SYNJ2 cryptic, include = FALSE}
 survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ 1, 
         data = subset(survival_SYNJ2_cryptic, synj2_cryptic_detected==FALSE)) |> 
   ggsurvfit() +
@@ -418,7 +593,7 @@ survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_stat
   add_confidence_interval() 
 ```
 
-```{r survival KM curves SYNJ2 - both cryptic and non, echo = FALSE}
+```{r survival KM curves SYNJ2 - both cryptic and non, out.width = "90%", echo = FALSE}
 survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ synj2_cryptic_detected, 
         data = survival_SYNJ2_cryptic) |> 
   ggsurvfit() +
@@ -429,8 +604,12 @@ survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_stat
   ) +
   add_confidence_interval() 
 ```
-  
-```{r density plot - months survival in cryptic vs non-cryptic SYNJ2, echo = FALSE}
+
+**Figure 8**: Kaplan-Meier survival curves for cancers with cryptic SYNJ2 events and those without cryptic SYNJ2. The probabilities shown are Kaplan-Meier survival probabilities.
+
+There is no significant difference between the overall survival of cancer patients with and without cryptic SYNJ2 expression as the confidence intervals of both curves largely overlap (Figure 8).
+
+```{r density plot - months survival in cryptic vs non-cryptic SYNJ2, include = FALSE}
 survival_SYNJ2_cryptic |> 
   mutate(synj2_cryptic_detected = as.logical(synj2_cryptic_detected)) |> 
   ggplot(aes(x = months_of_disease_specific_survival, colour = synj2_cryptic_detected)) +
@@ -454,34 +633,38 @@ SYNJ2_n_detected_non_cancer_abbrev <- survival_SYNJ2_cryptic |>
   rename("synj2_cryptic_false" = "FALSE")
 ```
 
-# Comparing Aneuploidy cancer-by-cancer
 
-```{r boxplot aneuploidy score cancer-by-cancer in cryptic vs none, echo = FALSE}
 
+# Comparing aneuploidy cancer-by-cancer
+
+Aneuploidy - an abnormal number of chromosomes - is associated with various genetic and developmental disorders. It is important to compare the aneuploidy score between patients with and without cryptic SYNJ2 events in order to explore a potential correlation between cryptic expression and abnormal chromosome number. This can also help unravel potential underlying mechanisms that the cryptic reads are involved in.
+
+Aneuploidy score was previously pulled back in the clinical data from cBioPortal. It was plotted cancer-by-cancer to compare the scores in cryptic cases against non-cryptic cases (Figure 9). 
+
+```{r boxplot aneuploidy score cancer-by-cancer in cryptic vs none, fig.width=15, fig.height=20, echo = FALSE, warning = FALSE}
 aneuploidy_SYNJ2 <- cBio_clinical |>
   left_join(SYNJ2_clinical_jir,by = c("case_submitter_id")) |> 
-  rename("synj2_cryptic_coverage" = "cryptic_count") |> 
-  rename("synj2_annotated_coverage" = "anno_count") |> 
   janitor::clean_names() |> 
-  select(case_submitter_id, study_id, cancer_abbrev, aneuploidy_score, synj2_cryptic_coverage, synj2_annotated_coverage) |> 
+  rename("cancer_abbrev" = "cancer_abbrev_x") |> 
+  select(case_submitter_id, study_id, cancer_abbrev, aneuploidy_score, cryptic_count, anno_count) |> 
   separate(study_id,into = ('study_start'),remove = FALSE) |> 
   unique() |> 
   mutate(aneuploidy_score = as.numeric(aneuploidy_score)) |> 
   filter(!is.na(aneuploidy_score) & aneuploidy_score != "NA") |> 
-  mutate(synj2_cryptic_detected = synj2_cryptic_coverage >= 2) |> 
+  mutate(synj2_cryptic_detected = cryptic_count >= 2) |> 
   group_by(study_start) |> 
   mutate(n_total_samples = n_distinct(case_submitter_id)) |> 
-  mutate(n_detected_synj2 = sum(synj2_cryptic_detected,na.rm = TRUE)) |> 
+  mutate(n_detected_synj2 = sum(synj2_cryptic_detected,na.rm = TRUE)) |>
   ungroup() |> 
   filter(!is.na(synj2_cryptic_detected)) |> 
   filter(n_detected_synj2 > 2) |> 
   group_by(study_start) |> 
-  mutate(wilcox_result = list(broom::tidy(wilcox.test(aneuploidy_score ~ synj2_cryptic_detected, exact=FALSE)))) |> 
-  add_significance() |> 
+  mutate(wilcox_result = if (length(unique(synj2_cryptic_detected)) < 2) {NA} 
+         else {
+    list(broom::tidy(wilcox.test(aneuploidy_score ~ synj2_cryptic_detected, exact = FALSE)))
+  }) |> 
   ungroup() |> 
   unnest(wilcox_result)
- 
-#write.table(aneuploidy_ARHGAP32, file="/Users/nimraaslam/Documents/GitHub/spliced-reads/lcm/aneuploidy_ARHGAP32.txt", sep=',')
   
 aneuploidy_SYNJ2 |> 
   ggplot(aes(x = synj2_cryptic_detected,
@@ -495,13 +678,17 @@ aneuploidy_SYNJ2 |>
   theme(legend.position = "bottom") +
   guides(fill = guide_legend(title = "Cryptic SYNJ2 detected")) +
   theme(
-    axis.title.x = element_text(size = 12, face = "bold"),
-    axis.title.y = element_text(size = 12, face = "bold"),
-    axis.text.x = element_text(size = 10),
-    axis.text.y = element_text(size = 10),
-    strip.text = element_text(size = 10, face = "bold"),
+    axis.title.x = element_text(size = 25, face = "bold"),
+    axis.title.y = element_text(size = 25, face = "bold"),
+    axis.text.x = element_text(size = 20),
+    axis.text.y = element_text(size = 25),
+    strip.text = element_text(size = 25, face = "bold"),
    strip.background = element_rect(fill = "lightgray"),
-    legend.text = element_text(size = 10),
-    legend.title = element_text(size = 12)
+    legend.text = element_text(size = 25),
+    legend.title = element_text(size = 25)
   )
 ```
+
+**Figure 9**: Aneuploidy score in cryptic SYNJ2 versus non-cryptic cases.
+
+There is no significant difference in aneuploidy score in cases with cryptic SYNJ2 expression and non- cryptic cases for each of the cancer types, indicating that the cryptic expression does not influence chromosome number. 

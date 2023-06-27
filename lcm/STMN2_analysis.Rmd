@@ -71,6 +71,29 @@ count_query <- function(gene_name, snapcount_coords, strand_code) {
     filter(start == str_split(str_split(snapcount_coords,'-',simplify = TRUE)[[1]],":",simplify = TRUE)[[2]])
   return(gene_df)
 }
+
+# query cryptic + anno and join into one df -------------------------------
+
+combine_two_junctions <- function(gene_name, snapcount_coords_cryptic, 
+                                  snapcount_coords_annotated, strand_code) {
+  
+  cryptic_query <- count_query(gene_name, snapcount_coords_cryptic, strand_code) |> 
+    rename("cryptic_count" = "count") |> 
+    select(gdc_cases.submitter_id, cryptic_count)
+  anno_query <- count_query(gene_name, snapcount_coords_annotated, strand_code) |> 
+    rename("anno_count" = "count")
+  
+  query <- anno_query |> 
+    left_join(cryptic_query, by = "gdc_cases.submitter_id") |> 
+    mutate(jir = cryptic_count/(anno_count + cryptic_count)) |> 
+    relocate(cryptic_count, .after = anno_count) |> 
+    relocate(jir, .after = cryptic_count) |> 
+    mutate(gene_name = gene_name) |> 
+    mutate(coords_cryptic = snapcount_coords_cryptic)
+  
+  return(query)
+
+}
 ```
 
 AL provided the specific genomic coordinates of TDP43-dependent STMN2 cryptic and annotated reads. A function was created to query junctions in the TCGA database for reads with the specified coordinates: 
@@ -82,8 +105,6 @@ snapcount_coords_annotated <- "chr8:79611215-79636801"
 strand_code <- "+"
 ```
 
-
-
 * Gene name = `r gene_name`
 
 * Snapcount coordinates (cryptic) = `r snapcount_coords_cryptic`
@@ -92,40 +113,15 @@ strand_code <- "+"
 
 * Strand code = `r strand_code`
 
+```{r querying for cryptic and annotated STMN2 reads, join cryptic and anno df, add jir column, include = FALSE}
+STMN2_query <- combine_two_junctions("STMN2", "chr8:79611215-79616821", "chr8:79611215-79636801", "+")
 
+write.table(STMN2_query, file="STMN2_query.txt", sep=",")
 
-```{r querying for cryptic and annotated STMN2 reads, include = FALSE}
-
-#STMN2_cryptic_query <- count_query(gene_name = "STMN2", snapcount_coords = "chr8:79611215-79616821", strand_code = "+")
-#STMN2_anno_query <- count_query(gene_name = "STMN2", snapcount_coords = "chr8:79611215-79636801", strand_code = "+")
-
-#write.table(STMN2_cryptic_query, file = "STMN2_cryptic_query.txt")
-#write.table(STMN2_anno_query, file = "STMN2_anno_query.txt")
-
-STMN2_cryptic_query <- read.table("STMN2_cryptic_query.txt", sep="", header = T)
-STMN2_anno_query <- read.table("STMN2_anno_query.txt", sep="", header = T)
-
+# write_clip(stmn2_query$gdc_cases.submitter_id)
 ```
 
 The resulting data included genomic information, sample-related clinical data and junction coverage information for cryptic and annotated reads, separately, and were read in as tables.
-
-```{r join cryptic and anno df, add jir column, include = FALSE}
-STMN2_cryptic_query <- STMN2_cryptic_query |> rename("cryptic_count" = "count")
-STMN2_anno_query <- STMN2_anno_query |> rename("anno_count" = "count")
-
-STMN2_query <- STMN2_cryptic_query |> 
-  select(gdc_cases.submitter_id, cryptic_count) |> 
-  left_join(STMN2_anno_query, by = "gdc_cases.submitter_id")
-
-STMN2_query <- STMN2_query |> 
-  relocate(cryptic_count, .after = anno_count)
-
-STMN2_query <- STMN2_query |> 
-  mutate(jir = cryptic_count/(anno_count + cryptic_count)) |> 
-  relocate(jir, .after = cryptic_count)
-
-#write_clip(STMN2_query$gdc_cases.submitter_id)
-```
 
 The STMN2 cryptic and annotated query tables were joined into a single dataframe (**STMN2_query**) and a "jir" (junction inclusion ratio) column was added to reflect the fraction of cryptic reads for each case:
 
@@ -181,7 +177,7 @@ STMN2_clinical_jir |>
 # BRCA = breast cancer; LGG = low-grade gliomas (brain tumours)
 ```
 
-**Figure 1**: STMN2 is expressed in mostly breast and brain cancer patients. 
+**Figure 1**: STMN2 is expressed in mostly PCPG cancer patients. PCPG = pheochromocytoma and paraganglioma. PCPG affects the nerve cells of the adrenal gland.
 
 # Cancers with cryptic STMN2 events
 
@@ -273,9 +269,9 @@ STMN2_clinical_jir_cryptic |>
         legend.position = "none")
 ```
 
-**Figure 3**: (a) Stomach and brain cancers are the most deeply sequenced. (b) Cancers of the uterus, adrenal gland and testis have the greatest cryptic coverage. 
+**Figure 3**: (a) Stomach cancers are the most deeply sequenced. (b) Cancers with the greatest cryptic coverage. 
 
-Indeed, the brain is deeply sequenced so it could be that the higher overall coverage resulted in a greater cryptic count for brain cancers. However, the adrenal gland is not as deeply sequenced, suggesting that the cryptic expression in adrenal gland cancers is significantly high. 
+Indeed, the brain is deeply sequenced so it could be that the higher overall coverage resulted in a greater cryptic count for brain cancers. However, the adrenal gland is not as deeply sequenced, suggesting that the cryptic expression in adrenal gland cancers is significantly high. Despite the stomach being the most deeply sequenced, there are not many stomach cancer patients exhibiting high cryptic STMN2 expression.
 
 There is only one liver cancer patient with TDP43-dependent cryptic STMN2 events, hence the single data value for liver. There are some extreme values for the adrenal gland and the brain, which indicates that it is few patients with a larger number of STMN2 cryptic reads that are influencing the overall cryptic coverage for these cancer subsets. 
 
@@ -321,7 +317,7 @@ STMN2_events_different_cancers |>
 
 **Figure 4**: High proportion of cryptic STMN2 events are in PCPG and GBM cancers. 
 
-The majority of the cryptic STMN2 events are expressed in PCPG (47.2% of cryptic cases) and GBM (13.2% of cryptic cases) patients, consistent with previous results indicating high cryptic coverage in these cancers and their primary sites. It is important to note that the high coverage is influenced by patients exhibiting extreme values of cryptic coverage.
+The majority of the cryptic STMN2 events are expressed in PCPG (52.1% of cryptic cases) and GBM (14.6% of cryptic cases) patients, consistent with previous results indicating high cryptic coverage in these cancers and their primary sites. It is important to note that the high coverage is influenced by patients exhibiting extreme values of cryptic coverage.
 
 ## Where are the cancers with cryptic STMN2 events located?
 
@@ -488,7 +484,7 @@ mutations_each_cancer_general_vs_STMN2cryptic <- total_mutations_each_cancer |>
 kable(mutations_each_cancer_general_vs_STMN2cryptic, caption = "Mutational burden of cryptic STMN2 cases.")
 ```
 
-Table 3 shows that 31% of the mutations in PCPG cancer patients are seen in cases with cryptic STMN2. This is the largest proportion out of all cancer subsets, with 7.3% of mutations in TGCT cancer patients being in those with cryptic STMN2 expression. 
+Table 3 shows that 31% of the mutations in PCPG cancer patients are seen in cases with cryptic STMN2. This is the largest proportion out of all cancer subsets. This follows nicely from Figure 6, which shows that the PCPG cancer has highest proportion of patients with cryptic STMN2 events.
 
 Mutational burden was further examined within each cancer type, using boxplots to visualise the mutation counts in non-cryptic cases and cases with cryptic STMN2 expression (Figure 7). Only cancers with cryptic STMN2 expression are plotted. This analysis aimed to determine whether cases with cryptic STMN2 events have a greater mutational burden.
 
@@ -533,7 +529,7 @@ cBio_clinical |>
 
 **Figure 7**: Mutational burden in cancer types with cryptic STMN2 expression.
 
-LGG cancer patients with cryptic STMN2 expression, on average, have a significantly higher mutation count than non-cryptic LGG patients. There may also be a higher mutational burden in cryptic PCPG cases compared to non-cryptic PCPG cases, however the statistical significance of this is not apparent. There is no significant difference in mutation count between cryptic and non-cryptic cases in GBM, LUSC or TGCT cancers. The dataset only contained STAD cancer patients with cryptic STMN2 expression so no comparison could be made against the mutation count of non-cryptic cases. 
+LGG cancer patients with cryptic STMN2 expression, on average, have a significantly higher mutation count than non-cryptic LGG patients (p = 0.0099). There may also be a higher mutational burden in cryptic PCPG cases compared to non-cryptic PCPG cases, however the statistical significance of this is not apparent (p = 0.061). There is no significant difference in mutation count between cryptic and non-cryptic cases in GBM, LUSC or TGCT cancers. The dataset only contained STAD cancer patients with cryptic STMN2 expression so no comparison could be made against the mutation count of non-cryptic cases. 
 
 # Survival Comparisons
 
