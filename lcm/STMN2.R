@@ -457,6 +457,31 @@ survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_stat
   ) +
   add_confidence_interval() 
 
+### Survival cancer-by-cancer
+
+survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ stmn2_cryptic_detected, 
+        data = survival_STMN2_cryptic) |> 
+  ggsurvfit() +
+  add_confidence_interval() +
+  facet_wrap(~study_start) +
+  labs(
+    x = "Months with disease",
+    y = "Overall Survival Probability",
+    title = "Kaplan-Meier Curve: STMN2"
+  ) +
+  theme(legend.position = "bottom") +
+  guides(fill = guide_legend(title = "Cryptic STMN2 detected")) +
+  theme(
+    axis.title.x = element_text(size = 25, face = "bold"),
+    axis.title.y = element_text(size = 25, face = "bold"),
+    axis.text.x = element_text(size = 20),
+    axis.text.y = element_text(size = 25),
+    strip.text = element_text(size = 25, face = "bold"),
+    strip.background = element_rect(fill = "lightgray"),
+    legend.text = element_text(size = 25),
+    legend.title = element_text(size = 25)
+  )
+
 # density plot - months survival in cryptic vs non-cryptic STMN2 ----------
 
 survival_STMN2_cryptic |> 

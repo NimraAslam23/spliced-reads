@@ -114,9 +114,10 @@ strand_code = "-"
 * Strand code = `r strand_code`
 
 ```{r querying for cryptic and annotated ARHGAP32 reads, join cryptic and anno df, add jir column, include = FALSE}
-ARHGAP32_query <- combine_two_junctions("ARHGAP32", "chr11:128992047-128998318", "chr11:128988126-128998318", "-")
+#ARHGAP32_query <- combine_two_junctions("ARHGAP32", "chr11:128992047-128998318", "chr11:128988126-128998318", "-")
 
-write.table(ARHGAP32_query, file="ARHGAP32_query.txt", sep=",")
+#write.table(ARHGAP32_query, file="ARHGAP32_query.txt", sep=",")
+ARHGAP32_query <- read.table("ARHGAP32_query.txt", sep=",")
 
 #write_clip(ARHGAP32_query$gdc_cases.submitter_id)
 ```

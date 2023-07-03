@@ -114,10 +114,11 @@ strand_code = "+"
 * Strand code = `r strand_code`
 
 ```{r querying for cryptic and annotated SYNJ2 reads, join cryptic and anno df, add jir column, include=FALSE}
-SYNJ2_query <- combine_two_junctions("SYNJ2", "chr6:158017291-158019983", "chr6:158017291-158028755", "+")
+#SYNJ2_query <- combine_two_junctions("SYNJ2", "chr6:158017291-158019983", "chr6:158017291-158028755", "+")
 
-write.table(SYNJ2_query, file="SYNJ2_query.txt", sep=",")
-            
+#write.table(SYNJ2_query, file="SYNJ2_query.txt", sep=",")
+SYNJ2_query <- read.table("SYNJ2_query.txt", sep=",")
+    
 #write_clip(SYNJ2_query$gdc_cases.submitter_id)
 ```
 
