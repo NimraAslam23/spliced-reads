@@ -540,7 +540,7 @@ survival_STMN2_cryptic <- cBio_clinical |>
   rename("cancer_abbrev" = "cancer_abbrev_x") |> 
   select(case_submitter_id, study_id, sample_id, cancer_abbrev, mutation_count, cryptic_count, anno_count, months_of_disease_specific_survival, overall_survival_months, disease_specific_survival_status) |> 
   separate(study_id,into = ('study_start'),remove = FALSE) |> 
-  mutate(study_start = as.factor(study_start)) |> 
+  mutate(study_start = as.character(study_start)) |> 
   mutate(months_of_disease_specific_survival = as.numeric(months_of_disease_specific_survival)) |> 
   filter(!is.na(months_of_disease_specific_survival) & months_of_disease_specific_survival != "NA") |>
   mutate(mutation_count = as.numeric(mutation_count)) |> 
@@ -589,7 +589,8 @@ survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_stat
 ```{r survival KM curves STMN2 - both cryptic and non, out.width = "90%", echo = FALSE}
 STMN2_KM_fit <- survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ stmn2_cryptic_detected, data = survival_STMN2_cryptic) 
 
-ggsurvplot(STMN2_KM_fit, data = survival_STMN2_cryptic,
+ggsurvplot(STMN2_KM_fit, data = survival_STMN2_cryptic, 
+           facet.by = "study_start",
            main = "Kaplan-Meier Curve: All Cancer Types (STMN2)",
            legend.title = "STMN2 Cryptic Detected",
            legend.labs = c("FALSE", "TRUE"),
@@ -604,7 +605,7 @@ ggsurvplot(STMN2_KM_fit, data = survival_STMN2_cryptic,
            ylab = "Survival Probability",
            font.y = c(10, "bold"),
            fontsize = 4
-) 
+)
 ```
   
 **Figure 8**: Kaplan-Meier survival curves for cancers with cryptic STMN2 events and those without cryptic STMN2. The probabilities shown are Kaplan-Meier survival probabilities.
@@ -694,3 +695,14 @@ aneuploidy_STMN2 |>
 **Figure 9**: No significant difference in aneuploidy score in cryptic STMN2 versus non-cryptic cases. 
 
 Aneuploidy score is neither significantly higher nor lower in cases with cryptic STMN2 expression, indicating that the cryptic expression does not influence chromosome number. 
+
+# Specific Mutations in Cases with Cryptic STMN2 Events 
+
+```{r joining STMN2 and mutation df, include = FALSE}
+
+STMN2_mutations <- STMN2_clinical_jir |> 
+  left_join(all_mutation_data, by = "case_submitter_id") |> 
+  janitor::clean_names() |> 
+  select(chromosome_x, start, end, strand_x, anno_count, cryptic_count, jir, case_submitter_id, gdc_cases_project_name, gdc_cases_project_primary_site, gene_name, coords_cryptic, cancer_abbrev, hugo_symbol, entrez_gene_id, ncbi_build, chromosome_y, start_position, end_position, strand_y, variant_classification, variant_type, reference_allele, tumor_seq_allele2, db_snp_rs, mutation_status, hgv_sc, hgv_sp, hgv_sp_short, transcript_id, all_effects, gene, feature, feature_type, one_consequence, consequence, biotype, sift, poly_phen, impact) 
+  
+```
