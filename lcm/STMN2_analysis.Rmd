@@ -539,30 +539,28 @@ survival_STMN2_cryptic <- cBio_clinical |>
    janitor::clean_names() |> 
   rename("cancer_abbrev" = "cancer_abbrev_x") |> 
   select(case_submitter_id, study_id, sample_id, cancer_abbrev, mutation_count, cryptic_count, anno_count, months_of_disease_specific_survival, overall_survival_months, disease_specific_survival_status) |> 
+  separate(study_id,into = ('study_start'),remove = FALSE) |> 
+  mutate(study_start = as.factor(study_start)) |> 
   mutate(months_of_disease_specific_survival = as.numeric(months_of_disease_specific_survival)) |> 
   filter(!is.na(months_of_disease_specific_survival) & months_of_disease_specific_survival != "NA") |> 
   mutate(mutation_count = as.numeric(mutation_count)) |> 
   filter(!is.na(mutation_count) & mutation_count != "NA") |> 
   mutate(stmn2_cryptic_detected = cryptic_count >= 2) |> 
-  group_by(cancer_abbrev) |> 
+  group_by(study_start) |> 
   mutate(n_detected_stmn2 = sum(stmn2_cryptic_detected,na.rm = TRUE)) |>
   ungroup() |> 
   filter(!is.na(stmn2_cryptic_detected)) |> 
   filter(n_detected_stmn2 > 2) |> 
   mutate(stmn2_cryptic_detected = as.logical(stmn2_cryptic_detected)) |> #changes FALSE and TRUE to 0 and 1 respectively
-  distinct()
-```
-
-Survival analysis was conducted to assess any potential differences in survival in the cryptic STMN2 cases and non-cryptic cases. This was done using the survival data that had previously been pulled back in the clinical data from cBioPortal. This included disease-specific survival (months) after diagnosis and disease-specific survival status (i.e., alive or dead). 
-
-```{r survival status column in STMN2 survival df, include = FALSE}
-survival_STMN2_cryptic <- survival_STMN2_cryptic |> 
+  distinct() |> 
   filter(!is.na(disease_specific_survival_status) & disease_specific_survival_status != "NA") |> 
   mutate(disease_specific_survival_status = str_extract(disease_specific_survival_status, "^[^:]+"),
          disease_specific_survival_status = as.numeric(disease_specific_survival_status))
     # 1 = dead with tumor
     # 0 = alive or dead tumor free
 ```
+
+Survival analysis was conducted to assess any potential differences in survival in the cryptic STMN2 cases and non-cryptic cases. This was done using the survival data that had previously been pulled back in the clinical data from cBioPortal. This included disease-specific survival (months) after diagnosis and disease-specific survival status (i.e., alive or dead). 
 
 ```{r survival KM curve for cases with STMN2 cryptic, include = FALSE}
 survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ 1, 
@@ -589,20 +587,57 @@ survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_stat
 ```
 
 ```{r survival KM curves STMN2 - both cryptic and non, out.width = "90%", echo = FALSE}
-survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ stmn2_cryptic_detected, 
-        data = survival_STMN2_cryptic) |> 
-  ggsurvfit() +
-  labs(
-    x = "Months with disease",
-    y = "Overall Survival Probability",
-    title = "Kaplan-Meier Curve: All Cancer Types (STMN2)"
-  ) +
-  add_confidence_interval() 
+STMN2_KM_fit <- survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ stmn2_cryptic_detected, data = survival_STMN2_cryptic) 
+
+ggsurvplot(STMN2_KM_fit, data = survival_STMN2_cryptic,
+           main = "Kaplan-Meier Curve: All Cancer Types (STMN2)",
+           legend.title = "STMN2 Cryptic Detected",
+           legend.labs = c("FALSE", "TRUE"),
+           legend.position = "bottom",
+           pval = TRUE,
+           conf.int = TRUE,
+           risk.table = TRUE,
+           tables.height = 0.2,
+           tables.theme = theme_cleantable(),
+           xlab = "Time (months)",
+           font.x = c(10, "bold"),
+           ylab = "Survival Probability",
+           font.y = c(10, "bold"),
+           fontsize = 4
+          
+) 
 ```
   
 **Figure 8**: Kaplan-Meier survival curves for cancers with cryptic STMN2 events and those without cryptic STMN2. The probabilities shown are Kaplan-Meier survival probabilities.
 
-There is no significant difference between the overall survival of cancer patients with and without cryptic STMN2 expression as the confidence intervals of both curves largely overlap (Figure 8).
+Patients with cryptic STMN2 events have greater survival (Figure 8).
+
+### Survival cancer-by-cancer
+
+```{r survival KM curves STMN2 cancer-by-cancer - both cryptic and non, out.width = "90%", echo = FALSE}
+survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ stmn2_cryptic_detected, 
+        data = survival_STMN2_cryptic) |> 
+  ggsurvfit() +
+  add_confidence_interval() +
+  facet_wrap(~study_start) +
+  labs(
+    x = "Months with disease",
+    y = "Overall Survival Probability",
+    title = "Kaplan-Meier Curve: STMN2"
+  ) +
+   theme(legend.position = "bottom") +
+  guides(fill = guide_legend(title = "Cryptic STMN2 detected")) +
+  theme(
+    axis.title.x = element_text(size = 25, face = "bold"),
+    axis.title.y = element_text(size = 25, face = "bold"),
+    axis.text.x = element_text(size = 20),
+    axis.text.y = element_text(size = 25),
+    strip.text = element_text(size = 25, face = "bold"),
+   strip.background = element_rect(fill = "lightgray"),
+    legend.text = element_text(size = 25),
+    legend.title = element_text(size = 25)
+  )
+```
 
 ```{r density plot - months survival in cryptic vs non-cryptic STMN2, include = FALSE}
 survival_STMN2_cryptic |> 
