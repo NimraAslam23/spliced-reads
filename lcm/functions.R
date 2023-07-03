@@ -89,29 +89,9 @@ combine_two_junctions <- function(gene_name, snapcount_coords_cryptic,
 
 }
 
-stmn2_query <- combine_two_junctions("STMN2", "chr8:79611215-79616821", "chr8:79611215-79636801", "+")
-arhgap32_query <- combine_two_junctions("ARHGAP32", "chr11:128992047-128998318", "chr11:128988126-128998318", "-")
-synj2_query <- combine_two_junctions("SYNJ2", "chr6:158017291-158019983", "chr6:158017291-158028755", "+")
-
-
-# query TCGA for additional cryptic events and combine into metatable --------
-
-tmp = list(data.table(matrix()))
-
-for (val in rownames(two_junc)){
-  id = as.numeric(val)
-  #print(id)
-  #print(two_junc[id,]$incl) # take the row for that value of 'id' and give the inclusion results
-  tmp[[id]] = combine_two_junctions(snapcount_coords_annotated = two_junc[id,]$incl,
-                                    snapcount_coords_cryptic = two_junc[id,]$excl,
-                                    strand_code = two_junc[id,]$annot.strand,
-                                    gene_name = two_junc[id,]$annot.gene_id)
-} 
-
-is_null = purrr::map(tmp, function(df){is.null(dim(df))}) #anonymous function function(df)
-tcga_cryptics_metatable = tmp[which(is_null == FALSE)] |> rbindlist() 
-
-write.table(tcga_cryptics_metatable, file="tcga_cryptics_metatable.txt", sep=",")
+# stmn2_query <- combine_two_junctions("STMN2", "chr8:79611215-79616821", "chr8:79611215-79636801", "+")
+# arhgap32_query <- combine_two_junctions("ARHGAP32", "chr11:128992047-128998318", "chr11:128988126-128998318", "-")
+# synj2_query <- combine_two_junctions("SYNJ2", "chr6:158017291-158019983", "chr6:158017291-158028755", "+")
 
 # join query table with clinical data -------------------------------------
 
