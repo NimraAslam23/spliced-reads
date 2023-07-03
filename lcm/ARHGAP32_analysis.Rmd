@@ -541,30 +541,28 @@ survival_ARHGAP32_cryptic <- cBio_clinical |>
   janitor::clean_names() |> 
   rename("cancer_abbrev" = "cancer_abbrev_x") |> 
   select(case_submitter_id, study_id, sample_id, cancer_abbrev, mutation_count, cryptic_count, anno_count, months_of_disease_specific_survival, overall_survival_months, disease_specific_survival_status) |> 
+  separate(study_id,into = ('study_start'),remove = FALSE) |> 
+  mutate(study_start = as.factor(study_start)) |>
   mutate(months_of_disease_specific_survival = as.numeric(months_of_disease_specific_survival)) |> 
   filter(!is.na(months_of_disease_specific_survival) & months_of_disease_specific_survival != "NA") |> 
   mutate(mutation_count = as.numeric(mutation_count)) |> 
   filter(!is.na(mutation_count) & mutation_count != "NA") |> 
   mutate(arhgap32_cryptic_detected = cryptic_count >= 2) |> 
-  group_by(cancer_abbrev) |> 
+  group_by(study_start) |> 
   mutate(n_detected_arhgap32 = sum(arhgap32_cryptic_detected,na.rm = TRUE)) |>
   ungroup() |> 
   filter(!is.na(arhgap32_cryptic_detected)) |> 
   filter(n_detected_arhgap32 > 2) |> 
   mutate(arhgap32_cryptic_detected = as.logical(arhgap32_cryptic_detected)) |> #changes FALSE and TRUE to 0 and 1 respectively
-  distinct()
-```
-
-Survival analysis was conducted to assess any potential differences in survival in the cryptic ARHGAP32 cases and non-cryptic cases. This was done using the survival data that had previously been pulled back in the clinical data from cBioPortal. This included disease-specific survival (months) after diagnosis and disease-specific survival status (i.e., alive or dead). 
-
-```{r survival status column in ARHGAP32 survival df, include = FALSE}
-survival_ARHGAP32_cryptic <- survival_ARHGAP32_cryptic |> 
+  distinct() |> 
   filter(!is.na(disease_specific_survival_status) & disease_specific_survival_status != "NA") |> 
   mutate(disease_specific_survival_status = str_extract(disease_specific_survival_status, "^[^:]+"),
          disease_specific_survival_status = as.numeric(disease_specific_survival_status))
     # 1 = dead with tumor
     # 0 = alive or dead tumor free
 ```
+
+Survival analysis was conducted to assess any potential differences in survival in the cryptic ARHGAP32 cases and non-cryptic cases. This was done using the survival data that had previously been pulled back in the clinical data from cBioPortal. This included disease-specific survival (months) after diagnosis and disease-specific survival status (i.e., alive or dead). 
 
 ```{r survival KM curve for cases with ARHGAP32 cryptic, include = FALSE}
 survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ 1, 
@@ -591,20 +589,31 @@ survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_stat
 ```
 
 ```{r survival KM curves ARHGAP32 - both cryptic and non, out.width = "90%", echo = FALSE}
-survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ arhgap32_cryptic_detected, 
-        data = survival_ARHGAP32_cryptic) |> 
-  ggsurvfit() +
-  labs(
-    x = "Months with disease",
-    y = "Overall Survival Probability",
-    title = "Kaplan-Meier Curve: All Cancer Types (ARHGAP32)"
-  ) +
-  add_confidence_interval() 
+
+ARHGAP32_KM_fit <- survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ arhgap32_cryptic_detected, 
+        data = survival_ARHGAP32_cryptic) 
+
+ggsurvplot(ARHGAP32_KM_fit, data = survival_ARHGAP32_cryptic,
+           main = "Kaplan-Meier Curve: All Cancer Types (ARHGAP32)",
+           legend.title = "ARHGAP32 Cryptic Detected",
+           legend.labs = c("FALSE", "TRUE"),
+           legend.position = "bottom",
+           pval = TRUE,
+           conf.int = TRUE,
+           risk.table = TRUE,
+           tables.height = 0.2,
+           tables.theme = theme_cleantable(),
+           xlab = "Time (months)",
+           font.x = c(10, "bold"),
+           ylab = "Survival Probability",
+           font.y = c(10, "bold"),
+           fontsize = 4
+) 
 ```
   
 **Figure 8**: Kaplan-Meier survival curves for cancers with cryptic ARHGAP32 events and those without cryptic ARHGAP32 The probabilities shown are Kaplan-Meier survival probabilities.
   
-There is no significant difference between the overall survival of cancer patients with and without cryptic ARHGAP32 expression as the confidence intervals of both curves largely overlap (Figure 8).
+Patients with cryptic ARHGAP32 have slightly worse survival (Figure 8).
   
 ```{r density plot - months survival in cryptic vs non-cryptic ARHGAP32, include = FALSE}
 survival_ARHGAP32_cryptic |> 
