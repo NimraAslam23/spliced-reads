@@ -1,3 +1,19 @@
+library(tidyverse)
+library(repurrrsive)
+library(jsonlite)
+library(clipr)
+library(naniar)
+library(ggpubr)
+library(rstatix)
+library(ggplot2)
+library(tidyr)
+library(knitr)
+library(snapcount)
+library(ggsignif)
+library(TCGAbiolinks)
+library(ggsurvfit)
+library(survival)
+library(survminer)
 library(data.table)
 library(dplyr)
 
@@ -78,6 +94,7 @@ arhgap32_query <- combine_two_junctions("ARHGAP32", "chr11:128992047-128998318",
 synj2_query <- combine_two_junctions("SYNJ2", "chr6:158017291-158019983", "chr6:158017291-158028755", "+")
 
 
+# query TCGA for additional cryptic events and combine into metatable --------
 
 tmp = list(data.table(matrix()))
 
@@ -95,3 +112,94 @@ is_null = purrr::map(tmp, function(df){is.null(dim(df))}) #anonymous function fu
 tcga_cryptics_metatable = tmp[which(is_null == FALSE)] |> rbindlist() 
 
 write.table(tcga_cryptics_metatable, file="tcga_cryptics_metatable.txt", sep=",")
+
+# join query table with clinical data -------------------------------------
+
+join_query_clinical <- function(query_df, clinical_df) {
+  
+  clinical_jir <- query_df |> 
+    rename("case_submitter_id" = "gdc_cases.submitter_id") |> 
+    left_join(clinical_df, by="case_submitter_id") |> 
+    janitor::clean_names() |> 
+    select(-c(gdc_cases_diagnoses_tumor_stage, age_at_index, gdc_cases_demographic_gender, 
+              ajcc_pathologic_stage, ethnicity, race, gender)) |>   
+    rename("cancer_abbrev" = "cancer_type")
+
+  return(clinical_jir)
+}
+
+# add rpm column ----------------------------------------------------------
+
+add_rpm_column <- function(clinical_jir_cryptic_df) {
+  
+  clinical_jir_cryptic_df |> 
+    mutate(rpm = (cryptic_count/junction_coverage)*1000000)
+}
+
+# join cBio clinical with cryptic df --------------------------------------
+
+join_cryptic_cBio <- function(clinical_jir_cryptic_df) {
+  
+  clinical_jir_cryptic_df |> 
+    left_join(cBio_clinical, by = "case_submitter_id") |> 
+    janitor::clean_names() |> 
+    select(-c(cgc_case_primary_site, cancer_abbrev_y, cancer_type)) |> 
+    rename("cancer_abbrev" = "cancer_abbrev_x")
+}
+
+# fraction of cases of each cancer that have cryptic event ----------------
+
+fraction_of_cases_with_cryptic <- function(cBio_clinical, cryptic_cBio_df) {
+  
+  total_each_cancer <- cBio_clinical |> 
+    group_by(cancer_abbrev) |> 
+    summarise(total_cancer_abbrev = n())
+  
+  total_each_cancer_with_cryptic <- cryptic_cBio_df |> 
+    group_by(cancer_abbrev) |> 
+    summarise(total_cancer_abbrev_with_cryptic = n())
+  
+  total_each_cancer_general_vs_cryptic <- total_each_cancer |> 
+    left_join(total_each_cancer_with_cryptic, by=c("cancer_abbrev")) |> 
+    mutate(percent_with_cryptic = (total_cancer_abbrev_with_cryptic/total_cancer_abbrev)*100)
+  
+  return(total_each_cancer_general_vs_cryptic)
+  
+}
+
+# fraction of mutations found in cases with cryptic -----------------------
+
+fraction_of_mutations_in_cryptic <- function(cBio_clinical, cryptic_cBio_df) {
+  
+  total_mutations_each_cancer <- cBio_clinical |> 
+    janitor::clean_names() |> 
+    mutate_at("mutation_count", as.numeric) |> 
+    drop_na(mutation_count) |> 
+    filter(grepl("^\\d+$", mutation_count)) |>
+    group_by(cancer_abbrev) |> 
+    summarise(total_mutations = sum(mutation_count))
+  
+  total_mutations_each_cancer_with_cryptic <- cryptic_cBio_df |> 
+    janitor::clean_names() |> 
+    mutate_at("mutation_count", as.numeric) |> 
+    drop_na(mutation_count) |> 
+    filter(mutation_count < 2500) |> 
+    group_by(cancer_abbrev) |> 
+    summarise(total_mutations_cryptic = sum(mutation_count))
+  
+  mutations_each_cancer_general_vs_cryptic <- total_mutations_each_cancer |> 
+    left_join(total_mutations_each_cancer_with_cryptic, by=c("cancer_abbrev")) |>   
+    mutate(percent_with_cryptic = (total_mutations_cryptic/total_mutations)*100) |> 
+    drop_na() |> 
+    arrange(-percent_with_cryptic)
+  
+  return(mutations_each_cancer_general_vs_cryptic)
+  
+}
+
+
+
+
+
+
+
