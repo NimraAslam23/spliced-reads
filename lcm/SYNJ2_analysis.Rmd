@@ -544,6 +544,8 @@ survival_SYNJ2_cryptic <- cBio_clinical |>
   janitor::clean_names() |> 
   rename("cancer_abbrev" = "cancer_abbrev_x") |> 
   select(case_submitter_id, study_id, sample_id, cancer_abbrev, mutation_count, cryptic_count, anno_count, months_of_disease_specific_survival, overall_survival_months, disease_specific_survival_status) |> 
+  separate(study_id,into = ('study_start'),remove = FALSE) |> 
+  mutate(study_start = as.factor(study_start)) |> 
   mutate(months_of_disease_specific_survival = as.numeric(months_of_disease_specific_survival)) |> 
   filter(!is.na(months_of_disease_specific_survival) & months_of_disease_specific_survival != "NA") |> 
   mutate(mutation_count = as.numeric(mutation_count)) |> 
@@ -555,19 +557,15 @@ survival_SYNJ2_cryptic <- cBio_clinical |>
   filter(!is.na(synj2_cryptic_detected)) |> 
   filter(n_detected_synj2 > 2) |> 
   mutate(synj2_cryptic_detected = as.logical(synj2_cryptic_detected)) |> #changes FALSE and TRUE to 0 and 1 respectively
-  distinct()
-```
-
-Survival analysis was conducted to assess any potential differences in survival in the cryptic SYNJ2 cases and non-cryptic cases. This was done using the survival data that had previously been pulled back in the clinical data from cBioPortal. This included disease-specific survival (months) after diagnosis and disease-specific survival status (i.e., alive or dead). 
-
-```{r survival status column in SYNJ2 survival df, include = FALSE}
-survival_SYNJ2_cryptic <- survival_SYNJ2_cryptic |> 
+  distinct() |> 
   filter(!is.na(disease_specific_survival_status) & disease_specific_survival_status != "NA") |> 
   mutate(disease_specific_survival_status = str_extract(disease_specific_survival_status, "^[^:]+"),
          disease_specific_survival_status = as.numeric(disease_specific_survival_status))
     # 1 = dead with tumor
     # 0 = alive or dead tumor free
 ```
+
+Survival analysis was conducted to assess any potential differences in survival in the cryptic SYNJ2 cases and non-cryptic cases. This was done using the survival data that had previously been pulled back in the clinical data from cBioPortal. This included disease-specific survival (months) after diagnosis and disease-specific survival status (i.e., alive or dead). 
 
 ```{r survival KM curve for cases with SYNJ2 cryptic, include = FALSE}
 survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ 1, 
@@ -594,15 +592,25 @@ survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_stat
 ```
 
 ```{r survival KM curves SYNJ2 - both cryptic and non, out.width = "90%", echo = FALSE}
-survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ synj2_cryptic_detected, 
-        data = survival_SYNJ2_cryptic) |> 
-  ggsurvfit() +
-  labs(
-    x = "Months with disease",
-    y = "Overall Survival Probability",
-    title = "Kaplan-Meier Curve: All Cancer Types (SYNJ2)"
-  ) +
-  add_confidence_interval() 
+SYNJ2_KM_fit <- survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ synj2_cryptic_detected, 
+        data = survival_SYNJ2_cryptic) 
+
+ggsurvplot(SYNJ2_KM_fit, data = survival_SYNJ2_cryptic,
+           main = "Kaplan-Meier Curve: All Cancer Types (SYNJ2)",
+           legend.title = "SYNJ2 Cryptic Detected",
+           legend.labs = c("FALSE", "TRUE"),
+           legend.position = "bottom",
+           pval = TRUE,
+           conf.int = TRUE,
+           risk.table = TRUE,
+           tables.height = 0.2,
+           tables.theme = theme_cleantable(),
+           xlab = "Time (months)",
+           font.x = c(10, "bold"),
+           ylab = "Survival Probability",
+           font.y = c(10, "bold"),
+           fontsize = 4
+) 
 ```
 
 **Figure 8**: Kaplan-Meier survival curves for cancers with cryptic SYNJ2 events and those without cryptic SYNJ2. The probabilities shown are Kaplan-Meier survival probabilities.

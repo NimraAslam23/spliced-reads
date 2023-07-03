@@ -542,7 +542,7 @@ survival_STMN2_cryptic <- cBio_clinical |>
   separate(study_id,into = ('study_start'),remove = FALSE) |> 
   mutate(study_start = as.factor(study_start)) |> 
   mutate(months_of_disease_specific_survival = as.numeric(months_of_disease_specific_survival)) |> 
-  filter(!is.na(months_of_disease_specific_survival) & months_of_disease_specific_survival != "NA") |> 
+  filter(!is.na(months_of_disease_specific_survival) & months_of_disease_specific_survival != "NA") |>
   mutate(mutation_count = as.numeric(mutation_count)) |> 
   filter(!is.na(mutation_count) & mutation_count != "NA") |> 
   mutate(stmn2_cryptic_detected = cryptic_count >= 2) |> 
@@ -604,7 +604,6 @@ ggsurvplot(STMN2_KM_fit, data = survival_STMN2_cryptic,
            ylab = "Survival Probability",
            font.y = c(10, "bold"),
            fontsize = 4
-          
 ) 
 ```
   
