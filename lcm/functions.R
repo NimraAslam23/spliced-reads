@@ -107,6 +107,7 @@ join_query_clinical <- function(query_df, clinical_df) {
 
   return(clinical_jir)
 }
+# age, gender, race/ethnicity 
 
 # add rpm column ----------------------------------------------------------
 
@@ -114,7 +115,7 @@ add_rpm_column <- function(clinical_jir_cryptic_df) {
   
   clinical_jir_cryptic_df |> 
     mutate(rpm = (cryptic_count/junction_coverage)*1000000)
-}
+} # return 
 
 # join cBio clinical with cryptic df --------------------------------------
 
@@ -163,7 +164,7 @@ fraction_of_mutations_in_cryptic <- function(cBio_clinical, cryptic_cBio_df) {
     janitor::clean_names() |> 
     mutate_at("mutation_count", as.numeric) |> 
     drop_na(mutation_count) |> 
-    filter(mutation_count < 2500) |> 
+    #filter(mutation_count < 2500) |>  (should be specific to each event, not in function)
     group_by(cancer_abbrev) |> 
     summarise(total_mutations_cryptic = sum(mutation_count))
   

@@ -330,7 +330,7 @@ STMN2_events_primary_sites <- STMN2_clinical_jir_cryptic |>
 
 kable(STMN2_events_primary_sites, caption = "Cancers with cryptic STMN2 events are found primarily in the adrenal gland and brain")
 
-STMN2_events_primary_sites |> 
+a <- STMN2_events_primary_sites |> 
   mutate(percentage = percent*100) |> 
   ggplot(aes(x = reorder(gdc_cases_project_primary_site, percentage), 
              y = percentage)) +
@@ -341,6 +341,7 @@ STMN2_events_primary_sites |>
     y = "Percentage of Cases"
   ) +
   theme(legend.position = "none", plot.title = element_text(size=8))
+print(a)
 # 46% of cancers with cryptic STMN2 events are in the adrenal gland
 ```
 
@@ -590,7 +591,7 @@ survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_stat
 STMN2_KM_fit <- survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ stmn2_cryptic_detected, data = survival_STMN2_cryptic) 
 
 ggsurvplot(STMN2_KM_fit, data = survival_STMN2_cryptic, 
-           facet.by = "study_start",
+           facet.by = "cancer_abbrev",
            main = "Kaplan-Meier Curve: All Cancer Types (STMN2)",
            legend.title = "STMN2 Cryptic Detected",
            legend.labs = c("FALSE", "TRUE"),
