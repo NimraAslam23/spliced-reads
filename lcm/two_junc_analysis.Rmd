@@ -385,6 +385,9 @@ cryptic_events <- unique(tcga_cryptics_metatable$coords_cryptic)
 cryptic_plots <- list()
 
 for(event in cryptic_events) {
+  gene_name <- tcga_cryptics_metatable |> filter(coords_cryptic == event) |> pull(gene_name) |> unique()
+plot_name <- glue::glue("{event} - {gene_name}")
+
   cryptic_plots[[event]] <- tcga_cryptics_metatable |> 
     filter(coords_cryptic == event) |> 
     filter(cryptic_count >= 2) |> 
@@ -399,12 +402,11 @@ for(event in cryptic_events) {
       y = "Cryptic Count",
     ) +
     theme(plot.title = element_text(size=10),
-          legend.position = "none")
+          legend.position = "none") +
+    ggtitle(plot_name)
   
   print(cryptic_plots[[event]])
 }
-
-
 
 
 
