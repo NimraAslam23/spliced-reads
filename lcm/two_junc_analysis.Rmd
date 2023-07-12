@@ -151,7 +151,7 @@ cBio_clinical <- cBio_clinical |>
   rename("cancer" = "Cancer.Type.Detailed") |> 
   rename("cancer_abbrev" = "TCGA.PanCanAtlas.Cancer.Type.Acronym")
 
-tcga_cryptics_metatable <- read.table("tcga_cryptics_metatable.txt", sep=",")
+tcga_cryptics_metatable <- data.table::fread("tcga_cryptics_metatable.txt")
 
 # cryptic and non-cryptic sample sizes
 cryptic_true_false_counts <- tcga_cryptics_metatable |> 
@@ -161,22 +161,20 @@ cryptic_true_false_counts <- tcga_cryptics_metatable |>
   left_join(cBio_clinical, by = "case_submitter_id") |> 
   janitor::clean_names() |> 
   mutate(cryptic_detected = cryptic_count >= 2) |> 
-  group_by(cancer_abbrev) |> 
-  mutate(n_detected_cryptic = sum(cryptic_detected, na.rm = TRUE)) |> 
-  ungroup() |> 
   filter(!is.na(cryptic_detected)) |> 
-  filter(n_detected_cryptic > 2) |> 
-  mutate(cryptic_detected = as.logical(cryptic_detected)) |> 
-  distinct() |> 
-  group_by(cancer_abbrev, cryptic_detected) |> 
-  summarise(count = n()) |> 
+  unique() |> 
+  group_by(coords_cryptic,cancer_abbrev,cryptic_detected ) |>
+  summarise(gene_name, n_detected_cryptic = n_distinct(case_submitter_id)) |> 
   ungroup() |> 
+  unique() |> 
+  filter(!is.na(cancer_abbrev)) |> 
   pivot_wider(
     names_from = cryptic_detected,
-    values_from = count
+    values_from = n_detected_cryptic
   ) |> 
   rename("cryptic_true" = "TRUE") |> 
-  rename("cryptic_false" = "FALSE")
+  rename("cryptic_false" = "FALSE") |> 
+  mutate(across(where(~anyNA(.) & is.numeric(.)), ~replace_na(., 0)))
 
 tcga_cryptics_metatable <- tcga_cryptics_metatable |> 
   janitor::clean_names() |> 
@@ -184,26 +182,21 @@ tcga_cryptics_metatable <- tcga_cryptics_metatable |>
   rename("case_submitter_id" = "gdc_cases_submitter_id") |> 
   left_join(cBio_clinical, by = "case_submitter_id") |> 
   janitor::clean_names() |> 
+  unique() |> 
   mutate(mutation_count = as.numeric(mutation_count)) |> 
   filter(!is.na(mutation_count) & mutation_count != "NA") |> 
   mutate(cryptic_detected = cryptic_count >= 2) |> 
+  filter(!is.na(cryptic_detected)) |> 
   group_by(cancer_abbrev) |> 
   mutate(n_detected_cryptic = sum(cryptic_detected, na.rm = TRUE)) |> 
+  mutate(cancer_sample_size = n_distinct(case_submitter_id)) |> 
   ungroup() |> 
   filter(!is.na(cryptic_detected)) |> 
-  filter(n_detected_cryptic > 2) |> 
+  filter(n_detected_cryptic >= 2) |> 
   mutate(cryptic_detected = as.logical(cryptic_detected)) 
 
-# cancer sample sizes
-cancer_sample_sizes <- tcga_cryptics_metatable |> 
-  group_by(cancer_abbrev) |> 
-  summarise(count = n()) |> 
-  ungroup() 
-
 tcga_cryptics_metatable <- tcga_cryptics_metatable |> 
-  left_join(cancer_sample_sizes, by="cancer_abbrev") |> 
-  rename("cancer_sample_size" = "count") |> 
-  left_join(cryptic_true_false_counts, by="cancer_abbrev")
+  left_join(cryptic_true_false_counts, by=c("cancer_abbrev", "coords_cryptic", "gene_name"))
 ```
 
 ```{r cancer types with cryptic [gene] expression, include = FALSE}
@@ -383,6 +376,7 @@ cBio_clinical |>
 
 cryptic_events <- unique(tcga_cryptics_metatable$coords_cryptic)
 cryptic_plots <- list()
+cryptic_tables <- tibble::tibble()
 
 for(event in cryptic_events) {
   gene_name <- tcga_cryptics_metatable |> filter(coords_cryptic == event) |> pull(gene_name) |> unique()
@@ -406,13 +400,29 @@ plot_name <- glue::glue("{event} - {gene_name}")
     ggtitle(plot_name)
   
   print(cryptic_plots[[event]])
+
+# table - cancers with most cryptic 
+  tmp <- tcga_cryptics_metatable |> 
+    filter(coords_cryptic == event) |> 
+    filter(cryptic_count >= 2) |> 
+    drop_na(cancer_abbrev) |> 
+    janitor::tabyl(cancer_abbrev) |> 
+    arrange(desc(percent)) |> 
+    mutate(event = event, gene_name = gene_name)
+
+  cryptic_tables <- rbind(cryptic_tables,tmp)
 }
 
 
 
-cryptic_tables <- list()
+
 
 for(event in cryptic_events) {
+  
+}
+
+for(event in cryptic_events) {
+  gene_name <- tcga_cryptics_metatable |> filter(coords_cryptic == event) |> pull(gene_name) |> unique()
   cryptic_tables[[event]] <- tcga_cryptics_metatable |> 
     filter(coords_cryptic == event) |> 
     filter(cryptic_count >= 2) |> 
