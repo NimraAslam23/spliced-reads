@@ -115,7 +115,9 @@ add_rpm_column <- function(clinical_jir_cryptic_df) {
   
   clinical_jir_cryptic_df |> 
     mutate(rpm = (cryptic_count/junction_coverage)*1000000)
-} # return 
+  
+  return(clinical_jir_cryptic_df)
+}  
 
 # join cBio clinical with cryptic df --------------------------------------
 
@@ -126,6 +128,8 @@ join_cryptic_cBio <- function(clinical_jir_cryptic_df) {
     janitor::clean_names() |> 
     select(-c(cgc_case_primary_site, cancer_abbrev_y, cancer_type)) |> 
     rename("cancer_abbrev" = "cancer_abbrev_x")
+  
+  return(clinical_jir_cryptic_df)
 }
 
 # fraction of cases of each cancer that have cryptic event ----------------

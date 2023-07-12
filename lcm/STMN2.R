@@ -16,6 +16,9 @@ library(ggsurvfit)
 library(survival)
 library(survminer)
 
+pdf("STMN2_plots.pdf")
+for(i in 1:10){
+  
 # STMN2 cryptic and anno reads --------------------------------------------
 
 gene_name <- "STMN2" 
@@ -83,7 +86,7 @@ head(STMN2_clinical_jir_cryptic)
 
 # bar plot - cancer types with general STMN2 expression -------------------
 
-STMN2_clinical_jir |> 
+cancer_type_STMN2_exp <- STMN2_clinical_jir |> 
   distinct() |> 
   drop_na() |> 
   ggplot(aes(x = fct_rev(fct_infreq(cancer_abbrev)))) +
@@ -96,10 +99,11 @@ STMN2_clinical_jir |>
   ) +
   theme(legend.position = "none", plot.title = element_text(size=10)) 
 # BRCA = breast cancer; LGG = low-grade gliomas (brain tumours)
+print(cancer_type_STMN2_exp)
 
 # bar plot - cancer types with cryptic STMN2 ------------------------------
 
-STMN2_clinical_jir_cryptic |> 
+cancer_type_cryptic_STMN2 <- STMN2_clinical_jir_cryptic |> 
   drop_na() |> 
   ggplot(aes(x = fct_rev(fct_infreq(cancer_abbrev)))) +
   geom_bar(aes(fill = cancer_abbrev)) +
@@ -115,6 +119,7 @@ STMN2_clinical_jir_cryptic |>
         axis.text.x = element_text(size = 12),
         axis.text.y = element_text(size = 12),
         legend.position = "none") 
+print(cancer_type_cryptic_STMN2)
 
 # bar plot - primary sites with cryptic STMN2 -----------------------------
 
@@ -555,3 +560,11 @@ aneuploidy_STMN2 |>
     legend.text = element_text(size = 10),
     legend.title = element_text(size = 12)
   )
+
+
+
+
+
+
+}
+dev.off()

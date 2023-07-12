@@ -588,6 +588,9 @@ survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_stat
 ```
 
 ```{r survival KM curves STMN2 - both cryptic and non, out.width = "90%", echo = FALSE}
+survival_STMN2_cryptic_KM <- survival_STMN2_cryptic |> 
+  filter()
+
 STMN2_KM_fit <- survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ stmn2_cryptic_detected, data = survival_STMN2_cryptic) 
 
 ggsurvplot(STMN2_KM_fit, data = survival_STMN2_cryptic, 
