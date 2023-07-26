@@ -450,6 +450,7 @@ total_each_cancer_general_vs_STMN2cryptic |>
   drop_na() |> 
   ggplot(aes(x = reorder(cancer_abbrev, percent_with_cryptic), y = percent_with_cryptic)) +
   geom_bar(aes(fill = cancer_abbrev), stat = "identity") +
+  coord_flip() +
   labs(
     x = "Cancer Type",
     y = "Percentage of cases with cryptic STMN2 events"
@@ -504,7 +505,7 @@ cBio_clinical |>
   mutate(stmn2_cryptic_detected = cryptic_count >= 2) |> 
   group_by(study_start) |> 
   mutate(n_total_samples = n_distinct(case_submitter_id)) |> 
-  mutate(n_detected_stmn2 = sum(stmn2_cryptic_detected,na.rm = TRUE)) |> 
+  mutate(n_detected_stmn2 = sum(stmn2_cryptic_detected,na.rm = TRUE)) |>
   ungroup() |> 
   filter(!is.na(stmn2_cryptic_detected)) |> 
   filter(n_detected_stmn2 > 2) |> 
@@ -526,7 +527,7 @@ cBio_clinical |>
     strip.text = element_text(size = 25, face = "bold"),
    strip.background = element_rect(fill = "lightgray"),
     legend.text = element_text(size = 25),
-    legend.title = element_text(size = 25)
+    legend.title = element_text(size = 25),
   )
 ```
 

@@ -182,6 +182,26 @@ fraction_of_mutations_in_cryptic <- function(cBio_clinical, cryptic_cBio_df) {
   
 }
 
+read_save_mutation_data <- function(filename) {
+  df <- janitor::clean_names(read.csv(filename, sep = "\t"))
+  return(df)
+}
+# read_save_mutation_data("TCGA-VQ-A91N_mutations.tsv") |> View()
+
+combine_mutation_data <- function(folder_path, pattern = "^TCGA.*_mutations.tsv$") {
+  mutation_files <- list.files(folder_path,
+                               pattern = pattern,
+                               full.names = TRUE)
+  #print(mutation_files)
+  df <- purrr::map(mutation_files, read_save_mutation_data)
+  patient_id <- purrr::simplify(purrr::map(mutation_files, basename))
+  patient_id = gsub("_mutations.tsv", "", patient_id)
+  non_empty_df <- df[sapply(df, function(x) nrow(x) > 0)]
+  non_empty_patient_id <- patient_id[sapply(df, function(x) nrow(x) > 0)]
+  df <- purrr::map2(non_empty_df, non_empty_patient_id, ~cbind(.x, case_submitter_id = .y))
+  df <- data.table::rbindlist(df)
+  return(df)
+}
 
 
 

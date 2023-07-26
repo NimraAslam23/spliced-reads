@@ -13,7 +13,30 @@ library(ggsignif)
 library(TCGAbiolinks)
 library(stringr)
 
-# need all_common_cases df from the combined.R script
+# need cBio_clinical df for this script
+
+# functions ---------------------------------------------------------------
+
+read_save_mutation_data <- function(filename) {
+  df <- janitor::clean_names(read.csv(filename, sep = "\t"))
+  return(df)
+}
+# read_save_mutation_data("TCGA-VQ-A91N_mutations.tsv") |> View()
+
+combine_mutation_data <- function(folder_path, pattern = "^TCGA.*_mutations.tsv$") {
+  mutation_files <- list.files(folder_path,
+                               pattern = pattern,
+                               full.names = TRUE)
+  #print(mutation_files)
+  df <- purrr::map(mutation_files, read_save_mutation_data)
+  patient_id <- purrr::simplify(purrr::map(mutation_files, basename))
+  patient_id = gsub("_mutations.tsv", "", patient_id)
+  non_empty_df <- df[sapply(df, function(x) nrow(x) > 0)]
+  non_empty_patient_id <- patient_id[sapply(df, function(x) nrow(x) > 0)]
+  df <- purrr::map2(non_empty_df, non_empty_patient_id, ~cbind(.x, case_submitter_id = .y))
+  df <- data.table::rbindlist(df)
+  return(df)
+}
 
 # pull back all mutation data from TCGA -----------------------------------
 
@@ -63,51 +86,22 @@ all_mutation_data <- all_mutation_data |>
   relocate(case_submitter_id, .before="x1")
 
 mutation_clinical_data <- all_mutation_data |> 
-  dplyr::select(hugo_symbol, variant_classification,
+  select(hugo_symbol, variant_classification,
          variant_type, reference_allele, tumor_seq_allele2, db_snp_rs, 
         hgv_sp_short, poly_phen, impact, case_submitter_id) |> 
   left_join(cBio_clinical, by="case_submitter_id") |> 
   janitor::clean_names() |> 
-  dplyr::select(-c(sample_id, cancer_type)) |> 
+  select(-c(sample_id, cancer_type)) |> 
   rename("gene" = "hugo_symbol",
          "variant_allele" = "tumor_seq_allele2",
          "db_snp" = "db_snp_rs") |> 
   mutate(protein_change = str_remove(hgv_sp_short, "^p\\.")) |> 
   select(-hgv_sp_short)
 
-# filter for patients with >1 cryptic event -------------------------------
-
-all_common_cases <- intersect(mutation_clinical_data$case_submitter_id, all_common_cases$case_submitter_id)
-
-mutation_clinical_multiple_cryptic_events <- mutation_clinical_data |> 
-  dplyr::filter(case_submitter_id %in% all_common_cases) 
-
-
 # read in data for missing patient mutation data --------------------------
 
-read_save_mutation_data <- function(filename) {
-  df <- janitor::clean_names(read.csv(filename, sep = "\t"))
-  return(df)
-}
-# read_save_mutation_data("TCGA-VQ-A91N_mutations.tsv") |> View()
-
-combine_mutation_data <- function(folder_path, pattern = "^TCGA.*_mutations.tsv$") {
-  mutation_files <- list.files(folder_path,
-                               pattern = pattern,
-                               full.names = TRUE)
-  #print(mutation_files)
-  df <- purrr::map(mutation_files, read_save_mutation_data)
-  patient_id <- purrr::simplify(purrr::map(mutation_files, basename))
-  patient_id = gsub("_mutations.tsv", "", patient_id)
-  non_empty_df <- df[sapply(df, function(x) nrow(x) > 0)]
-  non_empty_patient_id <- patient_id[sapply(df, function(x) nrow(x) > 0)]
-  df <- purrr::map2(non_empty_df, non_empty_patient_id, ~cbind(.x, case_submitter_id = .y))
-  df <- data.table::rbindlist(df)
-  return(df)
-}
-
 combined_mutation_data <- combine_mutation_data('/Users/nimraaslam/Documents/GitHub/spliced-reads/lcm') |> 
-  dplyr::select(-c(gene_panel, annotation, chromosome, start_pos, end_pos, hgv_sg, ms, vs, center, allele_freq, variant_reads, 
+  select(-c(gene_panel, annotation, chromosome, start_pos, end_pos, hgv_sg, ms, vs, center, allele_freq, variant_reads, 
             ref_reads, variant_reads_normal, ref_reads_normal, copy, cosmic, exon, gnom_ad, clin_var, signal)) |> 
   left_join(cBio_clinical, by="case_submitter_id") |> 
   janitor::clean_names() |> 
@@ -118,4 +112,95 @@ combined_mutation_data <- combine_mutation_data('/Users/nimraaslam/Documents/Git
          "reference_allele" = "ref",
          "variant_allele" = "var") |> 
   select(colnames(mutation_clinical_data))
-  
+
+all_common_cases <- read.csv("all_common_cases.txt", sep=",") 
+
+mutation_clinical_data <- rbind(mutation_clinical_data, combined_mutation_data) 
+write.table(mutation_clinical_data, file = "mutation_clinical_data.txt", sep=",")
+mutation_clinical_data <- read.table("mutation_clinical_data.txt", sep=",")
+
+# filter for patients with >1 cryptic event -------------------------------
+
+mutation_clinical_data |> 
+  filter(case_submitter_id %in% all_common_cases$case_submitter_id) |> 
+  mutate(gene = as.factor(gene)) |> 
+  count(gene, variant_type) |> 
+  filter(!is.na(gene) & gene != "NA") |> 
+  group_by(gene) |> 
+  mutate(proportion = n / sum(n)) |> 
+  ggplot(aes(x = gene, y = proportion)) +
+  geom_col()
+
+gene_mutation_proportions <- mutation_clinical_data |>
+  group_by(gene) |>
+  summarise(gene_mutation_count = n()) |> 
+  mutate(general_proportion = gene_mutation_count / sum(gene_mutation_count)) 
+
+common_cases_mutation_proportions <- mutation_clinical_data |> 
+  filter(case_submitter_id %in% all_common_cases$case_submitter_id) |> 
+  group_by(gene) |>
+  summarise(common_cases_mutation_count = n()) |> 
+  mutate(common_cases_proportion = common_cases_mutation_count / sum(common_cases_mutation_count)) 
+
+mutation_clinical_data |>
+  left_join(gene_mutation_proportions, by="gene") |> 
+  left_join(common_cases_mutation_proportions, by="gene") |> 
+  filter(case_submitter_id %in% all_common_cases$case_submitter_id) |>
+  filter(gene %in% cosmic_cancer_genes$Gene) |> 
+  pivot_longer(cols = c(general_proportion, common_cases_proportion),
+               names_to = "general_vs_common_cases",
+               values_to = "proportion") |> 
+  pivot_longer(cols = c(gene_mutation_count, common_cases_mutation_count),
+               names_to = "gene_or_common",
+               values_to = "gene_mutation_count") |> 
+  mutate(general_vs_common_cases = case_when(
+    general_vs_common_cases == "general_proportion" ~ "general",
+    general_vs_common_cases == "common_cases_proportion" ~ "common_cases",
+    TRUE ~ general_vs_common_cases
+  )) |> 
+  mutate(gene_or_common = case_when(
+    gene_or_common == "gene_mutation_count" ~ "general",
+    gene_or_common == "common_cases_mutation_count" ~ "common_cases",
+    TRUE ~ gene_or_common
+  )) 
+
+
+
+  ggplot(aes(x = gene,
+             y = proportion,
+             fill = general_vs_common_cases)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = scales::percent_format())
+
+
+# Specific Mutations in Cases with Cryptic STMN2 Events -------------------
+
+mutation_clinical_data |> 
+    left_join(tcga_cryptics_metatable, by="case_submitter_id") |> 
+    select(-ends_with(".y")) |> janitor::clean_names() |> 
+    rename_with(~ gsub("_x$", "", .), contains("_x")) |> 
+    filter(gene_name == "STMN2") |> 
+    left_join(gene_mutation_proportions, by="gene") |> 
+    left_join(common_cases_mutation_proportions, by="gene") |> 
+    filter(case_submitter_id %in% all_common_cases$case_submitter_id) |>
+    filter(gene %in% cosmic_cancer_genes$Gene) |> 
+    pivot_longer(cols = c(general_proportion, common_cases_proportion),
+                 names_to = "general_vs_common_cases",
+                 values_to = "proportion") |> 
+    pivot_longer(cols = c(gene_mutation_count, common_cases_mutation_count),
+                 names_to = "gene_or_common",
+                 values_to = "gene_mutation_count") |> 
+    mutate(general_vs_common_cases = case_when(
+      general_vs_common_cases == "general_proportion" ~ "general",
+      general_vs_common_cases == "common_cases_proportion" ~ "common_cases",
+      TRUE ~ general_vs_common_cases
+    )) |> 
+    ggplot(aes(x = gene,
+               y = proportion,
+               fill = general_vs_common_cases)) +
+    geom_col(position = "dodge") +
+    coord_flip() +
+    scale_y_continuous(labels = scales::percent_format()) +
+    theme(legend.position = "bottom")
+
+           

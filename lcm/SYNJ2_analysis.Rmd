@@ -452,11 +452,12 @@ total_each_cancer_general_vs_SYNJ2cryptic |>
   drop_na() |> 
   ggplot(aes(x = reorder(cancer_abbrev, percent_with_cryptic), y = percent_with_cryptic)) +
   geom_bar(aes(fill = cancer_abbrev), stat = "identity") +
+  coord_flip() +
   labs(
     x = "Cancer Type",
     y = "Percentage of cases with cryptic SYNJ2 events"
     ) +
-  theme(legend.position = "none", axis.text.x = element_text(size = 5))
+  theme(legend.position = "none", axis.text.x = element_text(size = 10))
 ```
 
 **Figure 6**: Fraction of each cancer type that has cryptic SYNJ2 expression.

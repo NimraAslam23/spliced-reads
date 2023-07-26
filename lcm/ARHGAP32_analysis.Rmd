@@ -450,6 +450,7 @@ total_each_cancer_general_vs_ARHGAP32cryptic |>
   drop_na() |> 
   ggplot(aes(x = reorder(cancer_abbrev, percent_with_cryptic), y = percent_with_cryptic)) +
   geom_bar(aes(fill = cancer_abbrev), stat = "identity") +
+  coord_flip() +
   labs(
     x = "Cancer Type",
     y = "Percentage of cases with cryptic ARHGAP32 events"

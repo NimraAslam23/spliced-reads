@@ -114,6 +114,8 @@ common_STMN2_ARHGAP32 <- STMN2_cryptic_cBio |>
 all_common_cases <- common_STMN2_ARHGAP32 |> 
   full_join(common_ARHGAP32_SYNJ2) 
 
+write.table(all_common_cases, file = "all_common_cases.txt", sep=",")
+
 all_common_cases |> 
   pivot_longer(cols = c(jir_stmn2, jir_arhgap32, jir_synj2),
                names_to = "gene",

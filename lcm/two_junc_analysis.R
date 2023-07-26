@@ -283,8 +283,8 @@ for(event in cryptic_events) {
   plot_data <- tcga_cryptics_metatable |> # Use filtered data for the current event
     filter(coords_cryptic == event) 
   
-  if (length(unique(plot_data$cryptic_detected)) == 2)
-  KM_fit <- survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ cryptic_detected, data = tcga_cryptics_metatable)
+  if (length(unique(plot_data$cryptic_detected)) == 2) {
+  KM_fit <- survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ cryptic_detected, data = plot_data)
 
   survival_plots[[event]] <- ggsurvplot(KM_fit, data = plot_data,
              legend.title = "Cryptic Detected",
@@ -304,6 +304,9 @@ for(event in cryptic_events) {
     ggtitle(plot_name)
   
   print(survival_plots[[event]])
+  } else {
+    message(glue::glue("Skipping event: {event} - {gene_name} due to insufficient data."))
+  }
 }
 
 dev.off()
