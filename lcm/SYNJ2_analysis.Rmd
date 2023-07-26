@@ -377,6 +377,8 @@ SYNJ2_cryptic_cBio <- SYNJ2_clinical_jir_cryptic |>
   janitor::clean_names() |> 
    select(-c(cgc_case_primary_site, cancer_abbrev_y, cancer_type)) |> 
   rename("cancer_abbrev" = "cancer_abbrev_x")
+
+write.table(SYNJ2_cryptic_cBio, file = "SYNJ2_cryptic_cBio.txt", sep=",")
 ```
 
 The **cBio_clinical** dataframe was joined to the existing dataframe containing the patients exhibiting cryptic SYNJ2 expression (**SYNJ2_clinical_jir_cryptic**). This join added the clinical data to only the relevant patients of interest (i.e., those with cryptic SYNJ2) to produce the **SYNJ2_cryptic_cBio** dataframe.

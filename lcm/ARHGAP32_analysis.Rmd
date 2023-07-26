@@ -375,6 +375,8 @@ ARHGAP32_cryptic_cBio <- ARHGAP32_clinical_jir_cryptic |>
   janitor::clean_names() |> 
   select(-c(cgc_case_primary_site, cancer_abbrev_y, cancer_type)) |> 
   rename("cancer_abbrev" = "cancer_abbrev_x")
+
+write.table(ARHGAP32_cryptic_cBio, file = "ARHGAP32_cryptic_cBio.txt", sep=",")
 ```
 
 The **cBio_clinical** dataframe was joined to the existing dataframe containing the patients exhibiting cryptic ARHGAP32 expression (**ARHGAP32_clinical_jir_cryptic**). This join added the clinical data to only the relevant patients of interest (i.e., those with cryptic ARHGAP32) to produce the **ARHGAP32_cryptic_cBio** dataframe.

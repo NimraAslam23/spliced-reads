@@ -487,6 +487,58 @@ survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_stat
     legend.title = element_text(size = 25)
   )
 
+
+# survival - looping through each cancer type -----------------------------
+
+cancer_abbrev <- unique(survival_STMN2_cryptic$cancer_abbrev)
+
+STMN2_survival_plots <- list()
+
+pdf("survival_STMN2.pdf", width = 10, height = 10)
+
+for(abbrev in cancer_abbrev) {
+  
+  message(glue::glue("Processing cancer type: {abbrev}"))
+  
+  plot_data <- survival_STMN2_cryptic |> 
+    filter(cancer_abbrev == abbrev)
+  
+  cancer <- survival_STMN2_cryptic |> 
+    filter(cancer_abbrev == abbrev) |> 
+    pull(cancer_abbrev) |> 
+    unique()
+  
+  plot_name <- glue::glue("{cancer}")
+  
+  if (length(unique(plot_data$stmn2_cryptic_detected)) == 2) {
+    KM_fit <- survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ stmn2_cryptic_detected, data = plot_data)
+    
+    STMN2_survival_plots[[abbrev]] <- ggsurvplot(KM_fit, data = plot_data,
+                                                 legend.title = "Cryptic Detected",
+                                                 legend.labs = c("FALSE", "TRUE"),
+                                                 legend.position = "bottom",
+                                                 pval = TRUE,
+                                                 conf.int = TRUE,
+                                                 risk.table = TRUE,
+                                                 tables.height = 0.2,
+                                                 tables.theme = theme_cleantable(),
+                                                 xlab = "Time (months)",
+                                                 font.x = c(10, "bold"),
+                                                 ylab = "Survival Probability",
+                                                 font.y = c(10, "bold"),
+                                                 fontsize = 4
+    ) +
+      ggtitle(plot_name)
+    
+    print(STMN2_survival_plots[[abbrev]])
+  } else {
+    message(glue::glue("Skipping cancer type: {abbrev} due to insufficient data."))
+  }
+}
+
+dev.off()
+
+
 # density plot - months survival in cryptic vs non-cryptic STMN2 ----------
 
 survival_STMN2_cryptic |> 
@@ -560,11 +612,3 @@ aneuploidy_STMN2 |>
     legend.text = element_text(size = 10),
     legend.title = element_text(size = 12)
   )
-
-
-
-
-
-
-}
-dev.off()

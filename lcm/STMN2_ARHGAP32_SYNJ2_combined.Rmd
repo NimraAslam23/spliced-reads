@@ -21,19 +21,20 @@ library(ggsignif)
 ```
 
 ```{r function: count_query, include = FALSE}
-function(gene_name, snapcount_coords, strand_code) {
-  cryptic_query <-  QueryBuilder(compilation = 'tcga',regions = snapcount_coords) 
+
+count_query <- function(gene_name, snapcount_coords, strand_code) {
+  query <-  QueryBuilder(compilation = 'tcga',regions = snapcount_coords) 
   
   if(strand_code == "+"){
-    cryptic_query <- set_row_filters(cryptic_query, strand == "+") 
+    query <- set_row_filters(query, strand == "+") 
   }else if(strand_code == "-"){
-    cryptic_query <- set_row_filters(cryptic_query, strand == "-") 
+    query <- set_row_filters(query, strand == "-") 
   }
   
-  cryptic_query_exact <- set_coordinate_modifier(cryptic_query, Coordinates$Exact) 
+  query_exact <- set_coordinate_modifier(query, Coordinates$Exact) 
   print("junction querying beginning")
-  juncs_on <- query_jx(cryptic_query) 
-  juncs_on_flat <- query_jx(cryptic_query,return_rse = FALSE) 
+  juncs_on <- query_jx(query) 
+  juncs_on_flat <- query_jx(query,return_rse = FALSE) 
   samples_with <- juncs_on@colData |> 
     as.data.frame()
   print("junction querying done")
@@ -63,141 +64,134 @@ function(gene_name, snapcount_coords, strand_code) {
     filter(start == str_split(str_split(snapcount_coords,'-',simplify = TRUE)[[1]],":",simplify = TRUE)[[2]])
   return(gene_df)
 }
+
+read_save_mutation_data <- function(filename) {
+  df <- janitor::clean_names(read.csv(filename, sep = "\t"))
+  return(df)
+}
+# read_save_mutation_data("TCGA-VQ-A91N_mutations.tsv") |> View()
+
+combine_mutation_data <- function(folder_path, pattern = "^TCGA.*_mutations.tsv$") {
+  mutation_files <- list.files(folder_path,
+                               pattern = pattern,
+                               full.names = TRUE)
+  #print(mutation_files)
+  df <- purrr::map(mutation_files, read_save_mutation_data)
+  patient_id <- purrr::simplify(purrr::map(mutation_files, basename))
+  patient_id = gsub("_mutations.tsv", "", patient_id)
+  non_empty_df <- df[sapply(df, function(x) nrow(x) > 0)]
+  non_empty_patient_id <- patient_id[sapply(df, function(x) nrow(x) > 0)]
+  df <- purrr::map2(non_empty_df, non_empty_patient_id, ~cbind(.x, case_submitter_id = .y))
+  df <- data.table::rbindlist(df)
+  return(df)
+}
 ```
 
 ```{r query (cryptic and anno), include = FALSE}
-STMN2_cryptic_query <- count_query(gene_name = "STMN2", snapcount_coords = "chr8:79611215-79616821", strand_code = "+")
-STMN2_anno_query <- count_query(gene_name = "STMN2", snapcount_coords = "chr8:79611215-79636801", strand_code = "+")
-
-ARHGAP32_cryptic_query <- count_query(gene_name = "ARHGAP32", snapcount_coords = "chr11:128992047-128998318", strand_code = "-")
-ARHGAP32_anno_query <- count_query(gene_name = "ARHGAP32", snapcount_coords = "chr11:128988126-128998318", strand_code = "-")
-
-SYNJ2_cryptic_query <- count_query(gene_name = "SYNJ2", snapcount_coords = "chr6:158017291-158019983", strand_code = "+")
-SYNJ2_anno_query <- count_query(gene_name = "SYNJ2", snapcount_coords = "chr6:158017291-158028755", strand_code = "+")
+STMN2_cryptic_cBio <- read.table("STMN2_cryptic_cBio.txt", sep=",")
+ARHGAP32_cryptic_cBio <- read.table("ARHGAP32_cryptic_cBio.txt", sep=",")
+SYNJ2_cryptic_cBio <- read.table("SYNJ2_cryptic_cBio.txt", sep=",")
 ```
 
-```{r join cryptic and anno df, add jir column, include = FALSE}
-STMN2_cryptic_query <- STMN2_cryptic_query |> rename("cryptic_count" = "count")
-STMN2_anno_query <- STMN2_anno_query |> rename("anno_count" = "count")
-
-STMN2_query <- STMN2_cryptic_query |> 
-  select(gdc_cases.submitter_id, cryptic_count) |> 
-  left_join(STMN2_anno_query, by = "gdc_cases.submitter_id")
-
-STMN2_query <- STMN2_query |> 
-  relocate(cryptic_count, .after = anno_count)
-
-STMN2_query <- STMN2_query |> 
-  mutate(jir = anno_count/(anno_count + cryptic_count)) |> 
-  relocate(jir, .after = cryptic_count)
-
-#write_clip(STMN2_query$gdc_cases.submitter_id)
-
-
-ARHGAP32_cryptic_query <- ARHGAP32_cryptic_query |> rename("cryptic_count" = "count")
-ARHGAP32_anno_query <- ARHGAP32_anno_query |> rename("anno_count" = "count")
-
-ARHGAP32_query <- ARHGAP32_cryptic_query |> 
-  select(gdc_cases.submitter_id, cryptic_count) |> 
-  left_join(ARHGAP32_anno_query, by = "gdc_cases.submitter_id")
-
-ARHGAP32_query <- ARHGAP32_query |> 
-  relocate(cryptic_count, .after = anno_count)
-
-ARHGAP32_query <- ARHGAP32_query |> 
-  mutate(jir = anno_count/(anno_count + cryptic_count)) |> 
-  relocate(jir, .after = cryptic_count)
-
-#write_clip(ARHGAP32_query$gdc_cases.submitter_id)
-
-
-SYNJ2_cryptic_query <- SYNJ2_cryptic_query |> rename("cryptic_count" = "count")
-SYNJ2_anno_query <- SYNJ2_anno_query |> rename("anno_count" = "count")
-
-SYNJ2_query <- SYNJ2_cryptic_query |> 
-  select(gdc_cases.submitter_id, cryptic_count) |> 
-  left_join(SYNJ2_anno_query, by = "gdc_cases.submitter_id")
-
-SYNJ2_query <- SYNJ2_query |> 
-  relocate(cryptic_count, .after = anno_count)
-
-SYNJ2_query <- SYNJ2_query |> 
-  mutate(jir = anno_count/(anno_count + cryptic_count)) |> 
-  relocate(jir, .after = cryptic_count)
-
-#write_clip(SYNJ2_query$gdc_cases.submitter_id)
+```{r any cases with all three or two cryptic events?, include = FALSE}
+common_patients_STMN2_ARHGAP32 <- intersect(STMN2_cryptic_cBio$case_submitter_id, ARHGAP32_cryptic_cBio$case_submitter_id) 
+      # 5 cases
+intersect(STMN2_cryptic_cBio$case_submitter_id, SYNJ2_cryptic_cBio$case_submitter_id) # none
+common_patients_ARHGAP32_SYNJ2 <- intersect(ARHGAP32_cryptic_cBio$case_submitter_id, SYNJ2_cryptic_cBio$case_submitter_id) 
+      # 31 cases with both ARHGAP32 and SYNJ2 cryptic events
 ```
 
-```{r raw cryptic counts and psi column, include = FALSE}
+```{r df with ARHGAP32 SYNJ2 common cases, echo = FALSE}
+common_ARHGAP32_SYNJ2 <- ARHGAP32_cryptic_cBio |> 
+  filter(case_submitter_id %in% common_patients_ARHGAP32_SYNJ2) |> 
+  select(case_submitter_id, start, end, strand, anno_count, cryptic_count, jir) |> 
+  left_join(SYNJ2_cryptic_cBio, by = "case_submitter_id", suffix = c("_ARHGAP32","_SYNJ2")) |> 
+  distinct() |> 
+  drop_na() |> 
+  select(-cancer) |> 
+  filter(sample_type == "Primary Tumor") |> 
+  janitor::clean_names() 
 
-STMN2_cryptic_rawcounts_psi <- STMN2_query |> 
-  select(gdc_cases.submitter_id, anno_count, cryptic_count, jir) |> 
-  mutate(total_count = anno_count + cryptic_count) |> 
-  mutate(STMN2_psi = cryptic_count / total_count) |> 
-  select(-total_count) |> 
-  rename("STMN2_anno_count" = "anno_count",
-         "STMN2_cryptic_count" = "cryptic_count",
-         "STMN2_jir" = "jir")
+  # within each patient, what is the fraction of cryptic to annotated reads?
+common_ARHGAP32_SYNJ2 |> 
+  select(case_submitter_id,gdc_primary_site,disease_survival_months,mutation_count,jir_arhgap32,jir_synj2) |> 
+  pivot_longer(cols = c(jir_arhgap32,jir_synj2),
+               names_to = "gene",
+               values_to = "cryptic_jir") |>  
+  mutate(gene = str_replace(gene, "jir_", "")) |> 
+  mutate(cryptic_jir = 1 - cryptic_jir) |> 
+  ggplot(aes(x = gene,y = cryptic_jir)) + 
+  geom_boxplot()
 
-ARHGAP32_cryptic_rawcounts_psi <- ARHGAP32_query |> 
-  select(gdc_cases.submitter_id, anno_count, cryptic_count, jir) |> 
-  mutate(total_count = anno_count + cryptic_count) |> 
-  mutate(ARHGAP32_psi = cryptic_count / total_count) |> 
-  select(-total_count) |> 
-  rename("ARHGAP32_anno_count" = "anno_count",
-         "ARHGAP32_cryptic_count" = "cryptic_count",
-         "ARHGAP32_jir" = "jir")
-
-SYNJ2_cryptic_rawcounts_psi <- SYNJ2_query |> 
-  select(gdc_cases.submitter_id, anno_count, cryptic_count, jir) |> 
-  mutate(total_count = anno_count + cryptic_count) |> 
-  mutate(SYNJ2_psi = cryptic_count / total_count) |> 
-  select(-total_count) |> 
-  rename("SYNJ2_anno_count" = "anno_count",
-         "SYNJ2_cryptic_count" = "cryptic_count",
-         "SYNJ2_jir" = "jir")
-```
-
-```{r combined table with STMN2 ARHGAP32 SYNJ2 raw jir psi, include = FALSE}
-
-STMN2_ARHGAP32_SYNJ2_combined <- STMN2_cryptic_rawcounts_psi |> 
-  full_join(ARHGAP32_cryptic_rawcounts_psi, by = "gdc_cases.submitter_id") |> 
-  full_join(SYNJ2_cryptic_rawcounts_psi, by = "gdc_cases.submitter_id") |> 
-  relocate(ARHGAP32_psi, .before = SYNJ2_psi) |> 
-  relocate(STMN2_psi, .before = ARHGAP32_psi) |> 
-  relocate(ARHGAP32_jir, .before = SYNJ2_jir) |> 
-  relocate(STMN2_jir, .before = ARHGAP32_jir) |> 
-  unique()
-```
-
-```{r do patients with high cryptic STMN2 have high cryptic expression, fig.show = "hold", out.width = "50%", echo = FALSE}
-
-STMN2_ARHGAP32_SYNJ2_combined |> 
-  ggplot(aes(x = STMN2_psi, y = ARHGAP32_psi)) +
+  # within each patient, is ARHGAP32 or SYNJ2 cryptic expressed at a higher rate?
+common_ARHGAP32_SYNJ2 |> 
+  select(case_submitter_id,gdc_primary_site,disease_survival_months,mutation_count,jir_arhgap32,jir_synj2) |> 
+  pivot_longer(cols = c(jir_arhgap32,jir_synj2),
+               names_to = "gene",
+               values_to = "cryptic_jir") |>  
+  mutate(gene = str_replace(gene, "jir_", "")) |> 
+  mutate(cryptic_jir = 1 - cryptic_jir) |> 
+  ggplot(aes(x = gene,y = cryptic_jir,group = case_submitter_id)) + 
   geom_point() +
-  geom_smooth(method = "lm", se=FALSE) +
-  labs(
-    x = "STMN2 psi",
-    y = "ARHGAP32 psi"
-  )
+  geom_line()
 
-STMN2_ARHGAP32_SYNJ2_combined |> 
-  ggplot(aes(x = STMN2_psi, y = SYNJ2_psi)) +
-  geom_point() +
-  geom_smooth(method = "lm", se=FALSE) +
-  labs(
-    x = "STMN2 psi",
-    y = "SYNJ2 psi"
-  )
-
-STMN2_ARHGAP32_SYNJ2_combined |> 
-  ggplot(aes(x = SYNJ2_psi, y = ARHGAP32_psi)) +
-  geom_point() +
-  geom_smooth(method = "lm", se=FALSE) +
-  labs(
-    x = "SYNJ2 psi",
-    y = "ARHGAP32 psi"
-  )
+common_ARHGAP32_SYNJ2 |> 
+  select(case_submitter_id,gdc_primary_site,disease_survival_months,mutation_count,jir_arhgap32,jir_synj2) |> 
+  mutate(jir_arhgap32 = 1 - jir_arhgap32 , jir_synj2 = 1 - jir_synj2) |> 
+  mutate(arh_ratio = log2(jir_arhgap32 / jir_synj2)) |> 
+  ggplot(aes(y = arh_ratio,x = 1)) + 
+  geom_violin() + 
+  geom_hline(yintercept = 0) + 
+  ylab("Log2Fold Ratio of ARHGAP32 to SYNJ2 cryptic expression")
 ```
 
 
+```{r df with STMN2 ARHGAP32 common cases, include = FALSE}
+common_STMN2_ARHGAP32 <- STMN2_cryptic_cBio |> 
+  filter(gdc_cases_samples_sample_type == "Primary Tumor",
+         case_submitter_id %in% common_patients_STMN2_ARHGAP32) |> 
+  select(case_submitter_id, cryptic_count, anno_count, jir) |> 
+  left_join(ARHGAP32_cryptic_cBio, by = "case_submitter_id",suffix = c("_STMN2","_ARHGAP32")) |>   
+  distinct() |> 
+  filter(gdc_cases_samples_sample_type == "Primary Tumor") |> 
+  janitor::clean_names() |> 
+  select(-c(chromosome, start, end, strand, rail_id, junction_coverage, junction_avg_coverage)) 
+```
+
+
+```{r df with all common cases, echo = FALSE}
+all_common_cases <- common_STMN2_ARHGAP32 |> 
+  full_join(common_ARHGAP32_SYNJ2) 
+
+all_common_cases |> 
+  pivot_longer(cols = c(jir_stmn2, jir_arhgap32, jir_synj2),
+               names_to = "gene",
+               values_to = "cryptic_jir") |> 
+  mutate(gene = str_replace(gene, "jir_", "")) |> 
+  mutate(cryptic_jir = 1 - cryptic_jir) |> 
+  ggplot(aes(x = gene, 
+             y = cryptic_jir,
+             group = case_submitter_id)) +
+  geom_point() +
+  geom_line()
+```
+
+```{r case set of all 14 common patients, include = FALSE}
+
+all_common_cases <- all_common_cases |> 
+  mutate(case_id = paste0(study_id, ":", case_submitter_id)) |> 
+  distinct()
+
+#write_clip(unique(all_common_cases$case_id)) # copies all common patients to clipboard
+#write_clip(unique(all_common_cases$case_submitter_id))
+
+# filter mutation_clinical_data for 14 common patients only 
+
+#x <- mutation_clinical_data |> 
+  #filter(case_submitter_id %in% all_common_cases)
+
+#intersect(all_common_cases$case_submitter_id, mutation_clinical_data$case_submitter_id)
+
+
+#intersect(STMN2_cryptic_cBio$case_submitter_id, SYNJ2_cryptic_cBio$case_submitter_id)
+```

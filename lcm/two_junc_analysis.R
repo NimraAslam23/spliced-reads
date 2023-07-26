@@ -23,13 +23,81 @@ library(dplyr)
 
 # functions ---------------------------------------------------------------
 
+count_query <- function(gene_name, snapcount_coords, strand_code) {
+  cryptic_query <-  QueryBuilder(compilation = 'tcga',regions = snapcount_coords) 
+  
+  if(strand_code == "+"){
+    cryptic_query <- set_row_filters(cryptic_query, strand == "+") 
+  }else if(strand_code == "-"){
+    cryptic_query <- set_row_filters(cryptic_query, strand == "-") 
+  }
+  
+  cryptic_query_exact <- set_coordinate_modifier(cryptic_query, Coordinates$Exact) 
+  print("junction querying beginning")
+  juncs_on <- query_jx(cryptic_query) 
+  juncs_on_flat <- query_jx(cryptic_query,return_rse = FALSE) 
+  samples_with <- juncs_on@colData |> 
+    as.data.frame()
+  print("junction querying done")
+  samples_with <- samples_with |> 
+    select(c("rail_id",
+             "gdc_cases.demographic.gender",
+             "gdc_cases.submitter_id",
+             "gdc_cases.project.name",
+             "gdc_cases.project.primary_site",
+             "gdc_cases.diagnoses.tumor_stage",
+             "gdc_cases.samples.sample_type",
+             "cgc_case_primary_site",
+             "junction_coverage",
+             "junction_avg_coverage")) 
+  
+  juncs_on_flat <- juncs_on_flat |> 
+    select(chromosome,start,end,strand,samples) |> 
+    separate_rows(samples, sep = ',') |> 
+    filter(samples != "") |> 
+    separate(samples, into = c("rail_id","count")) |> 
+    mutate(rail_id = as.integer(rail_id)) |> 
+    mutate(count = as.numeric(count)) 
+  
+  gene_df <- juncs_on_flat |> 
+    left_join(samples_with) |> 
+    filter(end == str_split(snapcount_coords,'-',simplify = TRUE)[[2]]) |> 
+    filter(start == str_split(str_split(snapcount_coords,'-',simplify = TRUE)[[1]],":",simplify = TRUE)[[2]])
+  return(gene_df)
+}
+
+# query cryptic + anno and join into one df
+
+combine_two_junctions <- function(gene_name, snapcount_coords_cryptic, 
+                                  snapcount_coords_annotated, strand_code) {
+  
+  cryptic_query <- count_query(gene_name, snapcount_coords_cryptic, strand_code) |> 
+    rename("cryptic_count" = "count") |> 
+    select(gdc_cases.submitter_id, cryptic_count)
+  anno_query <- count_query(gene_name, snapcount_coords_annotated, strand_code) |> 
+    rename("anno_count" = "count")
+  
+  query <- anno_query |> 
+    left_join(cryptic_query, by = "gdc_cases.submitter_id") |> 
+    mutate(jir = cryptic_count/(anno_count + cryptic_count)) |> 
+    relocate(cryptic_count, .after = anno_count) |> 
+    relocate(jir, .after = cryptic_count) |> 
+    mutate(gene_name = gene_name) |> 
+    mutate(coords_cryptic = snapcount_coords_cryptic)
+  
+  return(query)
+  
+}
+
+# add rpm column
+
 add_rpm_column <- function(df) {
   
   df |> 
     mutate(rpm = (cryptic_count/junction_coverage)*1000000)
   
   return(df)
-}  
+}
 
 
 # add STMN2, ARHGAP32, SYNJ2 to two_junc table ----------------------------
@@ -62,7 +130,6 @@ tcga_cryptics_metatable = tmp[which(is_null == FALSE)] |> rbindlist()
   
 
 write.table(tcga_cryptics_metatable, file="tcga_cryptics_metatable.txt", sep=",")
-
 #write_clip(tcga_cryptics_metatable$gdc_cases.submitter_id)
 
 # join clinical data ------------------------------------------------------
@@ -184,239 +251,159 @@ tcga_cryptics_metatable |>
 
 # survival analysis -------------------------------------------------------
 
-# STMN2 survival
+cryptic_events <- unique(tcga_cryptics_metatable$coords_cryptic)
+survival_plots <- list()
 
-tcga_cryptics_metatable_survival <- tcga_cryptics_metatable |>  
-  filter(cryptic_true >= 100 & cryptic_false >= 100) 
-
-STMN2_survival <- tcga_cryptics_metatable |>  
+tcga_cryptics_metatable <- tcga_cryptics_metatable |> 
   mutate(months_of_disease_specific_survival = as.numeric(months_of_disease_specific_survival)) |> 
-  mutate(cryptic_detected = as.logical(cryptic_detected)) |> 
-  filter(gene_name == "STMN2") |> 
-  filter(cryptic_true >= 100 & cryptic_false >= 100) |> 
+  filter(!is.na(months_of_disease_specific_survival) & months_of_disease_specific_survival != "NA") |>
+  mutate(mutation_count = as.numeric(mutation_count)) |> 
+  filter(!is.na(mutation_count) & mutation_count != "NA") |> 
+  filter(!is.na(cryptic_detected)) |> 
+  filter(n_detected_cryptic > 2) |> 
+  mutate(cryptic_detected = as.logical(cryptic_detected)) |> #changes FALSE and TRUE to 0 and 1 respectively
+  distinct() |> 
   filter(!is.na(disease_specific_survival_status) & disease_specific_survival_status != "NA") |> 
   mutate(disease_specific_survival_status = str_extract(disease_specific_survival_status, "^[^:]+"),
-         disease_specific_survival_status = as.numeric(disease_specific_survival_status)) |> 
-  filter(!is.na(months_of_disease_specific_survival) & months_of_disease_specific_survival != "NA") |> 
-  filter(!is.na(cryptic_detected) & cryptic_detected != "NA") |> 
-  mutate(cancer_abbrev = as.factor(cancer_abbrev)) |> 
-  filter(!is.na(cancer_abbrev) & cancer_abbrev != "NA")
+         disease_specific_survival_status = as.numeric(disease_specific_survival_status))
 # 1 = dead with tumor
-# 0 = alive or dead tumor free
- 
 
-STMN2_KM_fit <- survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ cryptic_detected, data = STMN2_survival) 
+pdf("survival_metatable.pdf", width = 10, height = 10)
 
-ggsurvplot(STMN2_KM_fit, data = STMN2_survival, 
-           facet.by = 'cancer_abbrev',
-           palette = "jco",
-           main = "Kaplan-Meier Curve: All Cancer Types (STMN2)",
-           legend.title = "STMN2 Cryptic Detected",
-           legend.labs = c("FALSE", "TRUE"),
-           legend.position = "bottom",
-           pval = TRUE,
-           conf.int = TRUE,
-           risk.table = TRUE,
-           tables.height = 0.2,
-           tables.theme = theme_cleantable(),
-           xlab = "Time (months)",
-           font.x = c(10, "bold"),
-           ylab = "Survival Probability",
-           font.y = c(10, "bold"),
-           fontsize = 4
-)
-
-
-
-# TMEM260 gene ----------------------------------------------------------------
-
-TMEM260_clinical_jir <- tcga_cryptics_metatable |> 
-  filter(gene_name == "TMEM260") |> 
-  separate(study_id,into = ("study_start"),remove = FALSE)
-
-# cancer types with general TMEM260 expression
-TMEM260_clinical_jir |> 
-  distinct() |> 
-  drop_na() |> 
-  ggplot(aes(x = fct_rev(fct_infreq(cancer_abbrev)))) +
-  geom_bar(aes(fill = cancer_abbrev)) +
-  coord_flip() +
-  labs(
-    x = "Cancer Type",
-    y = "Number of Cases"
-  ) +
-  theme(legend.position = "none")
+for(event in cryptic_events) {
   
-# TMEM260 junction coverage
+  gene_name <- tcga_cryptics_metatable |> 
+    filter(coords_cryptic == event) |> 
+    pull(gene_name) |> 
+    unique()
+  plot_name <- glue::glue("{event} - {gene_name}")
+  
+  plot_data <- tcga_cryptics_metatable |> # Use filtered data for the current event
+    filter(coords_cryptic == event) 
+  
+  KM_fit <- survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ cryptic_detected, data = tcga_cryptics_metatable)
 
-    # overall TMEM260 junction coverage in different cancer sites
-TMEM260_clinical_jir |> 
-  filter(cryptic_count > 2) |> 
-  drop_na() |> 
-  ggplot(aes(x = junction_avg_coverage,
-             y = fct_reorder(cancer_abbrev, junction_avg_coverage, median))) +
-  geom_boxplot(aes(fill = cancer_abbrev)) +
-  labs(
-    x = "Junction Average Coverage",
-    y = "Cancer Type"
+  survival_plots[[event]] <- ggsurvplot(KM_fit, data = plot_data,
+             legend.title = "Cryptic Detected",
+             legend.labs = c("FALSE", "TRUE"),
+             legend.position = "bottom",
+             pval = TRUE,
+             conf.int = TRUE,
+             risk.table = TRUE,
+             tables.height = 0.2,
+             tables.theme = theme_cleantable(),
+             xlab = "Time (months)",
+             font.x = c(10, "bold"),
+             ylab = "Survival Probability",
+             font.y = c(10, "bold"),
+             fontsize = 4
   ) + 
-  theme(legend.position = "none")
-
-    # adding reads per million (rpm) column for cryptic coverage
-TMEM260_clinical_jir |> add_rpm_column() |> 
-  drop_na() |> 
-  ggplot(aes(x = log10(rpm),
-             y = fct_reorder(cancer_abbrev, rpm, median))) +
-  geom_boxplot(aes(fill = cancer_abbrev)) +
-  labs(
-    x = "Cryptic Coverage (log10 reads per million)",
-    y = "Cancer Type"
-  ) +
-  theme(legend.position = "none")
-
-# cryptic TMEM260 expression
-
-    # which cancers?
-TMEM260_events_different_cancers <- TMEM260_clinical_jir |> 
-  filter(cryptic_count > 2) |> 
-  drop_na(cancer_abbrev) |> 
-  janitor::tabyl(cancer_abbrev) |> arrange(desc(percent))
-
-TMEM260_events_different_cancers |> 
-  ggplot(aes(x = reorder(cancer_abbrev, percent),
-             y = percent)) +
-  geom_bar(aes(fill = cancer_abbrev), stat = "identity") +
-  scale_y_continuous(labels = scales::percent_format()) +
-  coord_flip() +
-  labs(
-    x = "Cancer Type",
-    y = "Percentage of Cases"
-  ) +
-  theme(legend.position = "none")
-
-    # where are these cancers?
-TMEM260_events_primary_sites <- TMEM260_clinical_jir |> 
-  filter(cryptic_count > 2) |> 
-  drop_na(gdc_cases_project_primary_site) |> 
-  janitor::tabyl(gdc_cases_project_primary_site) |> arrange(desc(percent))
-
-TMEM260_events_primary_sites |> 
-  ggplot(aes(x = reorder(gdc_cases_project_primary_site, percent),
-             y = percent)) +
-  geom_bar(aes(fill = gdc_cases_project_primary_site), stat = "identity") +
-  scale_y_continuous(labels = scales::percent_format()) +
-  coord_flip() +
-  labs(
-    x = "Primary Site of Cancer",
-    y = "Percentage of Cases"
-  ) +
-  theme(legend.position = "none")
-
-# Mutational burden 
-
-cBio_clinical |> 
-  left_join(TMEM260_clinical_jir, by = "case_submitter_id") |> 
-  janitor::clean_names() |> 
-  rename("cancer_abbrev" = "cancer_abbrev_x") |> 
-  rename("cancer" = "cancer_x") |> 
-  select(study_id, case_submitter_id, aneuploidy_score, cancer, months_of_disease_specific_survival, 
-         mutation_count, overall_survival_months, disease_specific_survival_status, cryptic_count, 
-         jir, anno_count, gdc_cases_project_primary_site) |> 
-  separate(study_id, into = ("study_start"), remove = FALSE) |> 
-  unique() |> 
-  mutate(mutation_count = as.numeric(mutation_count)) |> 
-  filter(!is.na(mutation_count) & mutation_count !="NA") |> 
-  mutate(tmem260_cryptic_detected = cryptic_count >= 2) |> 
-  group_by(study_start) |> 
-  mutate(n_total_samples = n_distinct(case_submitter_id)) |> 
-  mutate(n_detected_tmem260 = sum(tmem260_cryptic_detected, na.rm = TRUE)) |> 
-  ungroup() |> 
-  filter(!is.na(tmem260_cryptic_detected)) |> 
-  filter(n_detected_tmem260 > 2) |> 
-  ggplot(aes(x = tmem260_cryptic_detected,
-             y = log10(mutation_count))) +
-  geom_boxplot(aes(fill = tmem260_cryptic_detected)) +
-  labs(x = "Cancer Type",
-       y = "Log10 Mutation Count") +
-  facet_wrap(~study_start) +
-  scale_y_continuous(trans = scales::pseudo_log_trans()) +
-  theme(legend.position = "bottom") +
-  guides(fill = guide_legend(title = "Cryptic TMEM260 detected"))
-
-
-# looping through all events in metatable and printing plots ---------------------------------
-
-metatable_cryptic_plots <- list() #empty list for all plots made using tcga_cryptics_metatable df
-pdf("metatable_cryptic_plots.pdf")
-for(i in metatable_cryptic_plots){
+    ggtitle(plot_name)
   
+  print(survival_plots[[event]])
+}
+
+dev.off()
+
 # which cancers have the most cryptic events? -----------------------------
 
 cryptic_events <- unique(tcga_cryptics_metatable$coords_cryptic)
 cryptic_plots <- list()
+cryptic_tables <- tibble::tibble()
+
+pdf("cryptic_metatable_plots.pdf", width = 10, height = 10)
 
 for(event in cryptic_events) {
+  
+  gene_name <- tcga_cryptics_metatable |> 
+    filter(coords_cryptic == event) |> 
+    pull(gene_name) |> 
+    unique()
+  plot_name <- glue::glue("{event} - {gene_name}")
+  
   cryptic_plots[[event]] <- tcga_cryptics_metatable |> 
     filter(coords_cryptic == event) |> 
     filter(cryptic_count >= 2) |> 
     drop_na() |> 
-    ggplot(aes(x = log10(cryptic_count), 
+    ggplot(aes(x = cryptic_count, 
                y = fct_reorder(cancer_abbrev, cryptic_count, median))) +
     geom_boxplot(aes(fill = cancer_abbrev)) +
+    scale_x_continuous(trans = scales::pseudo_log_trans()) +
     labs(
-      x = "Log10 Cryptic Count",
+      x = "Cryptic Count",
       y = "Cancer Type",
     ) +
+    ggtitle(plot_name) +
     theme(plot.title = element_text(size=10),
           legend.position = "none")
   
   print(cryptic_plots[[event]])
 }
 
-print(cryptic_plots)
-
-
+dev.off()
 
 
 cryptic_tables <- list()
 
 for(event in cryptic_events) {
-  cryptic_tables[[event]] <- tcga_cryptics_metatable |> 
+  tmp <- tcga_cryptics_metatable |> 
     filter(coords_cryptic == event) |> 
     filter(cryptic_count >= 2) |> 
     drop_na(cancer_abbrev) |> 
     janitor::tabyl(cancer_abbrev) |> 
-    arrange(desc(percent))
+    arrange(desc(percent)) |> 
+    mutate(event = event, gene_name = gene_name)
   
-  print(cryptic_tables[[event]])
+  cryptic_tables <- rbind(cryptic_tables, tmp)
 }
 
 # mutational burden -------------------------------------------------------
 
 mutational_burden_metatable_plots <- list()
 
+pdf("mutational_burden_metatable_plots.pdf", width = 10, height = 12)
+
 for(event in cryptic_events) {
-  mutational_burden_metatable_plots[[event]] <- tcga_cryptics_metatable |> 
+  
+  gene_name <- tcga_cryptics_metatable |> 
+    filter(coords_cryptic == event) |> 
+    pull(gene_name) |> 
+    unique()
+  plot_name <- glue::glue("{event} - {gene_name}")
+  
+  plot_data <- tcga_cryptics_metatable |> 
+    filter(coords_cryptic == event) |> 
     separate(study_id,into = ('study_start'),remove = FALSE) |> 
     unique() |> 
     mutate(mutation_count = as.numeric(mutation_count)) |> 
     filter(!is.na(mutation_count) & mutation_count != "NA") |> 
     filter(!is.na(cryptic_detected)) |> 
-    filter(n_detected_cryptic > 2) |> 
+    filter(n_detected_cryptic > 2) 
+  
+  if (nrow(plot_data) > 0) {
+    mutational_burden_metatable_plots[[event]] <- plot_data |>  
     ggplot(aes(x = cryptic_detected,
                y = log10(mutation_count))) + 
     geom_boxplot(aes(fill = cryptic_detected)) + 
     labs(x = "Cancer Type",
          y = "Log10 Mutation Count") +
-    facet_wrap(~study_start) +
+    ggtitle(plot_name) +
+    facet_wrap(~cancer_abbrev) +
     scale_y_continuous(trans = scales::pseudo_log_trans()) +
-    stat_compare_means(comparisons = list(c("TRUE", "FALSE")), label = "p.format") +
-    theme(legend.position = "bottom") +
+    stat_compare_means(comparisons = list(c("TRUE", "FALSE")), label = "p.format", hide.ns = TRUE, size = 3) +
+    theme(legend.position = "bottom",
+          axis.text.x = element_text(angle = 45, hjust = 1),
+          axis.text.y = element_text(hjust = 1.5),  # Adjust the y-axis label spacing
+          plot.title = element_text(size = 12),  # Adjust title font size
+          strip.text = element_text(size = 10),
+          plot.margin = unit(c(1, 2, 1, 2), "cm")) +
     guides(fill = guide_legend(title = "Cryptic detected"))
-  
+    
   print(mutational_burden_metatable_plots[[event]])
+  } else {
+  message(glue::glue("No data for {event} - {gene_name}."))
+  }
 }
 
-
-} # for the printing pdf loop
+ # for the printing pdf loop
 dev.off()

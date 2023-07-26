@@ -152,6 +152,8 @@ mean_per_junction |>
 
 **Figure 3**: Annotated events are expressed significantly higher in control LCM neurons compared to other types of junction events. An *ambig_gene* junction overlaps exons originating from more than one gene. An *annotated* junction matches an existing intron. *None* means the junction has neither end overlapping a known exon. One end of a *novel_acceptor* or *novel_donor* junction matches that of a known exon. Both ends of a *novel_exon_skip* junction overlap a known exon boundary. 
 
+Both the ALS and control cohorts have expression of mostly annotated junctions. ALS LCM neurones also exhibit expression of completely novel cryptic exons (with neither end overlapping a known exon) and novel acceptor junctions, with one end overlapping that of a known exon. Almost all junction events are seen in control LCM neurones. 
+
 ## Datasets supporting cryptic and annotated STMN2 events
 
 Next, we investigated the number of datasets (from knockdown studies) that have found significantly higher expression of these TDP43 events.
@@ -166,7 +168,7 @@ datasets_junction_found <- mean_per_junction |>
 kable(datasets_junction_found, caption = "Average number of datatsets the *STMN2* junction events are found in.")
 ```
 
-The annotated events found more highly expressed in control motor neurons were unique to a single TDP-43 knockdown, while the junction events in ALS motor neurons were more commonly found in studies (Table 2).
+The annotated events found more highly expressed in control motor neurons were unique to a single TDP-43 knockdown, while the junction events in ALS motor neurons were more commonly found in studies (Table 2). This means there is more evidence supporting the expression of the junction events found in ALS LCM neurones. 
 
 ## Investigating *STMN2* events
 

@@ -375,6 +375,8 @@ STMN2_cryptic_cBio <- STMN2_clinical_jir_cryptic |>
   janitor::clean_names() |> 
   select(-c(cgc_case_primary_site, cancer_abbrev_y, cancer_type)) |> 
   rename("cancer_abbrev" = "cancer_abbrev_x")
+
+write.table(STMN2_cryptic_cBio, file = "STMN2_cryptic_cBio.txt", sep=",")
 ```
 
 The **cBio_clinical** dataframe was joined to the existing dataframe containing the patients exhibiting cryptic STMN2 expression (**STMN2_clinical_jir_cryptic**). This join added the clinical data to only the relevant patients of interest (i.e., those with cryptic STMN2) to produce the **STMN2_cryptic_cBio** dataframe.
@@ -588,13 +590,10 @@ survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_stat
 ```
 
 ```{r survival KM curves STMN2 - both cryptic and non, out.width = "90%", echo = FALSE}
-survival_STMN2_cryptic_KM <- survival_STMN2_cryptic |> 
-  filter()
 
 STMN2_KM_fit <- survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ stmn2_cryptic_detected, data = survival_STMN2_cryptic) 
 
 ggsurvplot(STMN2_KM_fit, data = survival_STMN2_cryptic, 
-           facet.by = "cancer_abbrev",
            main = "Kaplan-Meier Curve: All Cancer Types (STMN2)",
            legend.title = "STMN2 Cryptic Detected",
            legend.labs = c("FALSE", "TRUE"),
@@ -699,14 +698,3 @@ aneuploidy_STMN2 |>
 **Figure 9**: No significant difference in aneuploidy score in cryptic STMN2 versus non-cryptic cases. 
 
 Aneuploidy score is neither significantly higher nor lower in cases with cryptic STMN2 expression, indicating that the cryptic expression does not influence chromosome number. 
-
-# Specific Mutations in Cases with Cryptic STMN2 Events 
-
-```{r joining STMN2 and mutation df, include = FALSE}
-
-STMN2_mutations <- STMN2_clinical_jir |> 
-  left_join(all_mutation_data, by = "case_submitter_id") |> 
-  janitor::clean_names() |> 
-  select(chromosome_x, start, end, strand_x, anno_count, cryptic_count, jir, case_submitter_id, gdc_cases_project_name, gdc_cases_project_primary_site, gene_name, coords_cryptic, cancer_abbrev, hugo_symbol, entrez_gene_id, ncbi_build, chromosome_y, start_position, end_position, strand_y, variant_classification, variant_type, reference_allele, tumor_seq_allele2, db_snp_rs, mutation_status, hgv_sc, hgv_sp, hgv_sp_short, transcript_id, all_effects, gene, feature, feature_type, one_consequence, consequence, biotype, sift, poly_phen, impact) 
-  
-```
