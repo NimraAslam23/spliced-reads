@@ -278,9 +278,12 @@ for(event in cryptic_events) {
     unique()
   plot_name <- glue::glue("{event} - {gene_name}")
   
+  message(glue::glue("Processing: {event} - {gene_name}"))
+  
   plot_data <- tcga_cryptics_metatable |> # Use filtered data for the current event
     filter(coords_cryptic == event) 
   
+  if (length(unique(plot_data$cryptic_detected)) == 2)
   KM_fit <- survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ cryptic_detected, data = tcga_cryptics_metatable)
 
   survival_plots[[event]] <- ggsurvplot(KM_fit, data = plot_data,
