@@ -12,6 +12,7 @@ library(snapcount)
 library(ggsignif)
 library(TCGAbiolinks)
 library(stringr)
+library(rstatix)
 
 # need cBio_clinical df for this script
 
@@ -119,17 +120,8 @@ mutation_clinical_data <- rbind(mutation_clinical_data, combined_mutation_data)
 write.table(mutation_clinical_data, file = "mutation_clinical_data.txt", sep=",")
 mutation_clinical_data <- read.table("mutation_clinical_data.txt", sep=",")
 
-# filter for patients with >1 cryptic event -------------------------------
-
-mutation_clinical_data |> 
-  filter(case_submitter_id %in% all_common_cases$case_submitter_id) |> 
-  mutate(gene = as.factor(gene)) |> 
-  count(gene, variant_type) |> 
-  filter(!is.na(gene) & gene != "NA") |> 
-  group_by(gene) |> 
-  mutate(proportion = n / sum(n)) |> 
-  ggplot(aes(x = gene, y = proportion)) +
-  geom_col()
+# proportion of all mutations of each gene vs proportion in cases with >1 cryptic
+# (how many mutations do we see in each gene and then the fraction of all mutations that appear in each gene)
 
 gene_mutation_proportions <- mutation_clinical_data |>
   group_by(gene) |>
@@ -142,7 +134,8 @@ common_cases_mutation_proportions <- mutation_clinical_data |>
   summarise(common_cases_mutation_count = n()) |> 
   mutate(common_cases_proportion = common_cases_mutation_count / sum(common_cases_mutation_count)) 
 
-mutation_clinical_data |>
+# comparing the general proportion of mutations in each gene to their proportion in the cases with >1 cryptic
+gene_common_proportion <- mutation_clinical_data |>
   left_join(gene_mutation_proportions, by="gene") |> 
   left_join(common_cases_mutation_proportions, by="gene") |> 
   filter(case_submitter_id %in% all_common_cases$case_submitter_id) |>
@@ -150,57 +143,21 @@ mutation_clinical_data |>
   pivot_longer(cols = c(general_proportion, common_cases_proportion),
                names_to = "general_vs_common_cases",
                values_to = "proportion") |> 
-  pivot_longer(cols = c(gene_mutation_count, common_cases_mutation_count),
-               names_to = "gene_or_common",
-               values_to = "gene_mutation_count") |> 
   mutate(general_vs_common_cases = case_when(
     general_vs_common_cases == "general_proportion" ~ "general",
-    general_vs_common_cases == "common_cases_proportion" ~ "common_cases",
+    general_vs_common_cases == "common_cases_proportion" ~ "common",
     TRUE ~ general_vs_common_cases
   )) |> 
-  mutate(gene_or_common = case_when(
-    gene_or_common == "gene_mutation_count" ~ "general",
-    gene_or_common == "common_cases_mutation_count" ~ "common_cases",
-    TRUE ~ gene_or_common
-  )) 
+  filter(gene_mutation_count >= 100)
 
-
-
-  ggplot(aes(x = gene,
+gene_common_proportion|> 
+  filter(gene_mutation_count >= 100) |> 
+  ggplot(aes(x = reorder(gene, proportion),
              y = proportion,
              fill = general_vs_common_cases)) +
   geom_col(position = "dodge") +
-  scale_y_continuous(labels = scales::percent_format())
-
-
-# Specific Mutations in Cases with Cryptic STMN2 Events -------------------
-
-mutation_clinical_data |> 
-    left_join(tcga_cryptics_metatable, by="case_submitter_id") |> 
-    select(-ends_with(".y")) |> janitor::clean_names() |> 
-    rename_with(~ gsub("_x$", "", .), contains("_x")) |> 
-    filter(gene_name == "STMN2") |> 
-    left_join(gene_mutation_proportions, by="gene") |> 
-    left_join(common_cases_mutation_proportions, by="gene") |> 
-    filter(case_submitter_id %in% all_common_cases$case_submitter_id) |>
-    filter(gene %in% cosmic_cancer_genes$Gene) |> 
-    pivot_longer(cols = c(general_proportion, common_cases_proportion),
-                 names_to = "general_vs_common_cases",
-                 values_to = "proportion") |> 
-    pivot_longer(cols = c(gene_mutation_count, common_cases_mutation_count),
-                 names_to = "gene_or_common",
-                 values_to = "gene_mutation_count") |> 
-    mutate(general_vs_common_cases = case_when(
-      general_vs_common_cases == "general_proportion" ~ "general",
-      general_vs_common_cases == "common_cases_proportion" ~ "common_cases",
-      TRUE ~ general_vs_common_cases
-    )) |> 
-    ggplot(aes(x = gene,
-               y = proportion,
-               fill = general_vs_common_cases)) +
-    geom_col(position = "dodge") +
-    coord_flip() +
-    scale_y_continuous(labels = scales::percent_format()) +
-    theme(legend.position = "bottom")
-
-           
+  scale_y_continuous(labels = scales::percent_format()) +
+  stat_compare_means(comparisons = list(c("general", "common")),
+                     label = "p.format",
+                     method = "t.test",
+                     paired = TRUE)
