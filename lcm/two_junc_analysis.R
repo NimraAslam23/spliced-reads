@@ -156,6 +156,7 @@ cryptic_true_false_counts <- tcga_cryptics_metatable |>
   rename("case_submitter_id" = "gdc_cases_submitter_id") |> 
   left_join(cBio_clinical, by = "case_submitter_id") |> 
   janitor::clean_names() |> 
+  distinct() |> 
   mutate(cryptic_detected = cryptic_count >= 2) |> 
   group_by(cancer_abbrev) |> 
   mutate(n_detected_cryptic = sum(cryptic_detected, na.rm = TRUE)) |> 
@@ -174,12 +175,14 @@ cryptic_true_false_counts <- tcga_cryptics_metatable |>
   rename("cryptic_true" = "TRUE") |> 
   rename("cryptic_false" = "FALSE")
 
+
 tcga_cryptics_metatable <- tcga_cryptics_metatable |> 
   janitor::clean_names() |> 
   select(-c(rail_id, gdc_cases_diagnoses_tumor_stage, gdc_cases_samples_sample_type, cgc_case_primary_site)) |> 
   rename("case_submitter_id" = "gdc_cases_submitter_id") |> 
   left_join(cBio_clinical, by = "case_submitter_id") |> 
   janitor::clean_names() |> 
+  distinct() |> 
   mutate(mutation_count = as.numeric(mutation_count)) |> 
   filter(!is.na(mutation_count) & mutation_count != "NA") |> 
   mutate(cryptic_detected = cryptic_count >= 2) |> 
@@ -193,7 +196,7 @@ tcga_cryptics_metatable <- tcga_cryptics_metatable |>
 # cancer sample sizes
 cancer_sample_sizes <- tcga_cryptics_metatable |> 
   group_by(cancer_abbrev) |> 
-  summarise(count = n()) |> 
+  summarise(count = n(), na.rm=TRUE) |> 
   ungroup() 
 
 tcga_cryptics_metatable <- tcga_cryptics_metatable |> 

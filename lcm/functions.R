@@ -203,8 +203,45 @@ combine_mutation_data <- function(folder_path, pattern = "^TCGA.*_mutations.tsv$
   return(df)
 }
 
+# tidy mutation data downloaded from cBioPortal for single cancer type
+tidy_mutation_data <- function(mutations_orig, cryptic_cBio) {
+  
+  cancer_abbrev <- strsplit(deparse(substitute(mutations_orig)), "_")[[1]][1]
+  
+  cryptic_event <- strsplit(deparse(substitute(cryptic_cBio)), "_")[[1]][1]
+  
+  mutations <- mutations_orig |> 
+    janitor::clean_names() |> 
+    mutate(case_submitter_id = str_extract(tumor_sample_barcode, "([^-]+-[^-]+-[^-]+)")) |> 
+    relocate(case_submitter_id, .before="hugo_symbol") |> 
+    select(c(case_submitter_id, hugo_symbol, entrez_gene_id, chromosome, start_position, end_position, strand,
+             consequence, variant_type, reference_allele, tumor_seq_allele2, db_snp_rs, tumor_sample_barcode,
+             n_ref_count, n_alt_count, hgv_sc, hgv_sp, hgv_sp_short, transcript_id, protein_position,
+             amino_acids, biotype, canonical, exon, feature_type, gene, impact, poly_phen, sift, variant_class, 
+             all_effects)) |> 
+    filter(case_submitter_id %in% cryptic_cBio$case_submitter_id) |> 
+    mutate(cryptic_event = cryptic_event) |> 
+    mutate(cancer_abbrev = cancer_abbrev) |> 
+    relocate(cryptic_event, .before = "case_submitter_id") |> 
+    relocate(cancer_abbrev, .after = "case_submitter_id")
+  
+  return(mutations)
+}
 
 
 
-
+  pcpg_mutations <- pcpg_mutations_orig |> 
+  janitor::clean_names() |> 
+  mutate(case_submitter_id = str_extract(tumor_sample_barcode, "([^-]+-[^-]+-[^-]+)")) |> 
+  relocate(case_submitter_id, .before="hugo_symbol") |> 
+  select(c(case_submitter_id, hugo_symbol, entrez_gene_id, chromosome, start_position, end_position, strand,
+           consequence, variant_type, reference_allele, tumor_seq_allele2, db_snp_rs, tumor_sample_barcode,
+           n_ref_count, n_alt_count, hgv_sc, hgv_sp, hgv_sp_short, transcript_id, protein_position,
+           amino_acids, biotype, canonical, exon, feature_type, gene, impact, poly_phen, sift, variant_class, 
+           all_effects)) |> 
+  filter(case_submitter_id %in% STMN2_cryptic_cBio$case_submitter_id) |> 
+  mutate(cryptic_event = "STMN2") |> 
+  mutate(cancer_abbrev = "PCPG") |> 
+  relocate(cryptic_event, .before = "case_submitter_id") |> 
+  relocate(cancer_abbrev, .after = "case_submitter_id")
 
