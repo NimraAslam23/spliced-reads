@@ -109,6 +109,8 @@ two_junc <- two_junc |>
   add_row(excl = "chr11:128988126-128998318", strand = "-", incl = "chr11:128992047-128998318", annot.strand = "-", annot.gene_id = "ARHGAP32") |> 
   add_row(excl = "chr6:158017291-158028755", strand = "+", incl = "chr6:158017291-158019983", annot.strand = "+", annot.gene_id = "SYNJ2")
 
+write.table(two_junc, file="two_junc.txt", sep=",", quote=FALSE)
+
 # query TCGA for additional cryptic events and combine into metatable --------
 
 tmp = list(data.table(matrix()))
