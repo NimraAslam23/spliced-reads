@@ -219,7 +219,7 @@ tidy_mutation_data <- function(mutations_orig, cryptic_cBio) {
              n_ref_count, n_alt_count, hgv_sc, hgv_sp, hgv_sp_short, transcript_id, protein_position,
              amino_acids, biotype, canonical, exon, feature_type, gene, impact, poly_phen, sift, variant_class, 
              all_effects)) |> 
-    filter(case_submitter_id %in% cryptic_cBio$case_submitter_id) |> 
+    mutate(cryptic_or_non = ifelse(case_submitter_id %in% cryptic_cBio$case_submitter_id, "cryptic", "non-cryptic")) |> 
     mutate(cryptic_event = cryptic_event) |> 
     mutate(cancer_abbrev = cancer_abbrev) |> 
     relocate(cryptic_event, .before = "case_submitter_id") |> 
