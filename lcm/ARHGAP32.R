@@ -135,11 +135,9 @@ ARHGAP32_clinical_jir <- ARHGAP32_query |> rename("case_submitter_id" = "gdc_cas
   left_join(ARHGAP32_clinical, by=c("case_submitter_id")) |> 
   select(-gdc_cases.diagnoses.tumor_stage, -age_at_index, -gdc_cases.demographic.gender, 
          -ajcc_pathologic_stage, -ethnicity, -race, -gender) |> 
+  janitor::clean_names() |> 
   rename("cancer_abbrev" = "cancer_type") |> 
-  rename("cancer_type" = "gdc_cases.project.name") |> 
-  rename("gdc_primary_site" = "gdc_cases.project.primary_site") |> 
-  rename("sample_type" = "gdc_cases.samples.sample_type") |> 
-  rename("cgc_primary_site" = "cgc_case_primary_site")
+  rename("cancer_type" = "gdc_cases_project_name") 
 
 ARHGAP32_clinical_jir_cryptic <- ARHGAP32_clinical_jir |> 
   filter(cryptic_count > 2) 
@@ -257,7 +255,7 @@ print(f_ARHGAP32_analysis)
 
 ARHGAP32_events_different_cancers <- ARHGAP32_clinical_jir_cryptic |> 
   drop_na() |> 
-  janitor::tabyl(cancer_type) |> arrange(-percent)
+  janitor::tabyl(cancer_abbrev) |> arrange(-percent)
 
 #kable(ARHGAP32_events_different_cancers, caption = "Breast cancer has high cryptic ARHGAP32 expression.")
 
@@ -281,7 +279,7 @@ print(g_ARHGAP32_analysis)
 
 ARHGAP32_events_primary_sites <- ARHGAP32_clinical_jir_cryptic |> 
   drop_na() |> 
-  janitor::tabyl(gdc_primary_site) |> arrange(-percent)
+  janitor::tabyl(gdc_cases_project_primary_site) |> arrange(-percent)
 
 #kable(ARHGAP32_events_primary_sites, caption = "")
 
@@ -628,3 +626,55 @@ r_ARHGAP32_analysis <- aneuploidy_ARHGAP32 |>
 print(r_ARHGAP32_analysis)
 
 dev.off()
+
+
+# survival - looping through each cancer type -----------------------------
+
+cancer_abbrev <- unique(survival_ARHGAP32_cryptic$cancer_abbrev)
+
+ARHGAP32_survival_plots <- list()
+
+pdf(file = "survival_ARHGAP32.pdf", width = 10, height = 10)
+
+for(abbrev in cancer_abbrev) {
+  
+  message(glue::glue("Processing cancer type: {abbrev}"))
+  
+  plot_data <- survival_ARHGAP32_cryptic |> 
+    filter(cancer_abbrev == abbrev)
+  
+  cancer <- survival_ARHGAP32_cryptic |> 
+    filter(cancer_abbrev == abbrev) |> 
+    pull(cancer_abbrev) |> 
+    unique()
+  
+  plot_name <- glue::glue("{cancer}")
+  
+  if (length(unique(plot_data$arhgap32_cryptic_detected)) == 2) {
+    KM_fit <- survfit(Surv(months_of_disease_specific_survival, disease_specific_survival_status) ~ arhgap32_cryptic_detected, data = plot_data)
+    
+    ARHGAP32_survival_plots[[abbrev]] <- ggsurvplot(KM_fit, data = plot_data,
+                                                 legend.title = "Cryptic Detected",
+                                                 legend.labs = c("FALSE", "TRUE"),
+                                                 legend.position = "bottom",
+                                                 pval = TRUE,
+                                                 conf.int = TRUE,
+                                                 risk.table = TRUE,
+                                                 tables.height = 0.2,
+                                                 tables.theme = theme_cleantable(),
+                                                 xlab = "Time (months)",
+                                                 font.x = c(12, "bold"),
+                                                 ylab = "Survival Probability",
+                                                 font.y = c(12, "bold"),
+                                                 fontsize = 6
+    ) +
+      ggtitle(plot_name)
+    
+    print(ARHGAP32_survival_plots[[abbrev]])
+  } else {
+    message(glue::glue("Skipping cancer type: {abbrev} due to insufficient data."))
+  }
+}
+
+dev.off()
+
