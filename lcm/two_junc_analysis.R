@@ -20,7 +20,6 @@ library(dplyr)
 # need two_junc df 
 # need cBio_clinical df
 
-
 # functions ---------------------------------------------------------------
 
 count_query <- function(gene_name, snapcount_coords, strand_code) {

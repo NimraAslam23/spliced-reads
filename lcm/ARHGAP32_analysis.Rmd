@@ -172,9 +172,9 @@ ARHGAP32_clinical_jir |>
   labs(
     x = "Cancer Type",
     y = "Number of Cases",
-    title = ""
+    title = "ARHGAP32 Expression in Different Cancer Types"
   ) +
-  theme(legend.position = "none", plot.title = element_text(size=10))
+  theme(legend.position = "none")
 # BRCA = breast cancer; HNSC = head and neck cancer
 ```
 
@@ -193,13 +193,14 @@ ARHGAP32_clinical_jir_cryptic |>
   labs(
     x = "Cancer Type",
     y = "Number of Cases",
-    title = "(a)"
+    title = "Cryptic ARHGAP32 Expression in Different Cancer Types"
   ) +
-  theme(plot.title = element_text(size=15),
-        axis.title.x = element_text(size = 15, face = "bold"),
-        axis.title.y = element_text(size = 15, face = "bold"),
-        axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12),
+  theme(
+    #plot.title = element_text(size=15),
+       # axis.title.x = element_text(size = 15, face = "bold"),
+       # axis.title.y = element_text(size = 15, face = "bold"),
+       # axis.text.x = element_text(size = 12),
+       # axis.text.y = element_text(size = 12),
         legend.position = "none") 
 
 ARHGAP32_clinical_jir_cryptic |> 

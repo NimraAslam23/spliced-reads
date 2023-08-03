@@ -171,9 +171,9 @@ STMN2_clinical_jir |>
   labs(
     x = "Cancer Type",
     y = "Number of Cases",
-    title = "STMN2 is expressed in mostly breast and brain cancers" 
+    title = "STMN2 Expression in Different Cancer Types" 
   ) +
-  theme(legend.position = "none", plot.title = element_text(size=10)) 
+  theme(legend.position = "none", plot.title = element_text(size=14)) 
 # BRCA = breast cancer; LGG = low-grade gliomas (brain tumours)
 ```
 
@@ -183,7 +183,7 @@ STMN2_clinical_jir |>
 
 The same bar chart was then plotted using the cryptic filtered dataframe (**STMN2_clinical_jir_cryptic**) to compare the expression of only the cryptic STMN2 events across the different cancer types. Again, this plot compares the absolute read counts of the cryptic events.
 
-```{r bar plot - cancer types with STMN2 events, primary sites with cryptic, out.width="50%", echo = FALSE}
+```{r bar plot - cancer types with STMN2 events, primary sites with cryptic, echo = FALSE}
 STMN2_clinical_jir_cryptic |> 
   drop_na() |> 
   ggplot(aes(x = fct_rev(fct_infreq(cancer_abbrev)))) +
@@ -192,13 +192,14 @@ STMN2_clinical_jir_cryptic |>
   labs(
     x = "Cancer Type",
     y = "Number of Cases",
-    title = "(a)" 
+    title = "Cryptic STMN2 Expression in Different Cancer Types" 
   ) +
-  theme(plot.title = element_text(size=15),
-        axis.title.x = element_text(size = 15, face = "bold"),
-        axis.title.y = element_text(size = 15, face = "bold"),
-        axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12),
+  theme(
+    #plot.title = element_text(size=15),
+       # axis.title.x = element_text(size = 15, face = "bold"),
+       # axis.title.y = element_text(size = 15, face = "bold"),
+       # axis.text.x = element_text(size = 12),
+       # axis.text.y = element_text(size = 12),
         legend.position = "none") 
 
 STMN2_clinical_jir_cryptic |> 
@@ -209,13 +210,14 @@ STMN2_clinical_jir_cryptic |>
   labs(
     x = "Primary Site of Cancer",
     y = "Number of Cases",
-    title = "(b)" 
+    title = "Cryptic STMN2 Expression in Different Cancer Sites" 
   ) +
-  theme(plot.title = element_text(size=15),
-        axis.title.x = element_text(size = 15, face = "bold"),
-        axis.title.y = element_text(size = 15, face = "bold"),
-        axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12),
+  theme(
+    #plot.title = element_text(size=15),
+       # axis.title.x = element_text(size = 15, face = "bold"),
+       # axis.title.y = element_text(size = 15, face = "bold"),
+       # axis.text.x = element_text(size = 12),
+       # axis.text.y = element_text(size = 12),
         legend.position = "none") 
 ```
 
@@ -225,7 +227,7 @@ STMN2_clinical_jir_cryptic |>
 
 Overall STMN2 junction coverage was visualised in the different primary sites of cancers to see if the high cryptic read counts in adrenal gland and brain cancers were due to higher overall STMN2 coverage in those cancers (Figure 3a). Cryptic STMN2 junction coverage was also investigated by calculating 'reads per million' as the fraction of cryptic reads of the overall junction coverage (Figure 3b). 
 
-```{r boxplot - STMN2 junction coverage, out.width = "50%", echo = FALSE, warning = FALSE}
+```{r boxplot - STMN2 junction coverage, echo = FALSE, warning = FALSE}
 #overall STMN2 junction coverage in different cancer sites
 STMN2_clinical_jir_cryptic |> 
   drop_na() |> 
@@ -235,13 +237,14 @@ STMN2_clinical_jir_cryptic |>
   labs(
     x = "Junction Average Coverage",
     y = "Primary Site of Cancer",
-    title = "(a)"
+    title = "Average STMN2 Junction Coverage in Different Cancer Sites"
   ) +
-  theme(plot.title = element_text(size=15),
-        axis.title.x = element_text(size = 15, face = "bold"),
-        axis.title.y = element_text(size = 15, face = "bold"),
-        axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12),
+  theme(
+    #plot.title = element_text(size=15),
+       # axis.title.x = element_text(size = 15, face = "bold"),
+       # axis.title.y = element_text(size = 15, face = "bold"),
+       # axis.text.x = element_text(size = 12),
+       # axis.text.y = element_text(size = 12),
         legend.position = "none") +
   geom_signif(comparisons = list(c("Stomach", "Brain"), c("Brain", "Lung")),
               map_signif_level = TRUE,
@@ -259,13 +262,14 @@ STMN2_clinical_jir_cryptic |>
   labs(
     x = "reads per million",
     y = "Primary Site of Cancer",
-    title = "(b)"
+    title = "STMN2 Cryptic Coverage in Different Cancer Sites"
   ) +
-    theme(plot.title = element_text(size=15),
-        axis.title.x = element_text(size = 15, face = "bold"),
-        axis.title.y = element_text(size = 15, face = "bold"),
-        axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12),
+    theme(
+      #plot.title = element_text(size=15),
+       # axis.title.x = element_text(size = 15, face = "bold"),
+       # axis.title.y = element_text(size = 15, face = "bold"),
+       # axis.text.x = element_text(size = 12),
+       # axis.text.y = element_text(size = 12),
         legend.position = "none")
 ```
 
@@ -304,15 +308,22 @@ kable(STMN2_events_different_cancers,
       caption = "PCPG and GBM cancers have high cryptic STMN2 expression.")
 
 STMN2_events_different_cancers |> 
-  mutate(percentage = percent*100) |> 
-  ggplot(aes(x = reorder(cancer_abbrev, percentage), y = percentage)) +
-  geom_bar(aes(fill = cancer_abbrev), stat = "identity") +
+  ggplot(aes(x = reorder(cancer_abbrev, percent), 
+             y = percent,
+             fill = cancer_abbrev)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = 
+                  ifelse(cancer_abbrev %in% c("PCPG", "GBM", "STAD"), 
+                         sprintf("%.1f%%", percent * 100), "")), 
+            size = 3.2, vjust=0.5, hjust = 0) +
   coord_flip() +
   labs(
     x = "Cancer Type",
-    y = "Percentage of Cases"
+    y = "Percentage of Cases",
+    title = "Fraction of all cryptic STMN2 cases that are of each cancer type"
   ) +
-  theme(legend.position = "none")
+  theme(legend.position = "none") +
+  scale_y_continuous(labels = scales::percent_format())
 ```
 
 **Figure 4**: High proportion of cryptic STMN2 events are in PCPG and GBM cancers. 
@@ -323,25 +334,31 @@ The majority of the cryptic STMN2 events are expressed in PCPG (52.1% of cryptic
 
 A similar calculation was done to see where these cryptic events are occurring (i.e., where these cancers are located in the body). The number of cases of each primary cancer site (with cryptic STMN2) was weighted against the total number of cases with cryptic STMN2.
 
-```{r where are the cancers with cryptic STMN2 events located?, out.width = "90%", echo = FALSE}
+```{r where are the cancers with cryptic STMN2 events located?, echo = FALSE}
 STMN2_events_primary_sites <- STMN2_clinical_jir_cryptic |> 
   drop_na() |> 
   janitor::tabyl(gdc_cases_project_primary_site) |> arrange(-percent)
 
 kable(STMN2_events_primary_sites, caption = "Cancers with cryptic STMN2 events are found primarily in the adrenal gland and brain")
 
-a <- STMN2_events_primary_sites |> 
-  mutate(percentage = percent*100) |> 
-  ggplot(aes(x = reorder(gdc_cases_project_primary_site, percentage), 
-             y = percentage)) +
-  geom_bar(aes(fill = gdc_cases_project_primary_site), stat = "identity") +
+STMN2_events_primary_sites |> 
+  ggplot(aes(x = reorder(gdc_cases_project_primary_site, percent), 
+             y = percent,
+             fill = gdc_cases_project_primary_site)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = 
+                  ifelse(gdc_cases_project_primary_site %in% c("Adrenal Gland", "Brain"), 
+                         sprintf("%.1f%%", percent * 100), "")), 
+            size = 3.1, vjust=0.5, hjust = 0) +
   coord_flip() +
   labs(
     x = "Primary Sites of Cancer",
-    y = "Percentage of Cases"
+    y = "Percentage of Cases",
+    title = "Fraction of all cryptic STMN2 cases that are in each cancer site"
   ) +
-  theme(legend.position = "none", plot.title = element_text(size=8))
-print(a)
+  theme(legend.position = "none") +
+  scale_y_continuous(labels = scales::percent_format())
+
 # 46% of cancers with cryptic STMN2 events are in the adrenal gland
 ```
 
@@ -444,7 +461,7 @@ total_each_cancer_with_STMN2cryptic <- STMN2_cryptic_cBio |>
 
 total_each_cancer_general_vs_STMN2cryptic <- total_each_cancer |> 
   left_join(total_each_cancer_with_STMN2cryptic, by=c("cancer_abbrev")) |> 
-  mutate(percent_with_cryptic = (total_cancer_abbrev_with_cryptic/total_cancer_abbrev)*100)
+  mutate(percent_with_cryptic = (total_cancer_abbrev_with_cryptic/total_cancer_abbrev))
 
 total_each_cancer_general_vs_STMN2cryptic |> 
   drop_na() |> 
@@ -453,9 +470,12 @@ total_each_cancer_general_vs_STMN2cryptic |>
   coord_flip() +
   labs(
     x = "Cancer Type",
-    y = "Percentage of cases with cryptic STMN2 events"
+    y = "Percentage of Cases",
+    title = "Percentage of Cases with Cryptic STMN2 Events"
     ) +
-  theme(legend.position = "none")
+  theme(legend.position = "none") +
+  scale_y_continuous(labels = scales::percent_format())
+
 ```
 
 **Figure 6**: Fraction of each cancer type that has cryptic STMN2 expression.
@@ -516,7 +536,9 @@ cBio_clinical |>
        y = "Log10 Mutation Count") +
   facet_wrap(~study_start) +
   scale_y_continuous(trans = scales::pseudo_log_trans()) +
-  stat_compare_means(comparisons = list(c("TRUE", "FALSE")), label = "p.format") +
+  stat_compare_means(comparisons = list(c("TRUE", "FALSE")), 
+                     label = "p.format",
+                     label.size = 6) +
   theme(legend.position = "bottom") +
   guides(fill = guide_legend(title = "Cryptic STMN2 detected")) +
   theme(

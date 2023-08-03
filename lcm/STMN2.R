@@ -378,24 +378,27 @@ cBio_clinical |>
   filter(!is.na(stmn2_cryptic_detected)) |> 
   filter(n_detected_stmn2 > 2) |> 
   ggplot(aes(x = stmn2_cryptic_detected,
-             y = mutation_count)) + 
+             y = log10(mutation_count))) + 
   geom_boxplot(aes(fill = stmn2_cryptic_detected)) + 
   labs(x = "Cancer Type",
-       y = "Mutation Count") +
+       y = "Log10 Mutation Count") +
   facet_wrap(~study_start) +
   scale_y_continuous(trans = scales::pseudo_log_trans()) +
-  stat_compare_means(comparisons = list(c("TRUE", "FALSE")), label = "p.format") +
+  stat_compare_means(comparisons = list(c("TRUE", "FALSE")), 
+                     label = "p.format",
+                     label.size = 6,
+                     vjust = 0.1) +
   theme(legend.position = "bottom") +
   guides(fill = guide_legend(title = "Cryptic STMN2 detected")) +
   theme(
-    axis.title.x = element_text(size = 25, face = "bold"),
-    axis.title.y = element_text(size = 25, face = "bold"),
-    axis.text.x = element_text(size = 20),
-    axis.text.y = element_text(size = 25),
-    strip.text = element_text(size = 25, face = "bold"),
+    axis.title.x = element_text(size = 12, face = "bold"),
+    axis.title.y = element_text(size = 12, face = "bold"),
+    axis.text.x = element_text(size = 10),
+    axis.text.y = element_text(size = 12),
+    strip.text = element_text(size = 12, face = "bold"),
     strip.background = element_rect(fill = "lightgray"),
-    legend.text = element_text(size = 25),
-    legend.title = element_text(size = 25)
+    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 12)
   )
 
 # Survival Comparisons ----------------------------------------------------
@@ -494,7 +497,7 @@ cancer_abbrev <- unique(survival_STMN2_cryptic$cancer_abbrev)
 
 STMN2_survival_plots <- list()
 
-pdf("survival_STMN2.pdf", width = 10, height = 10)
+pdf(file = "survival_STMN2.pdf", width = 10, height = 10)
 
 for(abbrev in cancer_abbrev) {
   
@@ -523,10 +526,10 @@ for(abbrev in cancer_abbrev) {
                                                  tables.height = 0.2,
                                                  tables.theme = theme_cleantable(),
                                                  xlab = "Time (months)",
-                                                 font.x = c(10, "bold"),
+                                                 font.x = c(12, "bold"),
                                                  ylab = "Survival Probability",
-                                                 font.y = c(10, "bold"),
-                                                 fontsize = 4
+                                                 font.y = c(12, "bold"),
+                                                 fontsize = 6
     ) +
       ggtitle(plot_name)
     
