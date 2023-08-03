@@ -262,7 +262,7 @@ f_spliced_read_from_lcm <- spliced_reads_pdtp_stmn2 |>
              fill = disease)) +
   geom_boxplot() +
   labs(
-    title = "Expression of Annotated and Cryptic STMN2 Events in ALS and Control LCM Neurons",
+    title = "Expression of Annotated and Cryptic STMN2 Events in ALS and Control \nLCM Neurons",
     x = "Junction Event",
     y = "Number of Spliced Reads",
     fill = "Disease Group"
@@ -286,7 +286,7 @@ g_spliced_read_from_lcm <- spliced_reads_pdtp_stmn2 |>
              fill = pTDP_category)) +
   geom_boxplot() +
   labs(
-    title = "Effect of pTDP-43 Accumulation on the Expression of Annotated and Cryptic STMN2 Events",
+    title = "Effect of pTDP-43 Accumulation on the Expression of Annotated and Cryptic \nSTMN2 Events",
     x = "Junction Event",
     y = "Number of Spliced Reads",
     fill = "Level of pTDP-43 Accumulation"
