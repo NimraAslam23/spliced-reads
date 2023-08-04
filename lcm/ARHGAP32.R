@@ -173,7 +173,7 @@ b_ARHGAP32_analysis <- ARHGAP32_clinical_jir_cryptic |>
   labs(
     x = "Cancer Type",
     y = "Number of Cases",
-    title = "Cryptic STMN2 Expression in Different Cancer Types"
+    title = "Cryptic ARHGAP32 Expression in Different Cancer Types"
   ) +
   theme(legend.position = "none")
 
@@ -205,7 +205,7 @@ d_ARHGAP32_analysis <- ARHGAP32_clinical_jir_cryptic |>
   labs(
     x = "Junction Average Coverage",
     y = "Primary Site of Cancer",
-    title = "Average STMN2 Junction Coverage in Different Cancer Sites"
+    title = "Average ARHGAP32 Junction Coverage in Different Cancer Sites"
   ) +
   theme(legend.position = "none") 
 
@@ -376,7 +376,7 @@ k_ARHGAP32_analysis <- ARHGAP32_cryptic_cBio |>
 
 print(k_ARHGAP32_analysis)
 
-# Fraction of each cancer that has cryptic STMN2 events  ------------------
+# Fraction of each cancer that has cryptic ARHGAP32 events  ------------------
 
 total_each_cancer <- cBio_clinical |> 
   group_by(cancer_abbrev) |> 

@@ -109,12 +109,12 @@ common_ARHGAP32_SYNJ2 <- ARHGAP32_cryptic_cBio |>
   distinct() |> 
   drop_na() |> 
   select(-cancer) |> 
-  filter(sample_type == "Primary Tumor") |> 
+  filter(gdc_cases_samples_sample_type == "Primary Tumor") |> 
   janitor::clean_names() 
 
   # within each patient, what is the fraction of cryptic to annotated reads?
 common_ARHGAP32_SYNJ2 |> 
-  select(case_submitter_id,gdc_primary_site,disease_survival_months,mutation_count,jir_arhgap32,jir_synj2) |> 
+  select(case_submitter_id,gdc_cases_project_primary_site,disease_survival_months,mutation_count,jir_arhgap32,jir_synj2) |> 
   pivot_longer(cols = c(jir_arhgap32,jir_synj2),
                names_to = "gene",
                values_to = "cryptic_jir") |>  

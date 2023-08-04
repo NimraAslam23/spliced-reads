@@ -133,6 +133,8 @@ tcga_cryptics_metatable = tmp[which(is_null == FALSE)] |> rbindlist()
 write.table(tcga_cryptics_metatable, file="tcga_cryptics_metatable.txt", sep=",")
 #write_clip(tcga_cryptics_metatable$gdc_cases.submitter_id)
 
+pdf(file = "figures_two_junc_analysis.pdf")
+
 # join clinical data ------------------------------------------------------
 
 cBio_all_clinical_orig <- read.csv("cBio_clinical_data.tsv", sep = "\t", header = TRUE, na.strings = "", fill = TRUE)
@@ -207,7 +209,7 @@ tcga_cryptics_metatable <- tcga_cryptics_metatable |>
 
 # cancer types with cryptic [gene] expression -----------------------------
 
-tcga_cryptics_metatable |> 
+a_two_junc_analysis <- tcga_cryptics_metatable |> 
   filter(cryptic_count > 2) |> 
   separate(study_id,into = ('study_start'),remove = FALSE) |>
   drop_na(study_start) |> 
@@ -220,10 +222,12 @@ tcga_cryptics_metatable |>
     y = "Number of Cases"
   )
 
+print(a_two_junc_analysis)
+
 
 # cryptic coverage (rpm)  -------------------------------------------------
 
-tcga_cryptics_metatable |> 
+b_two_junc_analysis <- tcga_cryptics_metatable |> 
   mutate(rpm = (cryptic_count/junction_coverage)*1000000) |> 
   filter(cryptic_count > 2) |> 
   separate(study_id,into = ('study_start'),remove = FALSE) |>
@@ -237,7 +241,9 @@ tcga_cryptics_metatable |>
     y = "Primary Site of Cancer"
   )
 
-tcga_cryptics_metatable |> 
+print(b_two_junc_analysis)
+
+c_two_junc_analysis <- tcga_cryptics_metatable |> 
   mutate(rpm = (cryptic_count/junction_coverage)*1000000) |> 
   filter(cryptic_count > 2) |> 
   filter(gene_name %in% c("AARS1", "ARHGAP32", "CAMK2B", "CDK7", "EPB41L4A", "KALRN", "KNDC1", 
@@ -252,6 +258,10 @@ tcga_cryptics_metatable |>
     x = "Cryptic Coverage (reads per million)",
     y = "Primary Site of Cancer"
   )
+
+print(c_two_junc_analysis)
+
+dev.off()
 
 # survival analysis -------------------------------------------------------
 

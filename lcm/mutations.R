@@ -105,6 +105,7 @@ for (project in project_list) {
 write.table(maf, file='\\Users\\nimraaslam\\Documents\\GitHub\\spliced-reads\\lcm\\all_mutation_data.txt')
 write.table(maf, file='all_mutation_data.txt')
 
+pdf(file = "figures_mutations.pdf")
 
 all_mutation_data_orig <- read.table("all_mutation_data.txt", sep="", header = T)
 all_mutation_data <- all_mutation_data_orig
@@ -209,7 +210,7 @@ gene_mutation_proportions <- as.data.table(gene_mutation_proportions)
 common_cases_mutation_proportions <- as.data.table(common_cases_mutation_proportions)
 
 # still getting errors
-gene_mutation_proportions |> 
+a_mutations <- gene_mutation_proportions |> 
   left_join(common_cases_mutation_proportions, by="gene")  |>  
   replace(is.na(.), 0)  |> 
   filter(gene %in% nested_thing$gene) |> 
@@ -223,6 +224,8 @@ gene_mutation_proportions |>
              fill = variable)) + 
   geom_col(position = "dodge") +
   scale_y_continuous(labels = scales::percent_format()) 
+
+print(a_mutations)
 
 #gene_common_proportion |> group_by(general_vs_common_cases, case_submitter_id) |> summarise(n = n()) |> View() # 11 cases  
 
@@ -240,7 +243,7 @@ chisq_test_gene_common_proportion <- gene_common_proportion |>
                                 TRUE ~ "NS"))
 
 
-gene_common_proportion|> 
+b_mutations <- gene_common_proportion|> 
   filter(gene_count >= 100) |> 
   ggplot(aes(x = reorder(gene, proportion),
              y = proportion,
@@ -251,11 +254,11 @@ gene_common_proportion|>
             data = chisq_test_gene_common_proportion) +
   scale_y_continuous(labels = scales::percent_format())
 
+print(b_mutations)
+
 #all_stad_cancers = stringr::str_split(readLines('/Users/nimraaslam/Downloads/stad_tcga_pan_can_atlas_2018/case_lists/cases_sv.txt')[6],"\t")
 #cancer_df = tibble(all_stad_cancers = gsub("case_list_ids: ","",all_stad_cancers[[1]]))
 #cancer_df = cancer_df |> mutate(multiple_or_none = ifelse(all_stad_cancers %in% all_common_cases$case_submitter_id,'contains_multiple_cryptics','non_cryptic_contain'))
-
-pdf(file="mutations_plots.pdf")
 
 # STMN2 cryptic events - mutations ----------------------------------------
     # pcpg, gbm, lgg
@@ -271,7 +274,7 @@ lgg_mutations <- tidy_mutation_data(lgg_mutations_orig, STMN2_cryptic_cBio)
 STMN2_pcpg_gbm_lgg_mutations <- rbind(pcpg_mutations, gbm_mutations, lgg_mutations)
 
 # fraction of mutations that are in cancer drivers vs non-drivers in each cancer type with cryptic STMN2
-a<- STMN2_pcpg_gbm_lgg_mutations |> 
+c_mutations <- STMN2_pcpg_gbm_lgg_mutations |> 
   mutate(cancer_driver_gene = ifelse(hugo_symbol %in% cosmic_cancer_genes$Gene,
                                      'cancer_driver', 'non_driver')) |>
   filter(cryptic_or_non == "cryptic") |> 
@@ -293,9 +296,9 @@ a<- STMN2_pcpg_gbm_lgg_mutations |>
   scale_fill_manual(labels = c("Yes", "No"),
                     values = c("cancer_driver" = "tomato", "non_driver" = "dodgerblue"))
 
-print(a)
+print(c_mutations)
 
-STMN2_pcpg_gbm_lgg_mutations |> 
+d_mutations <- STMN2_pcpg_gbm_lgg_mutations |> 
   mutate(cancer_driver_gene = ifelse(hugo_symbol %in% cosmic_cancer_genes$Gene,
                                      'cancer_driver', 'non_driver')) |>
   filter(cancer_driver_gene == "cancer_driver") |> 
@@ -318,9 +321,11 @@ STMN2_pcpg_gbm_lgg_mutations |>
                   values = c("cryptic" = "tomato", "non-cryptic" = "dodgerblue")) +
   theme(legend.position = "bottom")
   
+print(d_mutations)
+
 # fraction of mutations that are known or novel in each cancer type with cryptic STMN2 
     # this plot is wrong - need help
-b <- STMN2_pcpg_gbm_lgg_mutations |> 
+e_mutations <- STMN2_pcpg_gbm_lgg_mutations |> 
   mutate(cancer_driver_gene = ifelse(hugo_symbol %in% cosmic_cancer_genes$Gene,
                                      'cancer_driver', 'non_driver')) |>
   filter(cryptic_or_non == "cryptic") |> 
@@ -345,7 +350,7 @@ b <- STMN2_pcpg_gbm_lgg_mutations |>
   scale_y_continuous(labels = scales::percent_format()) +
   theme(legend.position="bottom")
 
-print(b)
+print(e_mutations)
 
 # then want to see how many of the known/novel variants are in cancer drivers vs non-drivers
 # OR
@@ -354,7 +359,7 @@ print(b)
 write.table(STMN2_pcpg_gbm_lgg_mutations, file="STMN2_pcpg_gbm_lgg_mutations.txt", sep=",")
 
 # looking at polyphen scores - likelihood of mutations being damaging 
-c <- STMN2_pcpg_gbm_lgg_mutations |>  
+f_mutations <- STMN2_pcpg_gbm_lgg_mutations |>  
   mutate(cancer_driver_gene = ifelse(hugo_symbol %in% cosmic_cancer_genes$Gene,
                                      'cancer_driver', 'non_driver')) |>
   mutate(known_or_novel_variant = 
@@ -378,10 +383,10 @@ c <- STMN2_pcpg_gbm_lgg_mutations |>
   scale_y_continuous(labels = scales::percent_format()) +
   theme(legend.position="bottom")
 
-print(c)
+print(f_mutations)
 
 # polyphen values 
-d <- STMN2_pcpg_gbm_lgg_mutations |>  
+g_mutations <- STMN2_pcpg_gbm_lgg_mutations |>  
   mutate(cancer_driver_gene = ifelse(hugo_symbol %in% cosmic_cancer_genes$Gene,
                                      'cancer_driver', 'non_driver')) |>
   mutate(known_or_novel_variant = 
@@ -397,10 +402,10 @@ d <- STMN2_pcpg_gbm_lgg_mutations |>
              fill = cancer_abbrev)) +
   geom_boxplot(position = "dodge")
 
-print(d)
+print(g_mutations)
 
 # polyphen values in cancer drivers vs non-drivers 
-e <- STMN2_pcpg_gbm_lgg_mutations |>  
+h_mutations <- STMN2_pcpg_gbm_lgg_mutations |>  
   mutate(cancer_driver_gene = ifelse(hugo_symbol %in% cosmic_cancer_genes$Gene,
                                      'cancer_driver', 'non_driver')) |>
   mutate(known_or_novel_variant = 
@@ -415,12 +420,12 @@ e <- STMN2_pcpg_gbm_lgg_mutations |>
              fill = cancer_driver_gene)) +
   geom_boxplot(position = "dodge") 
 
-print(e)
+print(h_mutations)
 
 # gene with the highest number of mutations in cryptic STMN2 cases
 # how can I add to this plot to show how many of those mutations are known vs novel?
 
-STMN2_pcpg_gbm_lgg_mutations |> 
+i_mutations <- STMN2_pcpg_gbm_lgg_mutations |> 
   mutate(cancer_driver_gene = ifelse(hugo_symbol %in% cosmic_cancer_genes$Gene,
                                      'cancer_driver', 'non_driver')) |>
   mutate(known_or_novel_variant = 
@@ -441,9 +446,10 @@ STMN2_pcpg_gbm_lgg_mutations |>
   scale_fill_manual(labels = c("Yes", "No"),
                     values = c("cancer_driver" = "tomato", "non_driver" = "dodgerblue"))
   
-  
 
-f <- STMN2_pcpg_gbm_lgg_mutations |>  
+print(i_mutations)
+
+j_mutations <- STMN2_pcpg_gbm_lgg_mutations |>  
   mutate(cancer_driver_gene = ifelse(hugo_symbol %in% cosmic_cancer_genes$Gene,
                                      'cancer_driver', 'non_driver')) |>
   mutate(known_or_novel_variant = 
@@ -465,8 +471,7 @@ f <- STMN2_pcpg_gbm_lgg_mutations |>
   scale_fill_manual(labels = c("Yes", "No"),
                     values = c("cancer_driver" = "tomato", "non_driver" = "dodgerblue"))
   
-print(f)
-dev.off()
+print(j_mutations)
 
 
 
@@ -483,9 +488,10 @@ prad_mutations <- tidy_mutation_data(prad_mutations_orig, ARHGAP32_cryptic_cBio)
 
 ARHGAP32_brca_esca_prad_mutations <- rbind(brca_mutations, esca_mutations_ARHGAP32, prad_mutations)
 
-ARHGAP32_brca_esca_prad_mutations |> 
+k_mutations <- ARHGAP32_brca_esca_prad_mutations |> 
   mutate(cancer_driver_gene = ifelse(hugo_symbol %in% cosmic_cancer_genes$Gene,
                                      'cancer_driver', 'non_driver')) |>
+  filter(cryptic_or_non == "cryptic") |> 
   group_by(cancer_abbrev, cancer_driver_gene) |> 
   summarise(n = n()) |> 
   mutate(proportion = n/sum(n)) |> 
@@ -504,6 +510,183 @@ ARHGAP32_brca_esca_prad_mutations |>
   scale_fill_manual(labels = c("Yes", "No"),
                     values = c("cancer_driver" = "tomato", "non_driver" = "dodgerblue"))
 
+print(k_mutations)
+
+l_mutations <- ARHGAP32_brca_esca_prad_mutations |> 
+  mutate(cancer_driver_gene = ifelse(hugo_symbol %in% cosmic_cancer_genes$Gene,
+                                     'cancer_driver', 'non_driver')) |>
+  filter(cancer_driver_gene == "cancer_driver") |> 
+  group_by(cancer_abbrev, cryptic_or_non) |> 
+  summarise(n = n()) |> 
+  mutate(proportion = n/sum(n)) |> 
+  ggplot(aes(x = cancer_abbrev, y = proportion,
+             fill = cryptic_or_non,
+             label = scales::percent(proportion))) +
+  geom_col(position = "dodge") +
+  labs(x = "Cancer Type",
+       y = "Percentage of Mutations",
+       title = "Mutations in Cancer Driver Genes",
+       fill = "Cryptic ARHGAP32 Detected") +
+  geom_text(position = position_dodge(width = .9),    
+            vjust = -0.5,    
+            size = 4) +
+  scale_y_continuous(labels = scales::percent_format()) +
+  scale_fill_manual(labels = c("Yes", "No"),
+                    values = c("cryptic" = "tomato", "non-cryptic" = "dodgerblue")) +
+  theme(legend.position = "bottom")
+
+print(l_mutations)
+
+# fraction of mutations that are known or novel in each cancer type with cryptic STMN2 
+# this plot is wrong - need help
+m_mutations <- ARHGAP32_brca_esca_prad_mutations |> 
+  mutate(cancer_driver_gene = ifelse(hugo_symbol %in% cosmic_cancer_genes$Gene,
+                                     'cancer_driver', 'non_driver')) |>
+  filter(cryptic_or_non == "cryptic") |> 
+  mutate(known_or_novel_variant = 
+           ifelse(db_snp_rs == "novel", "novel",
+                  ifelse(grepl("rs", db_snp_rs), "known", "no_info"))) |>
+  group_by(cancer_abbrev, known_or_novel_variant) |> 
+  summarise(n = n()) |> 
+  mutate(proportion = n/sum(n)) |> 
+  ggplot(aes(x = known_or_novel_variant, y = proportion,
+             fill = known_or_novel_variant,
+             label = scales::percent(proportion))) +
+  geom_col(position = "dodge") +
+  facet_wrap(~cancer_abbrev) +
+  labs(x = "Variant Type", 
+       y = "Percentage of Mutations",
+       fill = "",
+       title = "Mutations in Cancer Patients with Cryptic ARHGAP32 Events") +
+  geom_text(position = position_dodge(width = .9),    
+            vjust = -0.5,    
+            size = 3) +
+  scale_y_continuous(labels = scales::percent_format()) +
+  theme(legend.position="bottom")
+
+print(m_mutations)
+
+# then want to see how many of the known/novel variants are in cancer drivers vs non-drivers
+# OR
+# how many of the mutations in cancer drivers/non-drivers are known/novel
+
+write.table(ARHGAP32_brca_esca_prad_mutations, file="ARHGAP32_brca_esca_prad_mutations.txt", sep=",")
+
+# looking at polyphen scores - likelihood of mutations being damaging 
+n_mutations <- ARHGAP32_brca_esca_prad_mutations |>  
+  mutate(cancer_driver_gene = ifelse(hugo_symbol %in% cosmic_cancer_genes$Gene,
+                                     'cancer_driver', 'non_driver')) |>
+  mutate(known_or_novel_variant = 
+           ifelse(db_snp_rs == "novel", "novel",
+                  ifelse(grepl("rs", db_snp_rs), "known", "no_info"))) |>
+  filter(cancer_driver_gene=="cancer_driver") |> 
+  filter(known_or_novel_variant=="known") |> 
+  filter(consequence != "synonymous_variant") |> 
+  separate(poly_phen, into = c("poly_phen", "poly_phen_value"), sep = "\\(|\\)") |> 
+  filter(poly_phen != ".") |> 
+  group_by(cancer_abbrev, poly_phen) |> 
+  mutate(n = n()) |> 
+  mutate(proportion = n/sum(n)) |> 
+  ggplot(aes(x = cancer_abbrev, y = proportion,
+             fill = poly_phen,
+             label = scales::percent(proportion))) +
+  geom_col(position = "dodge") +
+  geom_text(position = position_dodge(width = .9),    
+            vjust = -0.5,    
+            size = 3) +
+  scale_y_continuous(labels = scales::percent_format()) +
+  theme(legend.position="bottom")
+
+print(n_mutations)
+
+# polyphen values 
+o_mutations <- ARHGAP32_brca_esca_prad_mutations |>  
+  mutate(cancer_driver_gene = ifelse(hugo_symbol %in% cosmic_cancer_genes$Gene,
+                                     'cancer_driver', 'non_driver')) |>
+  mutate(known_or_novel_variant = 
+           ifelse(db_snp_rs == "novel", "novel",
+                  ifelse(grepl("rs", db_snp_rs), "known", "no_info"))) |>
+  filter(cancer_driver_gene=="cancer_driver") |> 
+  filter(known_or_novel_variant=="known") |> 
+  filter(consequence != "synonymous_variant") |> 
+  separate(poly_phen, into = c("poly_phen", "poly_phen_value"), sep = "\\(|\\)") |> 
+  filter(poly_phen != ".") |> 
+  mutate(poly_phen_value = as.numeric(poly_phen_value)) |> 
+  ggplot(aes(x = cancer_abbrev, y = poly_phen_value,
+             fill = cancer_abbrev)) +
+  geom_boxplot(position = "dodge")
+
+print(o_mutations)
+
+# polyphen values in cancer drivers vs non-drivers 
+p_mutations <- ARHGAP32_brca_esca_prad_mutations |>  
+  mutate(cancer_driver_gene = ifelse(hugo_symbol %in% cosmic_cancer_genes$Gene,
+                                     'cancer_driver', 'non_driver')) |>
+  mutate(known_or_novel_variant = 
+           ifelse(db_snp_rs == "novel", "novel",
+                  ifelse(grepl("rs", db_snp_rs), "known", "no_info"))) |>
+  filter(known_or_novel_variant=="known") |> 
+  filter(consequence != "synonymous_variant") |> 
+  separate(poly_phen, into = c("poly_phen", "poly_phen_value"), sep = "\\(|\\)") |> 
+  filter(poly_phen != ".") |> 
+  mutate(poly_phen_value = as.numeric(poly_phen_value)) |> 
+  ggplot(aes(x = cancer_abbrev, y = poly_phen_value,
+             fill = cancer_driver_gene)) +
+  geom_boxplot(position = "dodge") 
+
+print(p_mutations)
+
+# gene with the highest number of mutations in cryptic STMN2 cases
+# how can I add to this plot to show how many of those mutations are known vs novel?
+
+q_mutations <- ARHGAP32_brca_esca_prad_mutations |> 
+  mutate(cancer_driver_gene = ifelse(hugo_symbol %in% cosmic_cancer_genes$Gene,
+                                     'cancer_driver', 'non_driver')) |>
+  mutate(known_or_novel_variant = 
+           ifelse(db_snp_rs == "novel", "novel",
+                  ifelse(grepl("rs", db_snp_rs), "known", "no_info"))) |> 
+  group_by(hugo_symbol, cryptic_or_non) |> 
+  summarise(n = n_distinct(case_submitter_id),
+            cancer_driver_gene) |> 
+  unique() |> 
+  ungroup() |> 
+  ggplot(aes(x = hugo_symbol, y = n,
+             fill = cancer_driver_gene)) +
+  geom_col() +
+  facet_wrap(~cryptic_or_non) +
+  labs(x = "Mutated Gene",
+       y = "Number of Mutations",
+       fill = "Cancer Driver Gene") +
+  scale_fill_manual(labels = c("Yes", "No"),
+                    values = c("cancer_driver" = "tomato", "non_driver" = "dodgerblue"))
+
+
+print(q_mutations)
+
+r_mutations <- ARHGAP32_brca_esca_prad_mutations |>  
+  mutate(cancer_driver_gene = ifelse(hugo_symbol %in% cosmic_cancer_genes$Gene,
+                                     'cancer_driver', 'non_driver')) |>
+  mutate(known_or_novel_variant = 
+           ifelse(db_snp_rs == "novel", "novel",
+                  ifelse(grepl("rs", db_snp_rs), "known", "no_info"))) |> 
+  filter(cryptic_or_non == "cryptic") |> 
+  group_by(hugo_symbol) |> #hugo symbol and cryptic contain - n mutations and fraction --> chi square test
+  summarise(n = n_distinct(case_submitter_id),
+            cancer_driver_gene) |> 
+  unique() |> 
+  filter(n >= 10) |> 
+  ungroup() |> 
+  ggplot(aes(x = reorder(hugo_symbol, n), y = n,
+             fill = cancer_driver_gene)) +
+  geom_col() +
+  labs(x = "Mutated Gene",
+       y = "Number of Mutations",
+       fill = "Cancer Driver Gene") +
+  scale_fill_manual(labels = c("Yes", "No"),
+                    values = c("cancer_driver" = "tomato", "non_driver" = "dodgerblue"))
+
+print(r_mutations)
+
 # SYNJ2 cryptic events - mutations -------------------------------------
     # stad, esca
 
@@ -515,9 +698,10 @@ esca_mutations_SYNJ2 <- tidy_mutation_data(esca_mutations_orig, SYNJ2_cryptic_cB
 
 SYNJ2_stad_esca_mutations <- rbind(stad_mutations, esca_mutations_SYNJ2)
 
-SYNJ2_stad_esca_mutations |> 
+s_mutations <- SYNJ2_stad_esca_mutations |> 
   mutate(cancer_driver_gene = ifelse(hugo_symbol %in% cosmic_cancer_genes$Gene,
                                      'cancer_driver', 'non_driver')) |>
+  filter(cryptic_or_non == "cryptic") |> 
   group_by(cancer_abbrev, cancer_driver_gene) |> 
   summarise(n = n()) |> 
   mutate(proportion = n/sum(n)) |> 
@@ -535,6 +719,191 @@ SYNJ2_stad_esca_mutations |>
   scale_y_continuous(labels = scales::percent_format()) +
   scale_fill_manual(labels = c("Yes", "No"),
                     values = c("cancer_driver" = "tomato", "non_driver" = "dodgerblue"))
+
+print(s_mutations)
+
+t_mutations <- SYNJ2_stad_esca_mutations |> 
+  mutate(cancer_driver_gene = ifelse(hugo_symbol %in% cosmic_cancer_genes$Gene,
+                                     'cancer_driver', 'non_driver')) |>
+  filter(cancer_driver_gene == "cancer_driver") |> 
+  group_by(cancer_abbrev, cryptic_or_non) |> 
+  summarise(n = n()) |> 
+  mutate(proportion = n/sum(n)) |> 
+  ggplot(aes(x = cancer_abbrev, y = proportion,
+             fill = cryptic_or_non,
+             label = scales::percent(proportion))) +
+  geom_col(position = "dodge") +
+  labs(x = "Cancer Type",
+       y = "Percentage of Mutations",
+       title = "Mutations in Cancer Driver Genes",
+       fill = "Cryptic SYNJ2 Detected") +
+  geom_text(position = position_dodge(width = .9),    
+            vjust = -0.5,    
+            size = 4) +
+  scale_y_continuous(labels = scales::percent_format()) +
+  scale_fill_manual(labels = c("Yes", "No"),
+                    values = c("cryptic" = "tomato", "non-cryptic" = "dodgerblue")) +
+  theme(legend.position = "bottom")
+
+print(t_mutations)
+
+# fraction of mutations that are known or novel in each cancer type with cryptic STMN2 
+# this plot is wrong - need help
+u_mutations <- SYNJ2_stad_esca_mutations |> 
+  mutate(cancer_driver_gene = ifelse(hugo_symbol %in% cosmic_cancer_genes$Gene,
+                                     'cancer_driver', 'non_driver')) |>
+  filter(cryptic_or_non == "cryptic") |> 
+  mutate(known_or_novel_variant = 
+           ifelse(db_snp_rs == "novel", "novel",
+                  ifelse(grepl("rs", db_snp_rs), "known", "no_info"))) |>
+  group_by(cancer_abbrev, known_or_novel_variant) |> 
+  summarise(n = n()) |> 
+  mutate(proportion = n/sum(n)) |> 
+  ggplot(aes(x = known_or_novel_variant, y = proportion,
+             fill = known_or_novel_variant,
+             label = scales::percent(proportion))) +
+  geom_col(position = "dodge") +
+  facet_wrap(~cancer_abbrev) +
+  labs(x = "Variant Type", 
+       y = "Percentage of Mutations",
+       fill = "",
+       title = "Mutations in Cancer Patients with Cryptic SYNJ2 Events") +
+  geom_text(position = position_dodge(width = .9),    
+            vjust = -0.5,    
+            size = 3) +
+  scale_y_continuous(labels = scales::percent_format()) +
+  theme(legend.position="bottom")
+
+print(u_mutations)
+
+# then want to see how many of the known/novel variants are in cancer drivers vs non-drivers
+# OR
+# how many of the mutations in cancer drivers/non-drivers are known/novel
+
+write.table(SYNJ2_stad_esca_mutations, file="SYNJ2_stad_esca_mutations.txt", sep=",")
+
+# looking at polyphen scores - likelihood of mutations being damaging 
+v_mutations <- SYNJ2_stad_esca_mutations |>  
+  mutate(cancer_driver_gene = ifelse(hugo_symbol %in% cosmic_cancer_genes$Gene,
+                                     'cancer_driver', 'non_driver')) |>
+  mutate(known_or_novel_variant = 
+           ifelse(db_snp_rs == "novel", "novel",
+                  ifelse(grepl("rs", db_snp_rs), "known", "no_info"))) |>
+  filter(cancer_driver_gene=="cancer_driver") |> 
+  filter(known_or_novel_variant=="known") |> 
+  filter(consequence != "synonymous_variant") |> 
+  separate(poly_phen, into = c("poly_phen", "poly_phen_value"), sep = "\\(|\\)") |> 
+  filter(poly_phen != ".") |> 
+  group_by(cancer_abbrev, poly_phen) |> 
+  mutate(n = n()) |> 
+  mutate(proportion = n/sum(n)) |> 
+  ggplot(aes(x = cancer_abbrev, y = proportion,
+             fill = poly_phen,
+             label = scales::percent(proportion))) +
+  geom_col(position = "dodge") +
+  geom_text(position = position_dodge(width = .9),    
+            vjust = -0.5,    
+            size = 3) +
+  scale_y_continuous(labels = scales::percent_format()) +
+  theme(legend.position="bottom")
+
+print(v_mutations)
+
+# polyphen values 
+w_mutations <- SYNJ2_stad_esca_mutations |>  
+  mutate(cancer_driver_gene = ifelse(hugo_symbol %in% cosmic_cancer_genes$Gene,
+                                     'cancer_driver', 'non_driver')) |>
+  mutate(known_or_novel_variant = 
+           ifelse(db_snp_rs == "novel", "novel",
+                  ifelse(grepl("rs", db_snp_rs), "known", "no_info"))) |>
+  filter(cancer_driver_gene=="cancer_driver") |> 
+  filter(known_or_novel_variant=="known") |> 
+  filter(consequence != "synonymous_variant") |> 
+  separate(poly_phen, into = c("poly_phen", "poly_phen_value"), sep = "\\(|\\)") |> 
+  filter(poly_phen != ".") |> 
+  mutate(poly_phen_value = as.numeric(poly_phen_value)) |> 
+  ggplot(aes(x = cancer_abbrev, y = poly_phen_value,
+             fill = cancer_abbrev)) +
+  geom_boxplot(position = "dodge")
+
+print(w_mutations)
+
+# polyphen values in cancer drivers vs non-drivers 
+x_mutations <- SYNJ2_stad_esca_mutations |>  
+  mutate(cancer_driver_gene = ifelse(hugo_symbol %in% cosmic_cancer_genes$Gene,
+                                     'cancer_driver', 'non_driver')) |>
+  mutate(known_or_novel_variant = 
+           ifelse(db_snp_rs == "novel", "novel",
+                  ifelse(grepl("rs", db_snp_rs), "known", "no_info"))) |>
+  filter(known_or_novel_variant=="known") |> 
+  filter(consequence != "synonymous_variant") |> 
+  separate(poly_phen, into = c("poly_phen", "poly_phen_value"), sep = "\\(|\\)") |> 
+  filter(poly_phen != ".") |> 
+  mutate(poly_phen_value = as.numeric(poly_phen_value)) |> 
+  ggplot(aes(x = cancer_abbrev, y = poly_phen_value,
+             fill = cancer_driver_gene)) +
+  geom_boxplot(position = "dodge") 
+
+print(x_mutations)
+
+# gene with the highest number of mutations in cryptic STMN2 cases
+# how can I add to this plot to show how many of those mutations are known vs novel?
+
+y_mutations <- SYNJ2_stad_esca_mutations |> 
+  mutate(cancer_driver_gene = ifelse(hugo_symbol %in% cosmic_cancer_genes$Gene,
+                                     'cancer_driver', 'non_driver')) |>
+  mutate(known_or_novel_variant = 
+           ifelse(db_snp_rs == "novel", "novel",
+                  ifelse(grepl("rs", db_snp_rs), "known", "no_info"))) |> 
+  group_by(hugo_symbol, cryptic_or_non) |> 
+  summarise(n = n_distinct(case_submitter_id),
+            cancer_driver_gene) |> 
+  unique() |> 
+  ungroup() |> 
+  ggplot(aes(x = hugo_symbol, y = n,
+             fill = cancer_driver_gene)) +
+  geom_col() +
+  facet_wrap(~cryptic_or_non) +
+  labs(x = "Mutated Gene",
+       y = "Number of Mutations",
+       fill = "Cancer Driver Gene") +
+  scale_fill_manual(labels = c("Yes", "No"),
+                    values = c("cancer_driver" = "tomato", "non_driver" = "dodgerblue"))
+
+
+print(y_mutations)
+
+z_mutations <- SYNJ2_stad_esca_mutations |>  
+  mutate(cancer_driver_gene = ifelse(hugo_symbol %in% cosmic_cancer_genes$Gene,
+                                     'cancer_driver', 'non_driver')) |>
+  mutate(known_or_novel_variant = 
+           ifelse(db_snp_rs == "novel", "novel",
+                  ifelse(grepl("rs", db_snp_rs), "known", "no_info"))) |> 
+  filter(cryptic_or_non == "cryptic") |> 
+  group_by(hugo_symbol) |> #hugo symbol and cryptic contain - n mutations and fraction --> chi square test
+  summarise(n = n_distinct(case_submitter_id),
+            cancer_driver_gene) |> 
+  unique() |> 
+  filter(n >= 10) |> 
+  ungroup() |> 
+  ggplot(aes(x = reorder(hugo_symbol, n), y = n,
+             fill = cancer_driver_gene)) +
+  geom_col() +
+  labs(x = "Mutated Gene",
+       y = "Number of Mutations",
+       fill = "Cancer Driver Gene") +
+  scale_fill_manual(labels = c("Yes", "No"),
+                    values = c("cancer_driver" = "tomato", "non_driver" = "dodgerblue"))
+
+print(z_mutations)
+
+
+dev.off()
+
+
+
+
+# ignore TMEM260 for now (limited time)
 
 
 # TMEM260 cryptic events - mutations --------------------------------------
